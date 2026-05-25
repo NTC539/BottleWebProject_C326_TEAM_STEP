@@ -11,7 +11,7 @@
     </p>
 </div>
 
-<div class="row">
+<div class="row row-cards">
     <div class="col-md-3">
         <div class="panel panel-primary">
             <div class="panel-heading">
@@ -21,7 +21,7 @@
                 <p>Нахождение кратчайших путей в графе. Применяется в протоколе маршрутизации OSPF.</p>
                 <a href="/dijkstra" class="btn btn-primary btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 1 — Антон</div>
+            <div class="panel-footer text-muted">Вариант 1 — Садеков</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -33,7 +33,7 @@
                 <p>Поиск мостов и точек сочленения графа для анализа устойчивости сети.</p>
                 <a href="/bridges" class="btn btn-success btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 2 — Дмитрий</div>
+            <div class="panel-footer text-muted">Вариант 2 — Тигранян</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -45,7 +45,7 @@
                 <p>Метод критического пути (CPM) для управления проектами и составления расписаний.</p>
                 <a href="/cpm" class="btn btn-warning btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 3 — Эдуард</div>
+            <div class="panel-footer text-muted">Вариант 3 — Езерский</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -57,7 +57,7 @@
                 <p>Раскраска вершин графа минимальным числом цветов. Применяется при составлении расписаний.</p>
                 <a href="/coloring" class="btn btn-danger btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 4 — Иван</div>
+            <div class="panel-footer text-muted">Вариант 4 — Петренко</div>
         </div>
     </div>
 </div>
