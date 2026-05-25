@@ -1,0 +1,5 @@
+% task_description = '<p>Найти все мосты и точки сочленения в неориентированном графе. Мост — ребро, удаление которого увеличивает число связных компонент. Применяется для анализа устойчивости сетевых топологий.</p>'
+% theory_content = '<h4>DFS и low-функция</h4><p>Алгоритм Тарьяна использует обход в глубину (DFS) и вычисляет для каждой вершины v значение low[v] — минимальный DFS-номер вершины, достижимой из поддерева v по одному обратному ребру. Ребро (u, v) является мостом, если low[v] &gt; disc[u].</p>'
+% algorithm_steps = '<ol><li>Запустить DFS, назначив каждой вершине время обнаружения disc[v].</li><li>Вычислить low[v] = min(disc[v], disc[w]) для всех обратных рёбер (v, w).</li><li>Обновить low[u] = min(low[u], low[v]) при возврате из рекурсии.</li><li>Ребро (u, v) — мост, если low[v] &gt; disc[u].</li><li>Вершина u — точка сочленения, если для дочерней v выполняется low[v] ≥ disc[u].</li></ol>'
+% practice_url = '/bridges/practice'
+% include('theory_base.tpl', title='Мосты Тарьяна', year=year, task_description=task_description, theory_content=theory_content, algorithm_steps=algorithm_steps, practice_url=practice_url)

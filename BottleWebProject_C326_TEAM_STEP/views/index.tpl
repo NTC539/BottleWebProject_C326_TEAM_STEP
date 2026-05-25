@@ -1,29 +1,63 @@
-% rebase('layout.tpl', title='Home Page', year=year)
+% rebase('layout.tpl', title='Главная', year=year, active_page='home')
 
 <div class="jumbotron">
-    <h1>Bottle</h1>
-    <p class="lead">Bottle is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://bottlepy.org/docs/dev/index.html" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+    <h1>Задачи на теории графов</h1>
+    <p class="lead">Учебная практика УП02 | ПМ02 | Специальность 09.02.07</p>
+    <p>
+        Сайт решает задачи маршрутизации сетей, анализа устойчивости и управления проектами
+        с помощью алгоритмов теории графов, реализованных на Python / Bottle.
+        Каждый раздел содержит теоретическую базу и интерактивную практическую часть,
+        позволяющую запустить алгоритм на собственных данных.
+    </p>
 </div>
 
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            Bottle gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://bottlepy.org/docs/dev/index.html">Learn more &raquo;</a></p>
+    <div class="col-md-3">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Алгоритм Дейкстры</h3>
+            </div>
+            <div class="panel-body">
+                <p>Нахождение кратчайших путей в графе. Применяется в протоколе маршрутизации OSPF.</p>
+                <a href="/dijkstra" class="btn btn-primary btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Вариант 1 — Антон</div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>The Python Package Index is a repository of software for the Python programming language.</p>
-        <p><a class="btn btn-default" href="https://pypi.python.org/pypi">Learn more &raquo;</a></p>
+    <div class="col-md-3">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Мосты Тарьяна</h3>
+            </div>
+            <div class="panel-body">
+                <p>Поиск мостов и точек сочленения графа для анализа устойчивости сети.</p>
+                <a href="/bridges" class="btn btn-success btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Вариант 2 — Дмитрий</div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Microsoft Azure</h2>
-        <p>You can easily publish to Microsoft Azure using Visual Studio. Find out how you can host your application using a free trial today.</p>
-        <p><a class="btn btn-default" href="http://azure.microsoft.com">Learn more &raquo;</a></p>
+    <div class="col-md-3">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">Критический путь</h3>
+            </div>
+            <div class="panel-body">
+                <p>Метод критического пути (CPM) для управления проектами и составления расписаний.</p>
+                <a href="/cpm" class="btn btn-warning btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Вариант 3 — Эдуард</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <h3 class="panel-title">Раскраска графа</h3>
+            </div>
+            <div class="panel-body">
+                <p>Раскраска вершин графа минимальным числом цветов. Применяется при составлении расписаний.</p>
+                <a href="/coloring" class="btn btn-danger btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Вариант 4 — Иван</div>
+        </div>
     </div>
 </div>

@@ -1,22 +1,253 @@
+/* ============================================================
+   GraphAlgo | Команда 1 — custom styles (Bootstrap 3 override)
+   ============================================================ */
+
+/* ----- Reset / base ---------------------------------------- */
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    background-color: #f4f7fa;
+    color: #2d3436;
 }
 
-/* Set padding to keep content from hitting the edges */
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+    padding-top: 20px;
+    padding-bottom: 40px;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
+/* ----- Navbar ---------------------------------------------- */
+.navbar-inverse {
+    background-color: #1a3a5c;
+    border-color: #122840;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.navbar-inverse .navbar-brand:hover,
+.navbar-inverse .navbar-brand:focus {
+    color: #d0e8f5;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #c8d8e8;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus {
+    color: #ffffff;
+    background-color: #2e86ab;
+}
+
+.navbar-inverse .navbar-nav > li.active > a,
+.navbar-inverse .navbar-nav > li.active > a:hover,
+.navbar-inverse .navbar-nav > li.active > a:focus {
+    color: #ffffff;
+    background-color: #2e86ab;
+}
+
+.navbar-inverse .navbar-nav > .open > a,
+.navbar-inverse .navbar-nav > .open > a:hover,
+.navbar-inverse .navbar-nav > .open > a:focus {
+    background-color: #2e86ab;
+    color: #ffffff;
+}
+
+.navbar-inverse .dropdown-menu {
+    background-color: #1a3a5c;
+    border: 1px solid #2e86ab;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+
+.navbar-inverse .dropdown-menu > li > a {
+    color: #c8d8e8;
+}
+
+.navbar-inverse .dropdown-menu > li > a:hover,
+.navbar-inverse .dropdown-menu > li > a:focus {
+    background-color: #2e86ab;
+    color: #ffffff;
+}
+
+.navbar-inverse .navbar-toggle {
+    border-color: #2e86ab;
+}
+
+.navbar-inverse .navbar-toggle .icon-bar {
+    background-color: #c8d8e8;
+}
+
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+    background-color: #2e86ab;
+}
+
+/* ----- Typography ------------------------------------------ */
+h2 {
+    color: #1a3a5c;
+    border-bottom: 3px solid #2e86ab;
+    padding-bottom: 8px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    color: #2e86ab;
+}
+
+/* ----- Jumbotron ------------------------------------------- */
+.jumbotron {
+    background: linear-gradient(135deg, #1a3a5c 0%, #2e86ab 100%);
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 40px 50px;
+    margin-bottom: 30px;
+}
+
+.jumbotron h1 {
+    font-size: 2.4em;
+    font-weight: 700;
+    margin-top: 0;
+    color: #ffffff;
+}
+
+.jumbotron .lead {
+    font-size: 1.1em;
+    color: #d0e8f5;
+}
+
+.jumbotron p {
+    color: #c0d8ed;
+}
+
+/* ----- Cards (panels) on index ----------------------------- */
+.panel {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    border-radius: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.panel-heading {
+    border-radius: 6px 6px 0 0;
+}
+
+.panel-footer {
+    background-color: #f8f9fa;
+    font-size: 0.85em;
+    border-radius: 0 0 6px 6px;
+}
+
+.panel .btn-block {
+    margin-top: 10px;
+}
+
+/* ----- Buttons --------------------------------------------- */
+.btn-primary {
+    background-color: #2e86ab;
+    border-color: #1a6e91;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #1a6e91;
+    border-color: #125578;
+}
+
+/* ----- Tables ---------------------------------------------- */
+.table thead {
+    background-color: #1a3a5c;
+    color: #ffffff;
+}
+
+.table thead th {
+    border-color: #2e86ab;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #edf3f8;
+}
+
+/* ----- Footer ---------------------------------------------- */
+footer {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 0.85em;
+    padding: 10px 0;
+}
+
+/* ----- Author panels --------------------------------------- */
+.author-panel {
+    border-left: 5px solid #2e86ab;
+}
+
+.author-panel .panel-heading {
+    background-color: #1a3a5c;
+    color: #ffffff;
+    border: none;
+}
+
+.author-panel .panel-title {
+    color: #ffffff;
+}
+
+/* ----- Theory sections ------------------------------------- */
+.theory-section {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.theory-section h3 {
+    margin-top: 0;
+}
+
+/* ----- Practice button ------------------------------------- */
+.btn-practice {
+    background-color: #1a3a5c;
+    color: #ffffff;
+    border: none;
+    padding: 12px 28px;
+    font-size: 1.05em;
+    border-radius: 4px;
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-practice:hover,
+.btn-practice:focus {
+    background-color: #e84855;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.btn-practice-wrap {
+    text-align: center;
+    margin: 30px 0 10px;
+}
+
+/* ----- Form validation (keep original) --------------------- */
 input,
 select,
 textarea {
     max-width: 280px;
 }
 
-/* styles for validation helpers */
 .field-validation-error {
     color: #b94a48;
 }
