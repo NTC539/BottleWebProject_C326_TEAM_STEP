@@ -3,39 +3,56 @@
 <h2>Мосты Тарьяна — Практика</h2>
 
 <!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 1: Форма ввода
+     СЕКЦИЯ 1: Форма ввода (динамические строки)
      ═══════════════════════════════════════════════════════════ -->
+<form method="POST" action="/bridges/practice">
+
 <div class="theory-section">
-    <h3>Ввод данных</h3>
-    <form method="POST" action="/bridges/practice">
-
-        <div class="form-group">
-            <label for="vertices">Список городов (каждый на новой строке)</label>
-            <textarea id="vertices" name="vertices" rows="5"
-                      class="form-control"
-                      placeholder="Москва&#10;Тула&#10;Орёл&#10;Курск&#10;Белгород">{{vertices_raw}}</textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="edges">Дороги (формат: ГОРОД_А - ГОРОД_Б : ВЕС, каждая на новой строке)</label>
-            <textarea id="edges" name="edges" rows="6"
-                      class="form-control"
-                      placeholder="Москва - Тула : 170&#10;Тула - Орёл : 180&#10;Москва - Орёл : 380&#10;Орёл - Курск : 150&#10;Курск - Белгород : 130">{{edges_raw}}</textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Анализировать сеть</button>
-    </form>
+    <h3>Шаг 1 — Города</h3>
+    <span class="input-section-label">Добавьте города / узлы сети:</span>
+    <div id="nodes-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addNodeRow('nodes-container','Название города')">
+        + Добавить город
+    </button>
 </div>
+
+<div class="theory-section">
+    <h3>Шаг 2 — Дороги</h3>
+    <span class="input-section-label">
+        Добавьте дороги (неориентированные) с весом — длиной или временем:
+    </span>
+    <div id="edges-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addEdgeRow('edges-container', false, true, false)">
+        + Добавить дорогу
+    </button>
+</div>
+
+<div style="margin-top:16px">
+    <button type="submit" class="btn btn-primary">Анализировать сеть</button>
+</div>
+</form>
+
+<script>
+$(function () {
+    addNodeRow('nodes-container', 'Название города');
+    addNodeRow('nodes-container', 'Название города');
+    addNodeRow('nodes-container', 'Название города');
+    addEdgeRow('edges-container', false, true, false);
+    addEdgeRow('edges-container', false, true, false);
+});
+</script>
 
 <!-- ═══════════════════════════════════════════════════════════
      СЕКЦИЯ 2: Ошибка
      ═══════════════════════════════════════════════════════════ -->
 % if defined('error') and error:
-<div class="alert alert-danger">{{error}}</div>
+<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
 % end
 
 <!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 3: Результат
+     СЕКЦИЯ 3: Результат (не трогать)
      ═══════════════════════════════════════════════════════════ -->
 % if defined('result') and result is not None:
 

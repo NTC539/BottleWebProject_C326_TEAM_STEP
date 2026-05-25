@@ -51,139 +51,63 @@ def coloring():
     return dict(year=_year())
 
 
-@route('/cpm/practice', method=['GET', 'POST'])
-@view('cpm_practice')
-def cpm_practice():
-    result = None
-    error  = None
-    tasks_raw = ''
-    deps_raw  = ''
-
-    if request.method == 'POST':
-        tasks_raw = request.forms.get('tasks', '').strip()
-        deps_raw  = request.forms.get('deps',  '').strip()
-        try:
-            tasks = {}
-            for line in tasks_raw.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                if ':' not in line:
-                    raise ValueError(
-                        f'Неверный формат задачи: «{line}». '
-                        f'Ожидается: Название: длительность'
-                    )
-                name, dur = line.split(':', 1)
-                name = name.strip()
-                dur  = dur.strip()
-                if not name:
-                    raise ValueError('Имя задачи не может быть пустым.')
-                if not dur.isdigit():
-                    raise ValueError(
-                        f'Длительность задачи «{name}» должна быть '
-                        f'целым числом ≥ 0, получено: «{dur}».'
-                    )
-                if name in tasks:
-                    raise ValueError(f'Задача «{name}» указана дважды.')
-                tasks[name] = int(dur)
-
-            if not tasks:
-                raise ValueError('Список задач не может быть пустым.')
-
-            deps = []
-            for line in deps_raw.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                if '->' not in line:
-                    raise ValueError(
-                        f'Неверный формат зависимости: «{line}». '
-                        f'Ожидается: Задача_А -> Задача_Б'
-                    )
-                a, b = line.split('->', 1)
-                a, b = a.strip(), b.strip()
-                if not a or not b:
-                    raise ValueError(
-                        f'Пустое имя задачи в зависимости: «{line}».'
-                    )
-                deps.append((a, b))
-
-            result = find_critical_path(tasks, deps)
-            result['tasks'] = tasks   # передаём в шаблон для таблицы
-        except ValueError as e:
-            error = str(e)
-        except Exception as e:
-            error = f'Ошибка: {e}'
-
-    return dict(
-        title='Критический путь — Практика',
-        active_page='cpm',
-        year=datetime.now().year,
-        result=result,
-        error=error,
-        tasks_raw=tasks_raw,
-        deps_raw=deps_raw,
-    )
-
-
+# ─────────────────────────────────────────────────────────────────────────────
+#  /dijkstra/practice
+# ─────────────────────────────────────────────────────────────────────────────
 @route('/dijkstra/practice', method=['GET', 'POST'])
 @view('dijkstra_practice')
 def dijkstra_practice():
-    result       = None
-    error        = None
-    vertices_raw = ''
-    edges_raw    = ''
-    source_raw   = ''
+    result     = None
+    error      = None
+    source_val = ''          # used in result-section template
 
     if request.method == 'POST':
-        vertices_raw = request.forms.get('vertices', '').strip()
-        edges_raw    = request.forms.get('edges',    '').strip()
-        source_raw   = request.forms.get('source',   '').strip()
         try:
-            vertices = []
-            for line in vertices_raw.splitlines():
-                v = line.strip()
-                if v:
-                    vertices.append(v)
-
+            # ── Vertices ──────────────────────────────────────────────────────
+            vertices = [v.strip()
+                        for v in request.forms.getall('vertex[]')
+                        if v.strip()]
             if not vertices:
                 raise ValueError('Список узлов не может быть пустым.')
             if len(vertices) != len(set(vertices)):
                 raise ValueError('Имена узлов должны быть уникальными.')
-            if not source_raw:
-                raise ValueError('Укажите узел-источник.')
-            if source_raw not in vertices:
+
+            # ── Source ────────────────────────────────────────────────────────
+            source = request.forms.get('source', '').strip()
+            if not source:
+                raise ValueError('Выберите узел-источник.')
+            if source not in vertices:
                 raise ValueError(
-                    f'Источник «{source_raw}» отсутствует в списке узлов.'
+                    f'Источник «{source}» отсутствует в списке узлов.'
                 )
+            source_val = source
+
+            # ── Edges (inf-aware via edge_inf_N fields) ───────────────────────
+            from_list  = request.forms.getall('edge_from[]')
+            to_list    = request.forms.getall('edge_to[]')
+            w_list     = request.forms.getall('edge_weight[]')
+            edge_count = int(request.forms.get('edge_count', '0') or '0')
 
             edges = []
-            for line in edges_raw.splitlines():
-                line = line.strip()
-                if not line:
+            for i in range(edge_count):
+                u = from_list[i] if i < len(from_list) else ''
+                v = to_list[i]   if i < len(to_list)   else ''
+                if not u or not v:
                     continue
-                if '->' not in line or ':' not in line:
-                    raise ValueError(
-                        f'Неверный формат канала: «{line}». '
-                        f'Ожидается: УЗЕЛ_А -> УЗЕЛ_Б : ВЕС'
-                    )
-                left, rest    = line.split('->', 1)
-                mid, weight_s = rest.split(':', 1)
-                u = left.strip()
-                v = mid.strip()
-                weight_s = weight_s.strip().lower()
-                if weight_s in ('inf', '∞', 'infinity'):
+                is_inf = request.forms.get(f'edge_inf_{i}') == '1'
+                if is_inf:
                     w = float('inf')
                 else:
                     try:
-                        w = float(weight_s)
-                    except ValueError:
+                        w = float(w_list[i]) if i < len(w_list) else 1.0
+                    except (ValueError, TypeError):
                         raise ValueError(
-                            f'Вес должен быть числом или inf: «{weight_s}».'
+                            f'Неверный вес для канала {u}→{v}.'
                         )
                 edges.append((u, v, w))
 
-            result = route_network(vertices, edges, source_raw)
+            result = route_network(vertices, edges, source)
+
         except ValueError as e:
             error = str(e)
         except Exception as e:
@@ -192,65 +116,52 @@ def dijkstra_practice():
     return dict(
         title='Дейкстра — Практика',
         active_page='dijkstra',
-        year=datetime.now().year,
+        year=_year(),
         result=result,
         error=error,
-        vertices_raw=vertices_raw,
-        edges_raw=edges_raw,
-        source_raw=source_raw,
+        source_val=source_val,
     )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+#  /bridges/practice
+# ─────────────────────────────────────────────────────────────────────────────
 @route('/bridges/practice', method=['GET', 'POST'])
 @view('bridges_practice')
 def bridges_practice():
     result = None
     error  = None
-    vertices_raw = ''
-    edges_raw    = ''
 
     if request.method == 'POST':
-        vertices_raw = request.forms.get('vertices', '').strip()
-        edges_raw    = request.forms.get('edges', '').strip()
         try:
-            vertices = []
-            for line in vertices_raw.splitlines():
-                v = line.strip()
-                if v:
-                    vertices.append(v)
-
+            # ── Vertices ──────────────────────────────────────────────────────
+            vertices = [v.strip()
+                        for v in request.forms.getall('vertex[]')
+                        if v.strip()]
             if not vertices:
                 raise ValueError('Список городов не может быть пустым.')
             if len(vertices) != len(set(vertices)):
                 raise ValueError('Названия городов должны быть уникальными.')
 
+            # ── Edges ─────────────────────────────────────────────────────────
+            from_list = request.forms.getall('edge_from[]')
+            to_list   = request.forms.getall('edge_to[]')
+            w_list    = request.forms.getall('edge_weight[]')
+
             edges = []
-            for line in edges_raw.splitlines():
-                line = line.strip()
-                if not line:
+            for i in range(len(from_list)):
+                u = from_list[i] if i < len(from_list) else ''
+                v = to_list[i]   if i < len(to_list)   else ''
+                if not u or not v:
                     continue
-                if '-' not in line or ':' not in line:
-                    raise ValueError(
-                        f'Неверный формат дороги: «{line}». '
-                        f'Ожидается: ГОРОД_А - ГОРОД_Б : ВЕС'
-                    )
-                parts = line.split('-', 1)
-                left  = parts[0].strip()
-                right_parts = parts[1].split(':', 1)
-                if len(right_parts) != 2:
-                    raise ValueError(
-                        f'Не указан вес для дороги: «{line}».'
-                    )
-                right = right_parts[0].strip()
                 try:
-                    weight = float(right_parts[1].strip())
-                except ValueError:
-                    raise ValueError(
-                        f'Вес должен быть числом: «{right_parts[1].strip()}».'
-                    )
-                edges.append((left, right, weight))
+                    w = float(w_list[i]) if i < len(w_list) else 1.0
+                except (ValueError, TypeError):
+                    raise ValueError(f'Неверный вес для дороги {u}—{v}.')
+                edges.append((u, v, w))
 
             result = analyze_network(vertices, edges)
+
         except ValueError as e:
             error = str(e)
         except Exception as e:
@@ -259,53 +170,103 @@ def bridges_practice():
     return dict(
         title='Мосты Тарьяна — Практика',
         active_page='bridges',
-        year=datetime.now().year,
+        year=_year(),
         result=result,
         error=error,
-        vertices_raw=vertices_raw,
-        edges_raw=edges_raw,
     )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+#  /cpm/practice
+# ─────────────────────────────────────────────────────────────────────────────
+@route('/cpm/practice', method=['GET', 'POST'])
+@view('cpm_practice')
+def cpm_practice():
+    result = None
+    error  = None
+
+    if request.method == 'POST':
+        try:
+            # ── Tasks ─────────────────────────────────────────────────────────
+            names = request.forms.getall('task_name[]')
+            durs  = request.forms.getall('task_dur[]')
+
+            tasks = {}
+            for i in range(len(names)):
+                name = names[i].strip() if i < len(names) else ''
+                if not name:
+                    continue
+                if name in tasks:
+                    raise ValueError(f'Задача «{name}» указана дважды.')
+                try:
+                    dur = int(durs[i]) if i < len(durs) else 0
+                except (ValueError, TypeError):
+                    raise ValueError(
+                        f'Длительность задачи «{name}» должна быть '
+                        f'целым числом ≥ 0.'
+                    )
+                tasks[name] = dur
+
+            if not tasks:
+                raise ValueError('Список задач не может быть пустым.')
+
+            # ── Dependencies ──────────────────────────────────────────────────
+            df   = request.forms.getall('dep_from[]')
+            dt   = request.forms.getall('dep_to[]')
+            deps = [
+                (df[i], dt[i])
+                for i in range(len(df))
+                if i < len(dt) and df[i] and dt[i]
+            ]
+
+            result = find_critical_path(tasks, deps)
+            result['tasks'] = tasks   # для таблицы в шаблоне
+
+        except ValueError as e:
+            error = str(e)
+        except Exception as e:
+            error = f'Ошибка: {e}'
+
+    return dict(
+        title='Критический путь — Практика',
+        active_page='cpm',
+        year=_year(),
+        result=result,
+        error=error,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  /coloring/practice
+# ─────────────────────────────────────────────────────────────────────────────
 @route('/coloring/practice', method=['GET', 'POST'])
 @view('coloring_practice')
 def coloring_practice():
     result = None
-    error = None
-    vertices_raw = ''
-    edges_raw = ''
+    error  = None
 
     if request.method == 'POST':
-        vertices_raw = request.forms.get('vertices', '').strip()
-        edges_raw    = request.forms.get('edges', '').strip()
         try:
-            vertices = []
-            for line in vertices_raw.splitlines():
-                v = line.strip()
-                if v:
-                    vertices.append(v)
-
+            # ── Vertices ──────────────────────────────────────────────────────
+            vertices = [v.strip()
+                        for v in request.forms.getall('vertex[]')
+                        if v.strip()]
             if not vertices:
                 raise ValueError('Список дисциплин не может быть пустым.')
-
             if len(vertices) != len(set(vertices)):
                 raise ValueError('Дисциплины должны иметь уникальные имена.')
 
-            edges = []
-            for line in edges_raw.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                if '-' not in line:
-                    raise ValueError(
-                        f'Неверный формат конфликта: «{line}». '
-                        f'Ожидается: ДИСЦИПЛИНА_А - ДИСЦИПЛИНА_Б'
-                    )
-                parts = line.split('-', 1)
-                a, b = parts[0].strip(), parts[1].strip()
-                edges.append((a, b))
+            # ── Conflict edges ────────────────────────────────────────────────
+            cf    = request.forms.getall('edge_from[]')
+            ct    = request.forms.getall('edge_to[]')
+            edges = [
+                (cf[i], ct[i])
+                for i in range(len(cf))
+                if i < len(ct) and cf[i] and ct[i]
+            ]
 
             result = color_graph(vertices, edges)
+
         except ValueError as e:
             error = str(e)
         except Exception as e:
@@ -314,9 +275,7 @@ def coloring_practice():
     return dict(
         title='Раскраска графа — Практика',
         active_page='coloring',
-        year=datetime.now().year,
+        year=_year(),
         result=result,
         error=error,
-        vertices_raw=vertices_raw,
-        edges_raw=edges_raw,
     )

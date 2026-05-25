@@ -3,48 +3,74 @@
 <h2>Алгоритм Дейкстры — Практика</h2>
 
 <!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 1: Форма ввода
+     СЕКЦИЯ 1: Форма ввода (динамические строки)
      ═══════════════════════════════════════════════════════════ -->
+<form method="POST" action="/dijkstra/practice" id="form-dijkstra">
+<input type="hidden" name="edge_count" id="edge-count" value="0">
+
 <div class="theory-section">
-    <h3>Ввод данных</h3>
-    <form method="POST" action="/dijkstra/practice">
-
-        <div class="form-group">
-            <label for="vertices">Список узлов / маршрутизаторов (каждый на новой строке)</label>
-            <textarea id="vertices" name="vertices" rows="5"
-                      class="form-control"
-                      placeholder="A&#10;B&#10;C&#10;D&#10;E">{{vertices_raw}}</textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="edges">Каналы (формат: УЗЕЛ_А -&gt; УЗЕЛ_Б : ЗАДЕРЖКА,
-                задержка = число или inf если канал недоступен)</label>
-            <textarea id="edges" name="edges" rows="7"
-                      class="form-control"
-                      placeholder="A -> B : 4&#10;A -> C : 2&#10;C -> B : 1&#10;B -> D : 5&#10;C -> D : 8&#10;D -> E : 2&#10;A -> E : inf">{{edges_raw}}</textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="source">Узел-источник (от которого строить маршруты)</label>
-            <input id="source" type="text" name="source"
-                   class="form-control" style="max-width:200px"
-                   placeholder="A"
-                   value="{{source_raw}}" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Построить маршруты</button>
-    </form>
+    <h3>Шаг 1 — Узлы сети</h3>
+    <span class="input-section-label">Добавьте маршрутизаторы / узлы:</span>
+    <div id="nodes-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addNodeRow('nodes-container','Название узла (A, Router-1...)')">
+        + Добавить узел
+    </button>
 </div>
+
+<div class="theory-section">
+    <h3>Шаг 2 — Каналы связи</h3>
+    <span class="input-section-label">
+        Добавьте направленные каналы. Отметьте «недоступен» для временно
+        отключённых каналов (вес = ∞):
+    </span>
+    <div id="edges-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addEdgeRow('edges-container', true, true, true)">
+        + Добавить канал
+    </button>
+</div>
+
+<div class="theory-section">
+    <h3>Шаг 3 — Источник</h3>
+    <span class="input-section-label">Выберите узел, от которого строить маршруты:</span>
+    <select name="source" class="form-control node-select" style="max-width:250px"></select>
+</div>
+
+<div style="margin-top:16px">
+    <button type="submit" class="btn btn-primary">Построить маршруты</button>
+</div>
+</form>
+
+<script>
+$(function () {
+    // Добавить 3 узла и 2 канала по умолчанию
+    addNodeRow('nodes-container', 'Название узла');
+    addNodeRow('nodes-container', 'Название узла');
+    addNodeRow('nodes-container', 'Название узла');
+    addEdgeRow('edges-container', true, true, true);
+    addEdgeRow('edges-container', true, true, true);
+
+    // Перед отправкой: нумеруем checkbox-ы и фиксируем edge_count
+    $('#form-dijkstra').on('submit', function () {
+        var count = $('#edges-container .edge-row').length;
+        $('#edge-count').val(count);
+        $('#edges-container .edge-row').each(function (i) {
+            $(this).find('input[type=checkbox]').attr('name', 'edge_inf_' + i);
+        });
+    });
+});
+</script>
 
 <!-- ═══════════════════════════════════════════════════════════
      СЕКЦИЯ 2: Ошибка
      ═══════════════════════════════════════════════════════════ -->
 % if defined('error') and error:
-<div class="alert alert-danger">{{error}}</div>
+<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
 % end
 
 <!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 3: Результат
+     СЕКЦИЯ 3: Результат (не трогать)
      ═══════════════════════════════════════════════════════════ -->
 % if defined('result') and result is not None:
 
@@ -64,7 +90,7 @@
 % end
 
 <div class="theory-section">
-    <h3>Таблица кратчайших маршрутов от узла {{source_raw}}</h3>
+    <h3>Таблица кратчайших маршрутов от узла {{source_val}}</h3>
     <table class="table table-bordered table-striped table-hover">
         <thead>
             <tr>
@@ -77,7 +103,7 @@
             % for v in result["distances"]:
             %   dist = result["distances"][v]
             %   path = result["paths"][v]
-            %   if v == source_raw:
+            %   if v == source_val:
             <tr class="active">
                 <td><strong>{{v}}</strong> (источник)</td>
                 <td>0</td>

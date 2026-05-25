@@ -2,27 +2,59 @@
 
 <h2>Критический путь — Практика</h2>
 
+<!-- ═══════════════════════════════════════════════════════════
+     СЕКЦИЯ 1: Форма ввода (динамические строки)
+     ═══════════════════════════════════════════════════════════ -->
+<form method="POST" action="/cpm/practice">
+
 <div class="theory-section">
-    <h3>Ввод данных</h3>
-    <form method="POST" action="/cpm/practice">
-        <div class="form-group">
-            <label for="tasks">Список задач (ИМЯ:ДЛИТЕЛЬНОСТЬ, каждая на новой строке)</label>
-            <textarea id="tasks" name="tasks" rows="6" class="form-control"
-                      placeholder="A:3&#10;B:2&#10;C:4&#10;D:1&#10;E:2">{{tasks_raw}}</textarea>
-        </div>
-        <div class="form-group">
-            <label for="deps">Зависимости (ПРЕДШЕСТВЕННИК->ПОСЛЕДОВАТЕЛЬ, каждая на новой строке)</label>
-            <textarea id="deps" name="deps" rows="6" class="form-control"
-                      placeholder="A->C&#10;A->D&#10;B->D&#10;C->E&#10;D->E">{{deps_raw}}</textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Рассчитать</button>
-    </form>
+    <h3>Шаг 1 — Задачи проекта</h3>
+    <span class="input-section-label">
+        Введите задачи и их длительность (в любых единицах — днях, часах):
+    </span>
+    <div id="tasks-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addTaskRow('tasks-container')">
+        + Добавить задачу
+    </button>
 </div>
 
+<div class="theory-section">
+    <h3>Шаг 2 — Зависимости</h3>
+    <span class="input-section-label">
+        Укажите порядок выполнения: задача A должна завершиться до начала задачи B:
+    </span>
+    <div id="deps-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addDepRow('deps-container')">
+        + Добавить зависимость
+    </button>
+</div>
+
+<div style="margin-top:16px">
+    <button type="submit" class="btn btn-primary">Рассчитать</button>
+</div>
+</form>
+
+<script>
+$(function () {
+    addTaskRow('tasks-container');
+    addTaskRow('tasks-container');
+    addTaskRow('tasks-container');
+    addDepRow('deps-container');
+});
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     СЕКЦИЯ 2: Ошибка
+     ═══════════════════════════════════════════════════════════ -->
 % if error:
-<div class="alert alert-danger">{{error}}</div>
+<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
 % end
 
+<!-- ═══════════════════════════════════════════════════════════
+     СЕКЦИЯ 3: Результат (не трогать)
+     ═══════════════════════════════════════════════════════════ -->
 % if result:
 <div class="theory-section">
     <h3>Результат</h3>

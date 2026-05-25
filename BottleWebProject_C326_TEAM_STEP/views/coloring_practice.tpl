@@ -2,30 +2,57 @@
 
 <h2>Раскраска графа — Практика</h2>
 
+<!-- ═══════════════════════════════════════════════════════════
+     СЕКЦИЯ 1: Форма ввода (динамические строки)
+     ═══════════════════════════════════════════════════════════ -->
+<form method="POST" action="/coloring/practice">
+
 <div class="theory-section">
-    <h3>Ввод данных</h3>
-    <form method="POST" action="/coloring/practice">
-        <div class="form-group">
-            <label for="vertices">Список дисциплин (каждая на новой строке)</label>
-            <textarea id="vertices" name="vertices" rows="6" class="form-control"
-                      placeholder="Математика&#10;Физика&#10;Информатика&#10;История&#10;Химия">{{vertices_raw}}</textarea>
-        </div>
-        <div class="form-group">
-            <label for="edges">
-                Конфликты — дисциплины, которые нельзя ставить в одну смену
-                (формат: ДИСЦИПЛИНА_А - ДИСЦИПЛИНА_Б, каждый на новой строке)
-            </label>
-            <textarea id="edges" name="edges" rows="6" class="form-control"
-                      placeholder="Математика - Физика&#10;Математика - Информатика&#10;Физика - Информатика&#10;Физика - История&#10;Информатика - Химия">{{edges_raw}}</textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Составить расписание</button>
-    </form>
+    <h3>Шаг 1 — Дисциплины</h3>
+    <span class="input-section-label">Добавьте дисциплины учебного расписания:</span>
+    <div id="nodes-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addNodeRow('nodes-container','Название дисциплины')">
+        + Добавить дисциплину
+    </button>
 </div>
 
+<div class="theory-section">
+    <h3>Шаг 2 — Конфликты</h3>
+    <span class="input-section-label">
+        Выберите пары дисциплин, которые нельзя ставить в одну смену:
+    </span>
+    <div id="edges-container"></div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn"
+            onclick="addEdgeRow('edges-container', false, false, false)">
+        + Добавить конфликт
+    </button>
+</div>
+
+<div style="margin-top:16px">
+    <button type="submit" class="btn btn-primary">Составить расписание</button>
+</div>
+</form>
+
+<script>
+$(function () {
+    addNodeRow('nodes-container', 'Название дисциплины');
+    addNodeRow('nodes-container', 'Название дисциплины');
+    addNodeRow('nodes-container', 'Название дисциплины');
+    addEdgeRow('edges-container', false, false, false);
+});
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     СЕКЦИЯ 2: Ошибка
+     ═══════════════════════════════════════════════════════════ -->
 % if error:
-<div class="alert alert-danger">{{error}}</div>
+<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
 % end
 
+<!-- ═══════════════════════════════════════════════════════════
+     СЕКЦИЯ 3: Результат (не трогать)
+     ═══════════════════════════════════════════════════════════ -->
 % if result:
 <div class="theory-section">
     <h3>Результат</h3>
