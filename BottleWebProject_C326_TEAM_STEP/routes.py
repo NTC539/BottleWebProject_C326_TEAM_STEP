@@ -5,6 +5,7 @@ Routes and views for the bottle application.
 from bottle import route, view, request
 from datetime import datetime
 from algorithms.coloring import color_graph
+from algorithms.cpm import find_critical_path
 
 
 def _year():
@@ -52,6 +53,81 @@ def cpm():
 @view('coloring_theory')
 def coloring():
     return dict(year=_year())
+
+
+@route('/cpm/practice', method=['GET', 'POST'])
+@view('cpm_practice')
+def cpm_practice():
+    result = None
+    error  = None
+    tasks_raw = ''
+    deps_raw  = ''
+
+    if request.method == 'POST':
+        tasks_raw = request.forms.get('tasks', '').strip()
+        deps_raw  = request.forms.get('deps',  '').strip()
+        try:
+            tasks = {}
+            for line in tasks_raw.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if ':' not in line:
+                    raise ValueError(
+                        f'Неверный формат задачи: «{line}». '
+                        f'Ожидается: Название: длительность'
+                    )
+                name, dur = line.split(':', 1)
+                name = name.strip()
+                dur  = dur.strip()
+                if not name:
+                    raise ValueError('Имя задачи не может быть пустым.')
+                if not dur.isdigit():
+                    raise ValueError(
+                        f'Длительность задачи «{name}» должна быть '
+                        f'целым числом ≥ 0, получено: «{dur}».'
+                    )
+                if name in tasks:
+                    raise ValueError(f'Задача «{name}» указана дважды.')
+                tasks[name] = int(dur)
+
+            if not tasks:
+                raise ValueError('Список задач не может быть пустым.')
+
+            deps = []
+            for line in deps_raw.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if '->' not in line:
+                    raise ValueError(
+                        f'Неверный формат зависимости: «{line}». '
+                        f'Ожидается: Задача_А -> Задача_Б'
+                    )
+                a, b = line.split('->', 1)
+                a, b = a.strip(), b.strip()
+                if not a or not b:
+                    raise ValueError(
+                        f'Пустое имя задачи в зависимости: «{line}».'
+                    )
+                deps.append((a, b))
+
+            result = find_critical_path(tasks, deps)
+            result['tasks'] = tasks   # передаём в шаблон для таблицы
+        except ValueError as e:
+            error = str(e)
+        except Exception as e:
+            error = f'Ошибка: {e}'
+
+    return dict(
+        title='Критический путь — Практика',
+        active_page='cpm',
+        year=datetime.now().year,
+        result=result,
+        error=error,
+        tasks_raw=tasks_raw,
+        deps_raw=deps_raw,
+    )
 
 
 @route('/coloring/practice', method=['GET', 'POST'])
