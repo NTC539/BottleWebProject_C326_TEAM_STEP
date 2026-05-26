@@ -29,6 +29,19 @@
     </button>
 </div>
 
+<div class="theory-section" style="padding:10px 16px">
+    <span style="font-weight:600; margin-right:8px">Данные:</span>
+    <button type="button" class="btn btn-default btn-sm" onclick="randomColoring()">
+        🎲 Случайные данные
+    </button>
+    <button type="button" class="btn btn-default btn-sm" onclick="loadFileColoring()">
+        📂 Загрузить из файла
+    </button>
+    <span class="text-muted" style="font-size:12px; margin-left:8px">
+        JSON: { "vertices":[...], "edges":[["A","B"]] }
+    </span>
+</div>
+
 <div style="margin-top:16px">
     <button type="submit" class="btn btn-primary">Составить расписание</button>
 </div>
@@ -54,6 +67,25 @@ $(function () {
      СЕКЦИЯ 3: Результат (не трогать)
      ═══════════════════════════════════════════════════════════ -->
 % if result:
+
+<div style="margin-bottom:12px">
+    <button type="button" class="btn btn-default btn-sm"
+            onclick="downloadResult('coloring')">
+        💾 Скачать результат (JSON)
+    </button>
+    <button type="button" class="btn btn-default btn-sm"
+            onclick="downloadResultTxt('coloring')">
+        📄 Скачать результат (TXT)
+    </button>
+</div>
+<script>
+window._resultData = window._resultData || {};
+window._resultData['coloring'] = {
+    num_colors: {{result['num_colors']}},
+    colors:     {{!result['gc']}}
+};
+</script>
+
 <div class="theory-section">
     <h3>Результат</h3>
 

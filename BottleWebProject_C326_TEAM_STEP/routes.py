@@ -3,6 +3,7 @@ Routes and views for the bottle application.
 """
 
 import json as _json
+import os as _os
 from bottle import route, view, request
 from datetime import datetime
 from algorithms.coloring import color_graph
@@ -13,6 +14,30 @@ from algorithms.dijkstra import route_network
 
 def _year():
     return datetime.now().year
+
+
+def _save_log(page_name, input_data, result_data):
+    """Дозаписывает запуск алгоритма в data/<page>_log.json"""
+    try:
+        log_dir = _os.path.join(_os.path.dirname(__file__), 'data')
+        _os.makedirs(log_dir, exist_ok=True)
+        log_path = _os.path.join(log_dir, page_name + '_log.json')
+        entries = []
+        if _os.path.exists(log_path):
+            with open(log_path, 'r', encoding='utf-8') as f:
+                try:
+                    entries = _json.load(f)
+                except Exception:
+                    entries = []
+        entries.append({
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'input':  input_data,
+            'result': result_data,
+        })
+        with open(log_path, 'w', encoding='utf-8') as f:
+            _json.dump(entries, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass  # лог не должен ломать основной поток
 
 
 @route('/')
@@ -117,6 +142,21 @@ def dijkstra_practice():
                 for _i in range(len(_p) - 1):
                     _pe.add((_p[_i], _p[_i + 1]))
             result['gpe'] = _json.dumps(list(_pe))
+            result['g_distances'] = _json.dumps(
+                {k: (None if v == float('inf') else v)
+                 for k, v in result['distances'].items()})
+            result['g_paths'] = _json.dumps(result['paths'])
+
+            _save_log('dijkstra', {
+                'vertices': vertices,
+                'edges': [[u, v, (None if w == float('inf') else w)]
+                          for u, v, w in edges],
+                'source': source,
+            }, {
+                'distances': {k: (None if v == float('inf') else v)
+                              for k, v in result['distances'].items()},
+                'paths': result['paths'],
+            })
 
         except ValueError as e:
             error = str(e)
@@ -175,6 +215,14 @@ def bridges_practice():
             result['gv'] = _json.dumps(vertices)
             result['ge'] = _json.dumps([[u, v, w] for u, v, w in edges])
             result['gb'] = _json.dumps([[u, v] for u, v, w in result['bridges']])
+
+            _save_log('bridges', {
+                'vertices': vertices,
+                'edges': [[u, v, w] for u, v, w in edges],
+            }, {
+                'bridges': [[u, v, w] for u, v, w in result['bridges']],
+                'total_path_sum': result['total_path_sum'],
+            })
 
         except ValueError as e:
             error = str(e)
@@ -243,6 +291,14 @@ def cpm_practice():
             result['ges']    = _json.dumps(result['es'])
             result['gef']    = _json.dumps(result['ef'])
 
+            _save_log('cpm', {
+                'tasks': tasks,
+                'deps':  [[a, b] for a, b in deps],
+            }, {
+                'duration':      result['duration'],
+                'critical_path': result['critical_path'],
+            })
+
         except ValueError as e:
             error = str(e)
         except Exception as e:
@@ -291,6 +347,14 @@ def coloring_practice():
             result['gv'] = _json.dumps(vertices)
             result['ge'] = _json.dumps([[u, v] for u, v in edges])
             result['gc'] = _json.dumps(result['colors'])
+
+            _save_log('coloring', {
+                'vertices': vertices,
+                'edges':    [[u, v] for u, v in edges],
+            }, {
+                'num_colors': result['num_colors'],
+                'colors':     result['colors'],
+            })
 
         except ValueError as e:
             error = str(e)

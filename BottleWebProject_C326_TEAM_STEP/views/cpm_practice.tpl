@@ -31,6 +31,19 @@
     </button>
 </div>
 
+<div class="theory-section" style="padding:10px 16px">
+    <span style="font-weight:600; margin-right:8px">Данные:</span>
+    <button type="button" class="btn btn-default btn-sm" onclick="randomCPM()">
+        🎲 Случайные данные
+    </button>
+    <button type="button" class="btn btn-default btn-sm" onclick="loadFileCPM()">
+        📂 Загрузить из файла
+    </button>
+    <span class="text-muted" style="font-size:12px; margin-left:8px">
+        JSON: { "tasks":[{"name","duration"}], "deps":[{"from","to"}] }
+    </span>
+</div>
+
 <div style="margin-top:16px">
     <button type="submit" class="btn btn-primary">Рассчитать</button>
 </div>
@@ -56,6 +69,28 @@ $(function () {
      СЕКЦИЯ 3: Результат (не трогать)
      ═══════════════════════════════════════════════════════════ -->
 % if result:
+
+<div style="margin-bottom:12px">
+    <button type="button" class="btn btn-default btn-sm"
+            onclick="downloadResult('cpm')">
+        💾 Скачать результат (JSON)
+    </button>
+    <button type="button" class="btn btn-default btn-sm"
+            onclick="downloadResultTxt('cpm')">
+        📄 Скачать результат (TXT)
+    </button>
+</div>
+<script>
+window._resultData = window._resultData || {};
+window._resultData['cpm'] = {
+    duration:      {{result['duration']}},
+    critical_path: {{!result['gcrit']}},
+    tasks:         {{!result['gtasks']}},
+    es:            {{!result['ges']}},
+    ef:            {{!result['gef']}}
+};
+</script>
+
 <div class="theory-section">
     <h3>Результат</h3>
 

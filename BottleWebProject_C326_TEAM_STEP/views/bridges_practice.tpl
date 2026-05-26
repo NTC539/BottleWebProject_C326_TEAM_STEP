@@ -29,6 +29,19 @@
     </button>
 </div>
 
+<div class="theory-section" style="padding:10px 16px">
+    <span style="font-weight:600; margin-right:8px">Данные:</span>
+    <button type="button" class="btn btn-default btn-sm" onclick="randomBridges()">
+        🎲 Случайные данные
+    </button>
+    <button type="button" class="btn btn-default btn-sm" onclick="loadFileBridges()">
+        📂 Загрузить из файла
+    </button>
+    <span class="text-muted" style="font-size:12px; margin-left:8px">
+        JSON: { "vertices":[...], "edges":[{"from","to","weight"}] }
+    </span>
+</div>
+
 <div style="margin-top:16px">
     <button type="submit" class="btn btn-primary">Анализировать сеть</button>
 </div>
@@ -55,6 +68,24 @@ $(function () {
      СЕКЦИЯ 3: Результат (не трогать)
      ═══════════════════════════════════════════════════════════ -->
 % if defined('result') and result is not None:
+
+<div style="margin-bottom:12px">
+    <button type="button" class="btn btn-default btn-sm"
+            onclick="downloadResult('bridges')">
+        💾 Скачать результат (JSON)
+    </button>
+    <button type="button" class="btn btn-default btn-sm"
+            onclick="downloadResultTxt('bridges')">
+        📄 Скачать результат (TXT)
+    </button>
+</div>
+<script>
+window._resultData = window._resultData || {};
+window._resultData['bridges'] = {
+    total_path_sum: {{result['total_path_sum']}},
+    bridges:        {{!result['gb']}}
+};
+</script>
 
 <div class="panel panel-info">
     <div class="panel-heading"><strong>Общая статистика</strong></div>
