@@ -92,5 +92,58 @@ $(function () {
             % end
         </tbody>
     </table>
+
+    <div class="theory-section">
+        <h4>Сетевой граф проекта</h4>
+        <p class="text-muted" style="font-size:13px">
+            Красные узлы и стрелки — критический путь.
+            В каждом узле: название задачи, длительность, ES и EF.
+        </p>
+        <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
+             border-radius:4px;background:#fafafa;margin-top:8px"></div>
+    </div>
+
+    <script>
+    (function() {
+        var vertices = {{!result['gv']}};
+        var edges    = {{!result['ge']}};
+        var critPath = {{!result['gcrit']}};
+        var tasks    = {{!result['gtasks']}};
+        var es       = {{!result['ges']}};
+        var ef       = {{!result['gef']}};
+        var critSet  = {};
+        critPath.forEach(function(v){ critSet[v] = true; });
+
+        var nodes = new vis.DataSet(vertices.map(function(v){
+            var label = v + '\nd=' + tasks[v] + '\nES=' + es[v] + ' EF=' + ef[v];
+            var onCrit = critSet[v] || false;
+            return {
+                id: v, label: label,
+                shape: 'box',
+                color: onCrit
+                    ? { background:'#fadbd8', border:'#e74c3c' }
+                    : { background:'#d6eaf8', border:'#2e86ab' },
+                font: { size: 12 },
+                margin: 8
+            };
+        }));
+
+        var edgesDS = new vis.DataSet(edges.map(function(e, i){
+            var onCrit = critSet[e[0]] && critSet[e[1]];
+            return {
+                id: i, from: e[0], to: e[1],
+                arrows: 'to',
+                color: onCrit ? { color:'#e74c3c' } : { color:'#aaaaaa' },
+                width: onCrit ? 3 : 1
+            };
+        }));
+
+        var container = document.getElementById('graph-canvas');
+        new vis.Network(container, { nodes: nodes, edges: edgesDS }, {
+            layout: { hierarchical: { direction:'LR', sortMethod:'directed', levelSeparation:180 } },
+            physics: false
+        });
+    })();
+    </script>
 </div>
 % end

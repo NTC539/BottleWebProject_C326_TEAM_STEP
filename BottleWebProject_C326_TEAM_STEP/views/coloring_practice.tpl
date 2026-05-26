@@ -89,5 +89,54 @@ $(function () {
             % end
         </tbody>
     </table>
+
+    <div class="theory-section">
+        <h4>Граф конфликтов (раскраска)</h4>
+        <p class="text-muted" style="font-size:13px">
+            Каждый цвет узла — отдельная смена. Рёбра соединяют конфликтующие дисциплины.
+        </p>
+        <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
+             border-radius:4px;background:#fafafa;margin-top:8px"></div>
+    </div>
+
+    <script>
+    (function() {
+        var vertices = {{!result['gv']}};
+        var edges    = {{!result['ge']}};
+        var colors   = {{!result['gc']}};
+
+        var palette = [
+            '#2e86ab','#e74c3c','#2ecc71','#f39c12',
+            '#9b59b6','#1abc9c','#e67e22','#34495e'
+        ];
+        var borderPalette = [
+            '#1a5276','#922b21','#1a7a45','#9a6004',
+            '#6c3483','#0f6b57','#935116','#1c2833'
+        ];
+
+        var nodes = new vis.DataSet(vertices.map(function(v){
+            var shift = (colors[v] || 1) - 1;
+            var bg  = palette[shift % palette.length];
+            var brd = borderPalette[shift % borderPalette.length];
+            return {
+                id: v,
+                label: v + '\n(Смена ' + (shift + 1) + ')',
+                color: { background: bg, border: brd },
+                font: { color: '#fff', size: 13 }
+            };
+        }));
+
+        var edgesDS = new vis.DataSet(edges.map(function(e, i){
+            return { id: i, from: e[0], to: e[1],
+                     color: { color:'#999' }, width: 1 };
+        }));
+
+        var container = document.getElementById('graph-canvas');
+        new vis.Network(container, { nodes: nodes, edges: edgesDS }, {
+            edges: { smooth: false },
+            physics: { stabilization: { iterations: 300 } }
+        });
+    })();
+    </script>
 </div>
 % end

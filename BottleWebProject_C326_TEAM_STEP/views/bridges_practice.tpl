@@ -131,4 +131,50 @@ $(function () {
 </table>
 </div>
 
+<div class="theory-section">
+    <h4>Граф транспортной сети</h4>
+    <p class="text-muted" style="font-size:13px">
+        Красные жирные рёбра — мосты (критические дороги).
+        Серые — обычные дороги.
+    </p>
+    <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
+         border-radius:4px;background:#fafafa;margin-top:8px"></div>
+</div>
+
+<script>
+(function() {
+    var vertices = {{!result['gv']}};
+    var edges    = {{!result['ge']}};
+    var bridges  = {{!result['gb']}};
+    var bSet = {};
+    bridges.forEach(function(b){ bSet[b[0]+'—'+b[1]] = true; bSet[b[1]+'—'+b[0]] = true; });
+
+    var nodes = new vis.DataSet(vertices.map(function(v){
+        return {
+            id: v, label: v,
+            color: { background:'#d6eaf8', border:'#2e86ab' },
+            font: { size: 14 }
+        };
+    }));
+
+    var edgesDS = new vis.DataSet(edges.map(function(e, i){
+        var u=e[0], v=e[1], w=e[2];
+        var isBridge = bSet[u+'—'+v] || false;
+        return {
+            id: i, from: u, to: v,
+            label: String(w),
+            color: isBridge ? { color:'#e74c3c' } : { color:'#aaaaaa' },
+            width: isBridge ? 4 : 1,
+            font: { align: 'middle', size: 11 }
+        };
+    }));
+
+    var container = document.getElementById('graph-canvas');
+    new vis.Network(container, { nodes: nodes, edges: edgesDS }, {
+        edges: { smooth: false },
+        physics: { stabilization: { iterations: 200 } }
+    });
+})();
+</script>
+
 % end

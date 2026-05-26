@@ -128,4 +128,61 @@ $(function () {
     </table>
 </div>
 
+<div class="theory-section">
+    <h4>Граф сети</h4>
+    <p class="text-muted" style="font-size:13px">
+        Синие стрелки — кратчайшие маршруты. Серые — остальные рёбра.
+        Красные пунктиры — недоступные каналы (∞). Золотой узел — источник.
+    </p>
+    <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
+         border-radius:4px;background:#fafafa;margin-top:8px"></div>
+</div>
+
+<script>
+(function() {
+    var vertices  = {{!result['gv']}};
+    var edges     = {{!result['ge']}};
+    var pathEdges = {{!result['gpe']}};
+    var source    = '{{source_val}}';
+    var peSet = {};
+    pathEdges.forEach(function(e){ peSet[e[0]+'→'+e[1]] = true; });
+
+    var nodes = new vis.DataSet(vertices.map(function(v){
+        return {
+            id: v, label: v,
+            color: v === source
+                ? { background:'#f0ad4e', border:'#d48a00' }
+                : { background:'#d6eaf8', border:'#2e86ab' },
+            font: { size: 14, bold: v === source }
+        };
+    }));
+
+    var edgesDS = new vis.DataSet(edges.map(function(e, i){
+        var u=e[0], v=e[1], w=e[2];
+        var isInf  = (w === null);
+        var isPath = peSet[u+'→'+v] || false;
+        return {
+            id: i, from: u, to: v,
+            label: isInf ? '∞' : String(w),
+            arrows: 'to',
+            dashes: isInf,
+            color: isInf
+                ? { color:'#e74c3c' }
+                : isPath
+                    ? { color:'#2e86ab' }
+                    : { color:'#aaaaaa' },
+            width: isPath ? 3 : 1,
+            font: { align: 'middle', size: 11 }
+        };
+    }));
+
+    var container = document.getElementById('graph-canvas');
+    new vis.Network(container, { nodes: nodes, edges: edgesDS }, {
+        layout: { improvedLayout: true },
+        edges: { smooth: { type: 'curvedCW', roundness: 0.2 } },
+        physics: { stabilization: { iterations: 200 } }
+    });
+})();
+</script>
+
 % end

@@ -2,6 +2,7 @@
 Routes and views for the bottle application.
 """
 
+import json as _json
 from bottle import route, view, request
 from datetime import datetime
 from algorithms.coloring import color_graph
@@ -108,6 +109,15 @@ def dijkstra_practice():
 
             result = route_network(vertices, edges, source)
 
+            result['gv']  = _json.dumps(vertices)
+            result['ge']  = _json.dumps([[u, v, (None if w == float('inf') else w)]
+                                         for u, v, w in edges])
+            _pe = set()
+            for _p in result['paths'].values():
+                for _i in range(len(_p) - 1):
+                    _pe.add((_p[_i], _p[_i + 1]))
+            result['gpe'] = _json.dumps(list(_pe))
+
         except ValueError as e:
             error = str(e)
         except Exception as e:
@@ -161,6 +171,10 @@ def bridges_practice():
                 edges.append((u, v, w))
 
             result = analyze_network(vertices, edges)
+
+            result['gv'] = _json.dumps(vertices)
+            result['ge'] = _json.dumps([[u, v, w] for u, v, w in edges])
+            result['gb'] = _json.dumps([[u, v] for u, v, w in result['bridges']])
 
         except ValueError as e:
             error = str(e)
@@ -222,6 +236,13 @@ def cpm_practice():
             result = find_critical_path(tasks, deps)
             result['tasks'] = tasks   # для таблицы в шаблоне
 
+            result['gv']     = _json.dumps(list(tasks.keys()))
+            result['ge']     = _json.dumps([[a, b] for a, b in deps])
+            result['gcrit']  = _json.dumps(result['critical_path'])
+            result['gtasks'] = _json.dumps(result['tasks'])
+            result['ges']    = _json.dumps(result['es'])
+            result['gef']    = _json.dumps(result['ef'])
+
         except ValueError as e:
             error = str(e)
         except Exception as e:
@@ -266,6 +287,10 @@ def coloring_practice():
             ]
 
             result = color_graph(vertices, edges)
+
+            result['gv'] = _json.dumps(vertices)
+            result['ge'] = _json.dumps([[u, v] for u, v in edges])
+            result['gc'] = _json.dumps(result['colors'])
 
         except ValueError as e:
             error = str(e)
