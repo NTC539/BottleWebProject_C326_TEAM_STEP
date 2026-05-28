@@ -312,7 +312,7 @@ function openJsonFile(callback) {
         };
         reader.readAsText(file, 'utf-8');
     });
-    $inp.trigger('click');
+    $inp[0].click();
 }
 
 function loadFileDijkstra() {

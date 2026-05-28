@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="2630"
+     viewBox="0 0 900 2630">
+<defs>
+  <marker id="A" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+    <polygon points="0 0, 9 3.5, 0 7" fill="black"/>
+  </marker>
+</defs>
+<rect width="900" height="2630" fill="white"/>
+<text x="440" y="28.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="black">Алгоритм раскраски графа Welsh-Powell</text>
+<text x="440" y="46.0" text-anchor="middle" dominant-baseline="central" font-size="10" font-family="Arial,sans-serif" font-weight="normal" fill="#555">Вариант 4: Автоматическое составление расписания  |  ГОСТ 19.701-90</text>
+<line x1="40" y1="60" x2="860" y2="60" stroke="black" stroke-width="1.5"/>
+<text x="40" y="76" text-anchor="start" font-size="9" font-family="Arial,sans-serif" font-style="italic" fill="#777">1. Построение графа смежности</text>
+<rect x="355" y="77" width="170" height="36" rx="18" ry="18" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="95.0" text-anchor="middle" dominant-baseline="central" font-size="12" font-family="Arial,sans-serif" font-weight="bold" fill="black">НАЧАЛО</text>
+<line x1="440" y1="113" x2="440" y2="135" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="270" y="135" width="340" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="155.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">adj[v] = ∅   для всех v ∈ vertices</text>
+<line x1="440" y1="175" x2="440" y2="201" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="260,201 620,201 620,235 440,220 260,235" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="213.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">ЦИКЛ:  для каждого ребра (u, v) ∈ edges</text>
+<line x1="440" y1="235" x2="440" y2="268" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="440,268 540,296 440,324 340,296" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="296.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">u ≠ v ?</text>
+<text x="446" y="328" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">ДА</text>
+<text x="546" y="290" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">НЕТ</text>
+<line x1="440" y1="324" x2="440" y2="350" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="300" y="350" width="280" height="48" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="366.5" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">adj[u].добавить(v)</text>
+<text x="440" y="381.5" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">adj[v].добавить(u)</text>
+<line x1="440" y1="398" x2="440" y2="418" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="270,418 440,433 610,418 610,452 270,452" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="440.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">следующее ребро (u, v)</text>
+<polyline points="540,296 730,296 730,435 610,435" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polyline points="270,435 58,435 58,218 260,218" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<line x1="440" y1="452" x2="440" y2="483" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<text x="40" y="473" text-anchor="start" font-size="9" font-family="Arial,sans-serif" font-style="italic" fill="#777">2. Жадная раскраска Welsh-Powell</text>
+<rect x="260" y="483" width="360" height="48" fill="white" stroke="black" stroke-width="1.5"/>
+<line x1="268" y1="483" x2="268" y2="531" stroke="black" stroke-width="1.5"/>
+<line x1="612" y1="483" x2="612" y2="531" stroke="black" stroke-width="1.5"/>
+<text x="440" y="499.5" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">order = сортировка(vertices,</text>
+<text x="440" y="514.5" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">ключ: (−степень(v), имя_v))</text>
+<line x1="440" y1="531" x2="440" y2="552" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="320" y="552" width="240" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="572.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">colors = {}</text>
+<line x1="440" y1="592" x2="440" y2="619" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="260,619 620,619 620,653 440,638 260,653" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="631.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">ЦИКЛ:  для каждой вершины v ∈ order</text>
+<line x1="440" y1="653" x2="440" y2="680" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="250" y="680" width="380" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="700.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">forbidden = { colors[u] | u ∈ adj[v], u уже покрашен }</text>
+<line x1="440" y1="720" x2="440" y2="740" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="340" y="740" width="200" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="760.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">color = 1</text>
+<line x1="440" y1="780" x2="440" y2="806" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="270,806 610,806 610,840 440,825 270,840" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="818.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">ЦИКЛ:  пока  color ∈ forbidden</text>
+<line x1="440" y1="840" x2="440" y2="865" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="340" y="865" width="200" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="885.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">color += 1</text>
+<line x1="440" y1="905" x2="440" y2="930" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="275,930 440,945 605,930 605,964 275,964" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="952.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">проверить color ∈ forbidden</text>
+<polyline points="275,947 108,947 108,823 270,823" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<line x1="440" y1="964" x2="440" y2="987" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="305" y="987" width="270" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1007.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">colors[v] = color</text>
+<line x1="440" y1="1027" x2="440" y2="1053" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="270,1053 440,1068 610,1053 610,1087 270,1087" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1075.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">следующая вершина v ∈ order</text>
+<polyline points="270,1070 58,1070 58,636 260,636" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<line x1="440" y1="1087" x2="440" y2="1117" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<circle cx="440" cy="1135" r="18" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1135.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-family="Arial,sans-serif" font-weight="bold" fill="black">A</text>
+<text x="40" y="1180" text-anchor="start" font-size="9" font-family="Arial,sans-serif" font-style="italic" fill="#777">3. Локальная оптимизация (перекраска)</text>
+<circle cx="440" cy="1210" r="18" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1210.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-family="Arial,sans-serif" font-weight="bold" fill="black">A</text>
+<line x1="440" y1="1228" x2="440" y2="1250" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="295" y="1250" width="290" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1270.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">есть_улучшения = Истина</text>
+<line x1="440" y1="1290" x2="440" y2="1318" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="270,1318 610,1318 610,1352 440,1337 270,1352" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1330.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">ЦИКЛ:  пока  есть_улучшения</text>
+<line x1="440" y1="1352" x2="440" y2="1375" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="295" y="1375" width="290" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1395.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">есть_улучшения = Ложь</text>
+<line x1="440" y1="1415" x2="440" y2="1435" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="275" y="1435" width="330" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1455.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">max_color = max( colors.values() )</text>
+<line x1="440" y1="1475" x2="440" y2="1501" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="255,1501 625,1501 625,1535 440,1520 255,1535" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1513.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">ЦИКЛ:  для каждой вершины v ∈ vertices</text>
+<line x1="440" y1="1535" x2="440" y2="1570" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="440,1570 590,1598 440,1626 290,1598" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1598.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">colors[v] = max_color ?</text>
+<text x="446" y="1630" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">ДА</text>
+<text x="596" y="1592" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">НЕТ</text>
+<line x1="440" y1="1626" x2="440" y2="1656" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="260" y="1656" width="360" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1676.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">forbidden = { colors[u] | u ∈ adj[v] }</text>
+<line x1="440" y1="1696" x2="440" y2="1720" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="440,1716 595,1748 440,1780 285,1748" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1740.5" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">∃c : 1 ≤ c &lt; max_color</text>
+<text x="440" y="1755.5" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">и  c ∉ forbidden ?</text>
+<text x="446" y="1784" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">ДА</text>
+<text x="601" y="1742" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">НЕТ</text>
+<line x1="440" y1="1780" x2="440" y2="1806" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="290" y="1806" width="300" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1826.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">colors[v] = наименьший такой c</text>
+<line x1="440" y1="1846" x2="440" y2="1879" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="260,1879 440,1894 620,1879 620,1913 260,1913" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1901.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">следующая вершина v ∈ vertices</text>
+<polyline points="590,1598 755,1598 755,1896 620,1896" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polyline points="595,1748 720,1748 720,1896 620,1896" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polyline points="260,1896 85,1896 85,1518 255,1518" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<line x1="440" y1="1913" x2="440" y2="1944" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="440,1944 600,1972 440,2000 280,1972" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="1972.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">max_color ∉ colors.values() ?</text>
+<text x="446" y="2004" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">ДА</text>
+<text x="606" y="1966" text-anchor="start" font-size="10" font-family="Arial,sans-serif" font-style="normal" fill="#333">НЕТ</text>
+<line x1="440" y1="2000" x2="440" y2="2030" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="295" y="2030" width="290" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2050.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">есть_улучшения = Истина</text>
+<line x1="440" y1="2070" x2="440" y2="2103" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polyline points="600,1972 755,1972 755,2120 610,2120" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="270,2103 440,2118 610,2103 610,2137 270,2137" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2125.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">проверить есть_улучшения</text>
+<polyline points="270,2120 58,2120 58,1335 270,1335" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<line x1="440" y1="2137" x2="440" y2="2180" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<text x="40" y="2170" text-anchor="start" font-size="9" font-family="Arial,sans-serif" font-style="italic" fill="#777">4. Построение расписания</text>
+<rect x="320" y="2180" width="240" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2200.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">schedule = {}</text>
+<line x1="440" y1="2220" x2="440" y2="2246" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="255,2246 625,2246 625,2280 440,2265 255,2280" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2258.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">ЦИКЛ:  для каждой вершины v ∈ vertices</text>
+<line x1="440" y1="2280" x2="440" y2="2305" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="275" y="2305" width="330" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2325.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">schedule[ colors[v] ].добавить(v)</text>
+<line x1="440" y1="2345" x2="440" y2="2371" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<polygon points="285,2371 440,2386 595,2371 595,2405 285,2405" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2393.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">следующая вершина v</text>
+<polyline points="285,2388 108,2388 108,2263 255,2263" fill="none" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<line x1="440" y1="2405" x2="440" y2="2428" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="295" y="2428" width="290" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2448.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">num_colors = len( schedule )</text>
+<line x1="440" y1="2468" x2="440" y2="2490" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="260" y="2490" width="360" height="40" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2510.0" text-anchor="middle" dominant-baseline="central" font-size="11" font-family="Arial,sans-serif" font-weight="normal" fill="black">Вернуть { num_colors, colors, schedule }</text>
+<line x1="440" y1="2530" x2="440" y2="2552" stroke="black" stroke-width="1.5" marker-end="url(#A)"/>
+<rect x="355" y="2552" width="170" height="36" rx="18" ry="18" fill="white" stroke="black" stroke-width="1.5"/>
+<text x="440" y="2570.0" text-anchor="middle" dominant-baseline="central" font-size="12" font-family="Arial,sans-serif" font-weight="bold" fill="black">КОНЕЦ</text>
+</svg>
