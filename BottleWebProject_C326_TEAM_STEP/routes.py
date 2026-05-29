@@ -37,6 +37,12 @@ def bridges():
     return dict(year=_year())
 
 
+@route('/bridges/practice', method=['GET', 'POST'])
+@view('bridges_practice')
+def bridges_practice():
+    return dict(year=_year())
+
+
 @route('/cpm')
 @view('cpm_theory')
 def cpm():
