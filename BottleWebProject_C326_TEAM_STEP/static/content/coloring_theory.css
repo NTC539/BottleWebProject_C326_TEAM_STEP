@@ -1,70 +1,89 @@
-/* coloring_theory.css — V4: grid-card style */
+/* coloring_theory.css — V4 redesign */
 
-.ct-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
+.ct-intro-box {
+    background: linear-gradient(135deg, #1a3a5c 0%, #2e86ab 100%);
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 22px 28px;
+    margin-bottom: 28px;
 }
 
-.ct-header h2 {
-    margin: 0;
+.ct-intro-box h3 {
+    color: #ffffff;
+    margin-top: 0;
     border: none;
-    padding: 0;
 }
 
-.theory-card {
-    border: 1px solid #b3d0e0;
-    border-top: 4px solid #2e86ab;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    background: #ffffff;
-    box-shadow: 0 1px 5px rgba(26, 58, 92, 0.09);
-    transition: box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+.ct-intro-box p {
+    margin-bottom: 0;
+    color: #d0e8f5;
 }
 
-.theory-card:hover {
-    box-shadow: 0 4px 14px rgba(26, 58, 92, 0.18);
-    transform: none;
-}
-
-.theory-card .card-header {
-    background: #f0f7fb;
-    padding: 11px 16px;
-    border-bottom: 1px solid #b3d0e0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.theory-card .card-header h4 {
-    margin: 0;
+.ct-section-title {
     color: #1a3a5c;
-    font-size: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-left: 5px solid #2e86ab;
+    padding-left: 12px;
+    margin: 28px 0 16px;
 }
 
-.card-icon {
-    font-size: 22px;
-    line-height: 1;
+.ct-section {
+    margin-bottom: 24px;
 }
 
-.theory-card .card-body {
-    padding: 14px 16px;
-    line-height: 1.6;
-    flex: 1;
+.ct-section h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #1a3a5c;
 }
 
-.theory-card .card-body code {
+.ct-section code {
     background: #e8f4fb;
     color: #1a3a5c;
     padding: 1px 5px;
     border-radius: 3px;
     font-size: 13px;
+}
+
+/* Numbered step items */
+.ct-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.ct-step-num {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1a3a5c;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.ct-step-body {
+    flex: 1;
+    line-height: 1.6;
+}
+
+/* Formula block */
+.ct-formula {
+    text-align: center;
+    background: #f0f7fb;
+    border: 2px solid #2e86ab;
+    border-radius: 6px;
+    padding: 14px 20px;
+    margin: 14px 0;
+    font-size: 16px;
+    color: #1a3a5c;
 }
 
 /* Coloured vertex badges */

@@ -1,4 +1,4 @@
-/* bridges_theory.css — V2: accordion style */
+/* bridges_theory.css */
 
 .bt-header {
     display: flex;
@@ -9,88 +9,283 @@
     gap: 12px;
 }
 
-.bt-header h2 {
-    margin: 0;
-    border: none;
-    padding: 0;
-}
+.bt-header h2 { margin: 0; border: none; padding: 0; }
 
-/* Disable generic panel hover for accordion panels */
-.bt-panel-group .panel {
-    border: 1px solid #b3d0e0;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(26, 58, 92, 0.08);
-    margin-bottom: 8px;
+/* ── Hero split box ──────────────────────────────────────── */
+
+.bt-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 6px;
     overflow: hidden;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 10px rgba(15, 42, 71, 0.15);
 }
 
-.bt-panel-group .panel:hover {
-    transform: none;
-    box-shadow: 0 1px 4px rgba(26, 58, 92, 0.08);
+.bt-hero-left {
+    background: #0f2a47;
+    color: #d0e8f5;
+    padding: 24px 26px;
 }
 
-.bt-panel-group .panel-heading {
-    background: #1a3a5c;
-    border-color: #1a3a5c;
-    border-radius: 0;
-    padding: 0;
+.bt-hero-right {
+    background: #1565a0;
+    color: #e8f6fc;
+    padding: 24px 26px;
 }
 
-.bt-panel-group .panel-heading .panel-title {
+.bt-hero-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 10px;
+}
+
+.bt-hero-def {
     font-size: 15px;
-    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 10px;
     color: #fff;
 }
 
-.bt-panel-group .panel-heading a {
-    display: block;
-    padding: 13px 16px;
-    color: #ffffff !important;
-    text-decoration: none;
-    transition: background 0.15s;
+.bt-hero-def strong { color: #7fd6f0; }
+.bt-hero-def em { font-style: normal; color: #b3e0f0; }
+
+.bt-hero-sub {
+    font-size: 13px;
+    color: #a8d4e8;
+    margin: 0;
 }
 
-.bt-panel-group .panel-heading a:hover,
-.bt-panel-group .panel-heading a:focus {
-    color: #b3dce8 !important;
-    background-color: #2e86ab;
+.bt-hero-steps {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #e8f6fc;
 }
 
-.bt-panel-group .panel-body {
+.bt-hero-steps li::marker { color: rgba(255,255,255,0.5); }
+
+@media (max-width: 640px) {
+    .bt-hero { grid-template-columns: 1fr; }
+}
+
+/* ── Section title with partial underline ────────────────── */
+
+.bt-section-title {
+    position: relative;
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f2a47;
+    padding-bottom: 8px;
+    margin: 30px 0 16px;
+    border-bottom: 1px solid #dde9f0;
+}
+
+.bt-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 56px;
+    height: 3px;
+    background: #1976a8;
+    border-radius: 2px;
+}
+
+/* ── Definition chips ────────────────────────────────────── */
+
+.bt-defs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.bt-def-chip {
+    background: #1976a8;
+    color: #c8e4f0;
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.bt-def-chip code {
+    background: rgba(255,255,255,0.12);
+    color: #7fd6f0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+/* ── Two-column algorithm grid ───────────────────────────── */
+
+.bt-algo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 700px) {
+    .bt-algo-grid { grid-template-columns: 1fr; }
+}
+
+.bt-algo-card {
+    border: 1px solid #b3d0e0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.bt-algo-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+}
+
+.bt-algo-head--tarjan { background: #1b5e8a; }
+.bt-algo-head--floyd  { background: #1976a8; }
+
+.bt-algo-complexity {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.75;
+    font-family: Consolas, monospace;
+}
+
+.bt-algo-body {
+    padding: 14px 18px;
+    font-size: 14px;
     line-height: 1.65;
-    padding: 16px 20px;
 }
 
-.bt-panel-group .panel-body code {
+.bt-algo-body code {
     background: #e8f4fb;
-    color: #1a3a5c;
+    color: #0f2a47;
     padding: 1px 5px;
     border-radius: 3px;
     font-size: 13px;
 }
 
-.bt-accordion-controls {
-    margin-bottom: 12px;
-    display: flex;
-    gap: 8px;
+/* ── Algorithm description ───────────────────────────────── */
+
+.bt-description {
+    background: #f7fafd;
+    border-left: 4px solid #1976a8;
+    border-radius: 0 6px 6px 0;
+    padding: 18px 22px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #2c3e50;
 }
 
-.bt-ctrl-btn:active,
-.bt-ctrl-btn:focus {
-    background-color: #2e86ab;
-    border-color: #2e86ab;
-    color: #fff;
-    outline: none;
+.bt-description p { margin-bottom: 12px; }
+.bt-description p:last-child { margin-bottom: 0; }
+
+.bt-description code {
+    background: #e8f4fb;
+    color: #0f2a47;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 13px;
 }
+
+/* ── Example boxes ───────────────────────────────────────── */
+
+.bt-example {
+    background: #f4f8fb;
+    border: 1px solid #b3d0e0;
+    border-top: 3px solid #1565a0;
+    border-radius: 0 0 6px 6px;
+    padding: 18px 22px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Iteration steps row */
+.bt-iter-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+}
+
+.bt-iter-step {
+    flex: 1;
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid #c8dfe8;
+    border-radius: 5px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.bt-iter-step p { margin: 0; }
+
+.bt-iter-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #1565a0;
+    margin-bottom: 6px;
+}
+
+.bt-iter-sep {
+    font-size: 20px;
+    color: #1565a0;
+    padding-top: 14px;
+    flex-shrink: 0;
+}
+
+/* ── Algo pseudocode block ───────────────────────────────── */
 
 .algo-block {
-    background: #f4f8fb;
-    border-left: 4px solid #2e86ab;
+    background: #0f1e2e;
+    color: #a8d8ea;
+    border-radius: 4px;
     padding: 12px 16px;
-    font-size: 13px;
-    border-radius: 0 4px 4px 0;
+    font-size: 12.5px;
     overflow-x: auto;
-    margin: 12px 0;
+    margin: 10px 0;
     white-space: pre;
     font-family: Consolas, monospace;
+    line-height: 1.6;
+}
+
+/* ── Table highlights ────────────────────────────────────── */
+
+.bt-row-bridge > td {
+    background: #eaf6f0 !important;
+    font-weight: 500;
+}
+
+.bt-inf {
+    background: #fdecea !important;
+    color: #b03a2e;
+    font-weight: 600;
+    text-align: center;
+}
+
+.bt-matrix {
+    font-size: 13px;
+}
+
+.bt-matrix td,
+.bt-matrix th {
+    text-align: center;
+    min-width: 36px;
 }
