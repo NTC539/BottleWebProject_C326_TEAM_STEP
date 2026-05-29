@@ -54,3 +54,116 @@
         </tr>
     </tbody>
 </table>
+<h4 style="color:#1a3a5c;">Алгоритм Welsh&ndash;Powell</h4>
+<p>Жадная эвристика, хорошее приближение к &chi;(G) за <strong>O(V&sup2;&nbsp;+&nbsp;E)</strong>.</p>
+<ol>
+    <li style="margin-bottom:10px;">
+        <strong>Сортировка по степени.</strong>
+        Упорядочить все вершины по убыванию степени deg(v).
+        При равной степени &mdash; в алфавитном порядке для детерминированности результата.
+    </li>
+    <li style="margin-bottom:10px;">
+        <strong>Выбор первой неокрашенной вершины.</strong>
+        Взять первую вершину из отсортированного списка, ещё не получившую цвет.
+        Назначить ей наименьший свободный цвет c.
+    </li>
+    <li style="margin-bottom:10px;">
+        <strong>Распространение цвета c.</strong>
+        Просмотреть оставшиеся неокрашенные вершины в том же порядке.
+        Если вершина <em>не конфликтует</em> ни с одной уже окрашенной в цвет c &mdash;
+        назначить ей цвет c.
+    </li>
+    <li style="margin-bottom:10px;">
+        <strong>Повтор.</strong>
+        Увеличить номер цвета и вернуться к шагу&nbsp;2.
+        Продолжать до тех пор, пока все вершины не получат цвет.
+    </li>
+</ol>
+<h4 style="color:#1a3a5c;">Гарантии и оптимальность</h4>
+<p>
+    Welsh&ndash;Powell <strong>не гарантирует</strong> оптимальной раскраски &mdash;
+    результат зависит от порядка вершин и структуры графа.
+    Тем не менее алгоритм даёт результат, близкий к оптимальному,
+    для большинства реальных задач и работает значительно быстрее методов полного перебора.
+</p>
+<div class="well text-center" style="font-size:16px;color:#1a3a5c;border-color:#2e86ab;">
+    &chi;(G) &le; k(WP) &le; &Delta;(G) + 1
+</div>
+<p>
+    где <strong>k(WP)</strong> &mdash; число цветов, использованных алгоритмом,
+    а <strong>&Delta;(G)</strong> &mdash; максимальная степень вершины графа.
+</p>
+<h4 style="color:#1a3a5c;">Пример: граф из 6 вершин</h4>
+<p>
+    <strong>Вершины:</strong> A, B, C, D, E, F.<br>
+    <strong>Рёбра:</strong> A&ndash;B, A&ndash;C, B&ndash;C, B&ndash;D,
+    C&ndash;E, D&ndash;E, D&ndash;F, E&ndash;F.<br>
+    <strong>Степени:</strong> B&nbsp;=&nbsp;3, C&nbsp;=&nbsp;3, D&nbsp;=&nbsp;3,
+    E&nbsp;=&nbsp;3, A&nbsp;=&nbsp;2, F&nbsp;=&nbsp;2.<br>
+    <strong>Порядок Welsh&ndash;Powell:</strong> B, C, D, E, A, F.
+</p>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Вершина</th>
+            <th>Степень</th>
+            <th>Назначенный цвет</th>
+            <th>Причина</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="danger">
+            <td>B</td><td>3</td>
+            <td><span class="label label-danger">Смена&nbsp;1</span></td>
+            <td>Первая вершина &mdash; цвет 1</td>
+        </tr>
+        <tr class="danger">
+            <td>E</td><td>3</td>
+            <td><span class="label label-danger">Смена&nbsp;1</span></td>
+            <td>Нет ребра с B(1) &rarr; цвет 1</td>
+        </tr>
+        <tr class="success">
+            <td>C</td><td>3</td>
+            <td><span class="label label-success">Смена&nbsp;2</span></td>
+            <td>Смежна с B(1) &rarr; новый цвет 2</td>
+        </tr>
+        <tr class="success">
+            <td>D</td><td>3</td>
+            <td><span class="label label-success">Смена&nbsp;2</span></td>
+            <td>Смежна с B(1); нет ребра C&ndash;D &rarr; цвет 2</td>
+        </tr>
+        <tr class="info">
+            <td>A</td><td>2</td>
+            <td><span class="label label-info">Смена&nbsp;3</span></td>
+            <td>Смежна с B(1) и C(2) &rarr; новый цвет 3</td>
+        </tr>
+        <tr class="info">
+            <td>F</td><td>2</td>
+            <td><span class="label label-info">Смена&nbsp;3</span></td>
+            <td>Смежна с E(1) и D(2); нет ребра A&ndash;F &rarr; цвет 3</td>
+        </tr>
+    </tbody>
+</table>
+<p>
+    Итоговая раскраска:
+    <span class="label label-danger">B &mdash; Смена&nbsp;1</span>
+    <span class="label label-danger">E &mdash; Смена&nbsp;1</span>
+    <span class="label label-success">C &mdash; Смена&nbsp;2</span>
+    <span class="label label-success">D &mdash; Смена&nbsp;2</span>
+    <span class="label label-info">A &mdash; Смена&nbsp;3</span>
+    <span class="label label-info">F &mdash; Смена&nbsp;3</span>
+</p>
+<div class="well text-center" style="font-size:3em;font-weight:bold;color:#1a3a5c;border-color:#2e86ab;">
+    3
+    <div style="font-size:0.35em;color:#2e86ab;font-weight:normal;">&chi;(G) = 3 цвета</div>
+</div>
+<h4 style="color:#1a3a5c;">Применение раскраски графов</h4>
+<div class="row">
+    <div class="col-sm-4">
+        <p>
+            <strong>Расписания экзаменов</strong><br>
+            Распределение дисциплин по временным слотам без конфликтов:
+            смежные вершины (конфликтующие дисциплины) &mdash; разные слоты.
+        </p>
+    </div>
+</div>
