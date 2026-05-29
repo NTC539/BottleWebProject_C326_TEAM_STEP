@@ -95,6 +95,67 @@
 </div>
 
 <div class="cpm-section-title">Пример: 6 задач с зависимостями</div>
+
+<div class="theory-section">
+    <h4>Дано</h4>
+    <pre class="algo-block">Задачи:      A(3), B(2), C(4), D(1), E(2), F(3)
+Зависимости: C&larr;A,  D&larr;{A,B},  E&larr;C,  F&larr;D
+             (A и B &mdash; стартовые, без предшественников)</pre>
+</div>
+
+<div class="theory-section">
+    <h4>Шаг 1 &mdash; Топологический порядок (алгоритм Кана)</h4>
+    <pre class="algo-block">in_degree: A=0, B=0, C=1, D=2, E=1, F=1
+Очередь: [A, B]  (оба in_degree=0, сортировка по алфавиту)
+
+Извлекаем A &rarr; порядок=[A];    уменьшаем: in_degree[C]=0, in_degree[D]=1
+          &rarr; очередь=[B, C]
+Извлекаем B &rarr; порядок=[A, B]; уменьшаем: in_degree[D]=0
+          &rarr; очередь=[C, D]
+...
+Результат: [A, B, C, D, E, F]</pre>
+</div>
+
+<div class="theory-section">
+    <h4>Шаг 2 &mdash; Прямой проход (ES, EF)</h4>
+    <pre class="algo-block">A: ES=0,                              EF=0+3=3
+B: ES=0,                              EF=0+2=2
+C: ES=max(EF[A])=3,                   EF=3+4=7
+D: ES=max(EF[A],EF[B])=max(3,2)=3,   EF=3+1=4
+...
+T<sub>кр</sub> = max(EF) = max(3, 2, 7, 4, 9, 7) = 9</pre>
+</div>
+
+<div class="theory-section">
+    <h4>Шаг 3 &mdash; Обратный проход (LS, LF)</h4>
+    <pre class="algo-block">Вершины с EF=T<sub>кр</sub>=9: E &rarr; LF[E]=9
+Обратный порядок: [F, E, D, C, B, A]
+
+E:  LF=9,                             LS=9&minus;2=7
+F:  LF=9,                             LS=9&minus;3=6
+...
+A:  LF=min(LS[C],LS[D])=min(3,6)=3,  LS=3&minus;3=0</pre>
+</div>
+
+<div class="theory-section">
+    <h4>Шаг 4 &mdash; Резервы и критический путь</h4>
+    <pre class="algo-block">R = LS &minus; ES:
+  A: 0&minus;0=0  &rarr; критическая
+  B: 1&minus;0=1
+  C: 3&minus;3=0  &rarr; критическая
+  D: 6&minus;3=3
+  E: 7&minus;7=0  &rarr; критическая
+  F: 6&minus;4=2
+
+Поиск критических путей:
+  Стартовые критические (ES=0, R=0): A
+  A(R=0) &rarr; C?  EF[A]=3 == ES[C]=3 и R[C]=0  &rarr; переходим
+  C(R=0) &rarr; E?  EF[C]=7 == ES[E]=7 и R[E]=0  &rarr; переходим
+  E(R=0) &rarr; нет последователей &rarr; путь завершён
+
+Критический путь: A &rarr; C &rarr; E,  T<sub>кр</sub> = 9 ед.</pre>
+</div>
+
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
