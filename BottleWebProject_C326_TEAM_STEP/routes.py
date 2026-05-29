@@ -60,21 +60,39 @@ def dijkstra():
 
 
 @route('/bridges')
+@route('/bridges_theory')
 @view('bridges_theory')
 def bridges():
-    return dict(year=_year())
+    return dict(
+        title='Мосты Тарьяна — Теория',
+        year=_year(),
+        result=None,
+        error=None,
+    )
 
 
 @route('/cpm')
+@route('/cpm_theory')
 @view('cpm_theory')
 def cpm():
-    return dict(year=_year())
+    return dict(
+        title='Критический путь (CPM) — Теория',
+        year=_year(),
+        result=None,
+        error=None,
+    )
 
 
 @route('/coloring')
+@route('/coloring_theory')
 @view('coloring_theory')
 def coloring():
-    return dict(year=_year())
+    return dict(
+        title='Раскраска графа Welsh–Powell — Теория',
+        year=_year(),
+        result=None,
+        error=None,
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

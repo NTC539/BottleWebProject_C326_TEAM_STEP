@@ -1,0 +1,107 @@
+/* coloring_theory.css — V4: grid-card style */
+
+.ct-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.ct-header h2 {
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+.theory-card {
+    border: 1px solid #b3d0e0;
+    border-top: 4px solid #2e86ab;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    box-shadow: 0 1px 5px rgba(26, 58, 92, 0.09);
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.theory-card:hover {
+    box-shadow: 0 4px 14px rgba(26, 58, 92, 0.18);
+    transform: none;
+}
+
+.theory-card .card-header {
+    background: #f0f7fb;
+    padding: 11px 16px;
+    border-bottom: 1px solid #b3d0e0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theory-card .card-header h4 {
+    margin: 0;
+    color: #1a3a5c;
+    font-size: 15px;
+}
+
+.card-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.theory-card .card-body {
+    padding: 14px 16px;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.theory-card .card-body code {
+    background: #e8f4fb;
+    color: #1a3a5c;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+/* Coloured vertex badges */
+.color-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 12px;
+    color: #ffffff;
+    font-weight: bold;
+    margin: 3px 2px;
+    font-size: 13px;
+}
+
+.cb-red    { background: #c0392b; }
+.cb-green  { background: #27ae60; }
+.cb-blue   { background: #2980b9; }
+.cb-purple { background: #7d3c98; }
+.cb-orange { background: #d35400; }
+
+/* Chromatic number display */
+.chi-display {
+    text-align: center;
+    font-size: 52px;
+    font-weight: bold;
+    color: #1a3a5c;
+    border: 3px solid #2e86ab;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 14px 0 4px;
+    background: #f0f7fb;
+    line-height: 1.2;
+}
+
+.chi-label {
+    display: block;
+    font-size: 16px;
+    color: #2e86ab;
+    font-weight: normal;
+    margin-top: 6px;
+}
