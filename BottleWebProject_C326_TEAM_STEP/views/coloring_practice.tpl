@@ -90,3 +90,12 @@
         <tr><td>Химия</td><td>Смена 3</td></tr>
     </tbody>
 </table>
+
+<div class="theory-section">
+    <h4>Граф конфликтов (раскраска)</h4>
+    <p class="text-muted" style="font-size:13px">
+        Каждый цвет узла — отдельная смена. Рёбра соединяют конфликтующие дисциплины.
+    </p>
+    <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
+         border-radius:4px;background:#fafafa;margin-top:8px"></div>
+</div>
