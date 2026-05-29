@@ -78,3 +78,128 @@
     </div>
 
 </div>
+
+<!-- Example 1: Tarjan -->
+<div class="bt-section-title">Пример &mdash; поиск мостов (граф из 5 вершин)</div>
+<div class="bt-example">
+    <p>
+        <strong>Рёбра:</strong> A&ndash;B:2, B&ndash;C:3, A&ndash;C:1, C&ndash;D:5, D&ndash;E:4.<br>
+        Подграф {A,&nbsp;B,&nbsp;C} образует цикл &mdash; обратные рёбра снижают low.
+        Цепочка C&ndash;D&ndash;E без обходных путей.
+    </p>
+    <table class="table table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Ребро</th>
+                <th>disc[v]</th>
+                <th>low[u]</th>
+                <th>low[u] &gt; disc[v]?</th>
+                <th>Мост?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>A&ndash;B</td><td>0</td><td>0</td><td>Нет</td><td>Нет</td>
+            </tr>
+            <tr>
+                <td>B&ndash;C</td><td>1</td><td>0</td><td>Нет</td><td>Нет</td>
+            </tr>
+            <tr>
+                <td>A&ndash;C</td><td>0</td><td>0</td><td>Нет</td><td>Нет</td>
+            </tr>
+            <tr class="bt-row-bridge">
+                <td>C&ndash;D</td><td>2</td><td>3</td><td><strong>Да</strong></td><td><strong>Да</strong></td>
+            </tr>
+            <tr class="bt-row-bridge">
+                <td>D&ndash;E</td><td>3</td><td>4</td><td><strong>Да</strong></td><td><strong>Да</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Мосты &mdash; C&ndash;D и D&ndash;E. {A,&nbsp;B,&nbsp;C} связаны циклом; D и E изолируются.</p>
+</div>
+
+<!-- Example 2: Floyd-Warshall -->
+<div class="bt-section-title">Пример &mdash; Флойд&ndash;Уоршолл и оценка моста</div>
+<div class="bt-example">
+    <p>Тот же граф. <strong>Начальная матрица dist:</strong></p>
+    <table class="table table-bordered table-condensed bt-matrix">
+        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
+        <tbody>
+            <tr><td><strong>A</strong></td><td>0</td><td>2</td><td>1</td><td>&infin;</td><td>&infin;</td></tr>
+            <tr><td><strong>B</strong></td><td>2</td><td>0</td><td>3</td><td>&infin;</td><td>&infin;</td></tr>
+            <tr><td><strong>C</strong></td><td>1</td><td>3</td><td>0</td><td>5</td><td>&infin;</td></tr>
+            <tr><td><strong>D</strong></td><td>&infin;</td><td>&infin;</td><td>5</td><td>0</td><td>4</td></tr>
+            <tr><td><strong>E</strong></td><td>&infin;</td><td>&infin;</td><td>&infin;</td><td>4</td><td>0</td></tr>
+        </tbody>
+    </table>
+
+    <div class="bt-iter-row">
+        <div class="bt-iter-step">
+            <div class="bt-iter-label">k = C</div>
+            <p>dist[A][D]&nbsp;=&nbsp;min(&infin;,&nbsp;1+5)&nbsp;=&nbsp;<strong>6</strong><br>
+            dist[B][D]&nbsp;=&nbsp;min(&infin;,&nbsp;3+5)&nbsp;=&nbsp;<strong>8</strong></p>
+        </div>
+        <div class="bt-iter-sep">&rarr;</div>
+        <div class="bt-iter-step">
+            <div class="bt-iter-label">k = D</div>
+            <p>dist[A][E]&nbsp;=&nbsp;6+4&nbsp;=&nbsp;<strong>10</strong><br>
+            dist[B][E]&nbsp;=&nbsp;8+4&nbsp;=&nbsp;<strong>12</strong><br>
+            dist[C][E]&nbsp;=&nbsp;5+4&nbsp;=&nbsp;<strong>9</strong></p>
+        </div>
+        <div class="bt-iter-sep">&rarr;</div>
+        <div class="bt-iter-step">
+            <div class="bt-iter-label">итог</div>
+            <p><strong>база</strong>&nbsp;=<br>2+1+6+10+3+8<br>+12+5+9+4&nbsp;=&nbsp;<strong>60</strong></p>
+        </div>
+    </div>
+
+    <p><strong>Удаляем мост C&ndash;D.</strong> Компоненты {A,B,C} и {D,E} теряют связность:</p>
+    <table class="table table-bordered table-condensed bt-matrix">
+        <thead><tr><th>dist&prime;</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
+        <tbody>
+            <tr><td><strong>A</strong></td><td>0</td><td>2</td><td>1</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td></tr>
+            <tr><td><strong>B</strong></td><td>2</td><td>0</td><td>3</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td></tr>
+            <tr><td><strong>C</strong></td><td>1</td><td>3</td><td>0</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td></tr>
+            <tr><td><strong>D</strong></td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td>0</td><td>4</td></tr>
+            <tr><td><strong>E</strong></td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td>4</td><td>0</td></tr>
+        </tbody>
+    </table>
+    <p>
+        новая_сумма конечных пар&nbsp;=&nbsp;10;&nbsp;&nbsp;
+        &delta;&nbsp;=&nbsp;&infin;&nbsp;&mdash;
+        <strong>граф распался, связность нарушена полностью</strong>.
+    </p>
+</div>
+
+<!-- Complexity -->
+<div class="bt-section-title">Сложность алгоритмов</div>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Этап</th>
+            <th>Время</th>
+            <th>Память</th>
+            <th>Назначение</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Тарьян (мосты)</td>
+            <td>O(V&nbsp;+&nbsp;E)</td>
+            <td>O(V)</td>
+            <td>Поиск всех мостов</td>
+        </tr>
+        <tr>
+            <td>Флойд&ndash;Уоршолл</td>
+            <td>O(V&sup3;)</td>
+            <td>O(V&sup2;)</td>
+            <td>Все кратчайшие пути; базовая сумма</td>
+        </tr>
+        <tr>
+            <td>Оценка N мостов</td>
+            <td>O(N&middot;V&sup3;)</td>
+            <td>O(V&sup2;)</td>
+            <td>N &mdash; количество найденных мостов</td>
+        </tr>
+    </tbody>
+</table>
