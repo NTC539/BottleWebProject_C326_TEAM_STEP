@@ -1,11 +1,12 @@
 % rebase('layout.tpl', title='Критический путь (CPM)', year=year)
+<link rel="stylesheet" type="text/css" href="/static/content/cpm_theory.css" />
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
     <h2 style="margin:0;border:none;padding:0;">Метод критического пути (CPM)</h2>
     <a href="/cpm/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
 </div>
 
-<div>
+<div class="cpm-intro-box">
     <h3>Что такое метод критического пути?</h3>
     <p>
         CPM (Critical Path Method) &mdash; метод сетевого планирования проектов,
@@ -15,13 +16,13 @@
     </p>
 </div>
 
-<div>Ключевые понятия</div>
-<div>
-    <div><strong>ES</strong> &mdash; ранний старт (Early Start)</div>
-    <div><strong>EF</strong> &mdash; раннее окончание (Early Finish)</div>
-    <div><strong>LS</strong> &mdash; поздний старт (Late Start)</div>
-    <div><strong>LF</strong> &mdash; позднее окончание (Late Finish)</div>
-    <div><strong>Float</strong> &mdash; резерв времени (LS &minus; ES)</div>
+<div class="cpm-section-title">Ключевые понятия</div>
+<div class="cpm-concepts">
+    <div class="cpm-concept-chip"><strong>ES</strong> &mdash; ранний старт (Early Start)</div>
+    <div class="cpm-concept-chip"><strong>EF</strong> &mdash; раннее окончание (Early Finish)</div>
+    <div class="cpm-concept-chip"><strong>LS</strong> &mdash; поздний старт (Late Start)</div>
+    <div class="cpm-concept-chip"><strong>LF</strong> &mdash; позднее окончание (Late Finish)</div>
+    <div class="cpm-concept-chip"><strong>Float</strong> &mdash; резерв времени (LS &minus; ES)</div>
 </div>
 <p>
     <strong>Резерв (Float)</strong> = LS &minus; ES &mdash; время, на которое задача может
@@ -29,9 +30,9 @@
     <strong>Float&nbsp;=&nbsp;0</strong>.
 </p>
 
-<div>Алгоритм вычисления</div>
+<div class="cpm-section-title">Алгоритм вычисления</div>
 
-<div>
+<div class="theory-section">
     <h4>Шаг 1 &mdash; Подготовка графа (Алгоритм Кана)</h4>
     <p>
         Для каждой вершины подсчитывается входящая степень (<code>in_degree</code>).
@@ -47,7 +48,7 @@
     </p>
 </div>
 
-<div>
+<div class="theory-section">
     <h4>Шаг 2 &mdash; Прямой проход (ES, EF)</h4>
     <p>
         Обход по топологическому порядку слева направо.
@@ -63,7 +64,7 @@
     </p>
 </div>
 
-<div>
+<div class="theory-section">
     <h4>Шаг 3 &mdash; Обратный проход (LS, LF)</h4>
     <p>
         Всем вершинам присваивается <code>LF&nbsp;=&nbsp;&infin;</code>.
@@ -79,7 +80,7 @@
     </p>
 </div>
 
-<div>
+<div class="theory-section">
     <h4>Шаг 4 &mdash; Критический путь и резервы</h4>
     <p>
         Резерв каждой задачи: <code>R&nbsp;=&nbsp;LS&nbsp;&minus;&nbsp;ES</code>.
@@ -93,8 +94,8 @@
     </p>
 </div>
 
-<div>Пример: 6 задач с зависимостями</div>
-<table>
+<div class="cpm-section-title">Пример: 6 задач с зависимостями</div>
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Задача</th>
@@ -109,7 +110,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
+        <tr class="danger">
             <td>A</td><td>3</td><td>&mdash;</td>
             <td>0</td><td>3</td><td>0</td><td>3</td><td>0</td>
             <td><strong>Да</strong></td>
@@ -119,7 +120,7 @@
             <td>0</td><td>2</td><td>1</td><td>3</td><td>1</td>
             <td>Нет</td>
         </tr>
-        <tr>
+        <tr class="danger">
             <td>C</td><td>4</td><td>A</td>
             <td>3</td><td>7</td><td>3</td><td>7</td><td>0</td>
             <td><strong>Да</strong></td>
@@ -129,7 +130,7 @@
             <td>3</td><td>4</td><td>6</td><td>7</td><td>3</td>
             <td>Нет</td>
         </tr>
-        <tr>
+        <tr class="danger">
             <td>E</td><td>2</td><td>C</td>
             <td>7</td><td>9</td><td>7</td><td>9</td><td>0</td>
             <td><strong>Да</strong></td>
@@ -147,8 +148,8 @@
     Путь B&nbsp;&rarr;&nbsp;D&nbsp;&rarr;&nbsp;F имеет резерв 2 ед.
 </p>
 
-<div>Применение</div>
-<ul>
+<div class="cpm-section-title">Применение</div>
+<ul class="cpm-apply-list">
     <li>Строительство и инженерные проекты</li>
     <li>Разработка программного обеспечения</li>
     <li>Производственное планирование</li>
