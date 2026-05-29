@@ -1,6 +1,9 @@
 % rebase('layout.tpl', title='Критический путь (CPM)', year=year)
 
-<h2>Критический путь (CPM)</h2>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <h2 style="margin:0;border:none;padding:0;">Метод критического пути (CPM)</h2>
+    <a href="/cpm/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
+</div>
 
 <div>
     <h3>Секция теории</h3>
@@ -10,8 +13,4 @@
         et laudantium quia in minus quisquam qui suscipit minima a molestiae impedit! Qui odit aliquam sed ratione laborum 
         et culpa tempore ut corrupti omnis est quibusdam recusandae eum quibusdam aperiam et animi tempore. 
     </p>
-</div>
-
-<div>
-    <a href="/cpm/practice">Перейти к практике →</a>
 </div>
