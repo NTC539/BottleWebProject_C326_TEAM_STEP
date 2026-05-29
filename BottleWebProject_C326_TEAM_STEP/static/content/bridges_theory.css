@@ -176,6 +176,30 @@
     font-size: 13px;
 }
 
+/* ── Algorithm description ───────────────────────────────── */
+
+.bt-description {
+    background: #f7fafd;
+    border-left: 4px solid #2e86ab;
+    border-radius: 0 6px 6px 0;
+    padding: 18px 22px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #2c3e50;
+}
+
+.bt-description p { margin-bottom: 12px; }
+.bt-description p:last-child { margin-bottom: 0; }
+
+.bt-description code {
+    background: #e8f4fb;
+    color: #1a3a5c;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
 /* ── Example boxes ───────────────────────────────────────── */
 
 .bt-example {
