@@ -36,6 +36,11 @@ def dijkstra():
 def bridges():
     return dict(year=_year())
 
+@route('/coloring/practice', method=['GET', 'POST'])
+@view('coloring_practice')
+def coloring_practice():
+    return dict(year=_year())
+
 
 @route('/cpm')
 @view('cpm_theory')
