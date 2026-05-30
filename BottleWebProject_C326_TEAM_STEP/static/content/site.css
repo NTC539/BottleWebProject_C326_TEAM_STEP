@@ -144,6 +144,31 @@ h3 {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        padding: 24px 22px;
+        min-height: 180px;
+    }
+
+    .row-cards .panel-body p {
+        font-size: 1.05em;
+        line-height: 1.6;
+    }
+
+    .row-cards .panel-heading {
+        padding: 18px 22px;
+    }
+
+    .row-cards .panel-heading .panel-title {
+        font-size: 1.2em;
+    }
+
+    .row-cards .panel-footer {
+        padding: 12px 22px;
+        font-size: 0.9em;
+    }
+
+    .row-cards .btn-block {
+        padding: 12px 0;
+        font-size: 1.05em;
     }
 
 .panel {
@@ -190,6 +215,17 @@ h3 {
     }
 
 /* ----- Tables ---------------------------------------------- */
+.table {
+    width: auto;
+}
+
+.table th,
+.table td {
+    white-space: nowrap;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
 .table thead {
     background-color: #1a3a5c;
     color: #ffffff;

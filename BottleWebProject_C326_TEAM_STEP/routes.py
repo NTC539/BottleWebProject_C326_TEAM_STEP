@@ -7,7 +7,6 @@ import json
 import os
 from bottle import route, view, request, template
 from datetime import datetime
-from algorithms.dijkstra import route_network
 
 def _year():
     return datetime.now().year

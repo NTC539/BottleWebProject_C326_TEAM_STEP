@@ -10,7 +10,18 @@
 <div class="theory-section">
     <h3>Шаг 1 &mdash; Города</h3>
     <span class="input-section-label">Добавьте города / узлы сети:</span>
-    <div id="nodes-container"></div>
+    <div id="nodes-container">
+        <div class="input-row">
+            <input type="text" name="node[]" class="form-control input-node"
+                   placeholder="Название города" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+        <div class="input-row">
+            <input type="text" name="node[]" class="form-control input-node"
+                   placeholder="Название города" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+    </div>
     <button type="button" class="btn btn-success btn-sm add-row-btn">
         + Добавить город
     </button>
@@ -21,7 +32,26 @@
     <span class="input-section-label">
         Добавьте дороги (неориентированные) с весом &mdash; длиной или временем:
     </span>
-    <div id="edges-container"></div>
+    <div id="edges-container">
+        <div class="input-row">
+            <input type="text" name="edge_from[]" class="form-control input-edge"
+                   placeholder="Откуда" value="">
+            <input type="text" name="edge_to[]" class="form-control input-edge"
+                   placeholder="Куда" value="">
+            <input type="number" name="edge_weight[]" class="form-control edge-weight"
+                   placeholder="Вес" min="0" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+        <div class="input-row">
+            <input type="text" name="edge_from[]" class="form-control input-edge"
+                   placeholder="Откуда" value="">
+            <input type="text" name="edge_to[]" class="form-control input-edge"
+                   placeholder="Куда" value="">
+            <input type="number" name="edge_weight[]" class="form-control edge-weight"
+                   placeholder="Вес" min="0" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+    </div>
     <button type="button" class="btn btn-success btn-sm add-row-btn">
         + Добавить дорогу
     </button>
