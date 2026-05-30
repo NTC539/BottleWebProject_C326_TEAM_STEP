@@ -27,6 +27,7 @@
                 <ul class="nav navbar-nav">
                     <li class="{{ 'active' if ap == 'home' else '' }}"><a href="/">Главная</a></li>
                     <li class="{{ 'active' if ap == 'about' else '' }}"><a href="/about">О нас</a></li>
+                    <li class="{{ 'active' if ap == 'graph_theory' else '' }}"><a href="/graph_theory">Теория графов</a></li>
                     <li class="dropdown {{ 'active' if ap == 'algorithms' else '' }}">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-haspopup="true" aria-expanded="false">

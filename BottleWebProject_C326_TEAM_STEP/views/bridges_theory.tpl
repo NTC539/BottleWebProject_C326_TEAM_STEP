@@ -240,36 +240,3 @@
         <strong>граф распался, связность нарушена полностью</strong>.
     </p>
 </div>
-
-<!-- Complexity -->
-<div class="bt-section-title">Сложность алгоритмов</div>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Этап</th>
-            <th>Время</th>
-            <th>Память</th>
-            <th>Назначение</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Тарьян (мосты)</td>
-            <td>O(V&nbsp;+&nbsp;E)</td>
-            <td>O(V)</td>
-            <td>Поиск всех мостов</td>
-        </tr>
-        <tr>
-            <td>Флойд&ndash;Уоршолл</td>
-            <td>O(V&sup3;)</td>
-            <td>O(V&sup2;)</td>
-            <td>Все кратчайшие пути; базовая сумма</td>
-        </tr>
-        <tr>
-            <td>Оценка N мостов</td>
-            <td>O(N&middot;V&sup3;)</td>
-            <td>O(V&sup2;)</td>
-            <td>N &mdash; количество найденных мостов</td>
-        </tr>
-    </tbody>
-</table>

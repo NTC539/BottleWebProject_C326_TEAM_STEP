@@ -239,6 +239,17 @@ h3 {
     background-color: #edf3f8;
 }
 
+/* ----- Wrapping table (graph theory page) ------------------ */
+.table-wrap {
+    width: 100%;
+}
+
+.table-wrap th,
+.table-wrap td {
+    white-space: normal;
+    word-break: break-word;
+}
+
 /* ----- Footer ---------------------------------------------- */
 footer {
     text-align: center;

@@ -25,6 +25,12 @@ def about():
     return dict(year=_year())
 
 
+@route('/graph_theory')
+@view('graph_theory')
+def graph_theory():
+    return dict(year=_year())
+
+
 @route('/dijkstra')
 @view('dijkstra_theory')
 def dijkstra():

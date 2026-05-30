@@ -5,7 +5,7 @@
     <p class="lead">Алгоритмы на теории графов</p>
     <p>
         Сайт решает задачи маршрутизации сетей, анализа устойчивости и управления проектами
-        с помощью алгоритмов теории графов, реализованных на Python / Bottle.
+        с помощью алгоритмов теории графов.
         Каждый раздел содержит теоретическую базу и интерактивную практическую часть,
         позволяющую запустить алгоритм на собственных данных.
     </p>
@@ -58,6 +58,23 @@
                 <a href="/coloring" class="btn btn-danger btn-block">Подробнее &raquo;</a>
             </div>
             <div class="panel-footer text-muted">Петренко</div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 24px;">
+    <div class="col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Теория графов: основные понятия и термины</h3>
+            </div>
+            <div class="panel-body" style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
+                <p style="margin:0;">
+                    Граф, вершина, ребро, путь, мост, хроматическое число, критический путь —
+                    все ключевые термины, которые используются в задачах этого сайта, собраны на одной странице.
+                </p>
+                <a href="/graph_theory" class="btn btn-info" style="white-space:nowrap;">Читать &raquo;</a>
+            </div>
         </div>
     </div>
 </div>
