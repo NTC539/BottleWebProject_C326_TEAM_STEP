@@ -54,6 +54,11 @@ def bridges_practice():
 def cpm():
     return dict(year=_year())
 
+@route('/cpm/practice')
+@view('cpm_practice')
+def cpm():
+    return dict(year=_year())
+
 
 @route('/coloring')
 @view('coloring_theory')
