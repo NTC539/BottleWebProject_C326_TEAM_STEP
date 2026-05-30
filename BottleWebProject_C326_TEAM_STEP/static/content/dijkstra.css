@@ -1,0 +1,440 @@
+/* ===== dijkstra.css — Additional styles for Dijkstra page ===== */
+/* These styles extend the main site theme without breaking existing design */
+
+/* Background and spacing enhancements */
+.theory-section {
+    transition: box-shadow 0.25s ease, transform 0.2s ease;
+    border-radius: 8px;
+}
+
+    .theory-section:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+/* Context note and highlight boxes */
+.context-note {
+    background: #eef3fc;
+    border-left: 5px solid #2e86ab;
+    padding: 14px 20px;
+    margin-top: 24px;
+    border-radius: 0 10px 10px 0;
+    font-size: 0.95em;
+    color: #1e4663;
+    line-height: 1.4;
+}
+
+.graph-metrics {
+    background: #ffffff;
+    border: 1px solid #d4e2ef;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+    .graph-metrics h4 {
+        color: #1a3a5c;
+        font-size: 1.05em;
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+    }
+
+    .graph-metrics ul {
+        margin-bottom: 0;
+        padding-left: 1.2rem;
+    }
+
+/* Algorithm steps as timeline */
+.algorithm-steps {
+    margin: 24px 0 16px;
+}
+
+.step {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+
+.step-number {
+    background: #2e86ab;
+    color: white;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1em;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    transition: background 0.2s;
+}
+
+.step:hover .step-number {
+    background: #e84855;
+}
+
+.step-content {
+    flex: 1;
+    background: #fafdff;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid #e2edf8;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+    .step-content ul {
+        margin-bottom: 0;
+        margin-top: 8px;
+        padding-left: 20px;
+    }
+
+.complexity-box {
+    background: #1a3a5c;
+    color: #eef4fc;
+    padding: 10px 24px;
+    border-radius: 40px;
+    display: inline-block;
+    font-size: 0.9em;
+    margin-top: 20px;
+    font-family: 'SF Mono', Consolas, monospace;
+    letter-spacing: 0.3px;
+}
+
+.complexity-label {
+    font-weight: 700;
+    color: #ffda88;
+}
+
+/* OSPF modification callout */
+.ospf-note {
+    background: #fff8e7;
+    border: 1px solid #ffdfa5;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-top: 24px;
+    color: #6b4c00;
+    line-height: 1.45;
+}
+
+/* Example table improvements */
+.example-table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+    border-radius: 8px;
+    border: 1px solid #e0edf5;
+    background: white;
+}
+
+    .example-table-wrapper table {
+        font-size: 0.9em;
+        margin-bottom: 0;
+    }
+
+    .example-table-wrapper th,
+    .example-table-wrapper td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 10px 8px;
+    }
+
+.note-example {
+    background: #eef2fa;
+    border-left: 5px solid #e84855;
+    padding: 14px 20px;
+    margin-top: 24px;
+    border-radius: 0 10px 10px 0;
+    font-size: 0.95em;
+    color: #2c3e4e;
+}
+
+/* Additional polish for code elements */
+code {
+    background: #eef2f7;
+    color: #b3413b;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: 'SF Mono', Consolas, monospace;
+}
+
+h4 {
+    margin-top: 28px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    color: #1a3a5c;
+    letter-spacing: -0.2px;
+}
+
+/* Practice button enhancement for this page */
+.btn-practice {
+    transition: background 0.25s, transform 0.08s linear;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    font-weight: 500;
+}
+
+    .btn-practice:active {
+        transform: scale(0.97);
+    }
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .step {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .step-number {
+        align-self: flex-start;
+    }
+
+    .complexity-box {
+        display: block;
+        text-align: center;
+        font-size: 0.85em;
+        padding: 8px 16px;
+    }
+
+    .theory-section {
+        padding: 18px 20px;
+    }
+}
+
+/* subtle pattern for identity - refined gradient underline */
+.theory-section h3 {
+    position: relative;
+    padding-left: 0;
+}
+
+    .theory-section h3::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #2e86ab, #a0c4e0);
+        margin-top: 10px;
+        border-radius: 4px;
+        transition: width 0.2s ease;
+    }
+
+.theory-section:hover h3::after {
+    width: 100px;
+}
+
+/* ===== Practice page specific styles ===== */
+.practice-form {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 25px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+    .practice-form label {
+        font-weight: 600;
+        color: #1a3a5c;
+        margin-top: 10px;
+    }
+
+    .practice-form textarea,
+    .practice-form input[type="number"] {
+        font-family: 'SF Mono', Consolas, monospace;
+        border: 1px solid #cbdae6;
+        border-radius: 6px;
+        padding: 8px 12px;
+        width: 100%;
+        transition: border 0.2s;
+    }
+
+        .practice-form textarea:focus,
+        .practice-form input:focus {
+            border-color: #2e86ab;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(46,134,171,0.2);
+        }
+
+.graph-preview {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+    border: 1px solid #e2edf5;
+    overflow-x: auto;
+}
+
+    .graph-preview table {
+        margin-bottom: 0;
+        font-size: 0.9em;
+    }
+
+.error-block {
+    background: #ffe6e5;
+    border-left: 5px solid #e84855;
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin: 15px 0;
+    color: #a1222e;
+}
+
+.result-table th, .result-table td {
+    vertical-align: middle;
+}
+
+.btn-group-practice {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0 10px;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #2e86ab;
+    color: #2e86ab;
+    padding: 6px 14px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+    .btn-outline:hover {
+        background: #2e86ab;
+        color: white;
+    }
+
+.canvas-wrapper {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.graph-canvas {
+    border: 1px solid #d4e2ef;
+    border-radius: 8px;
+    background: #fefefe;
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.graph-legend {
+    margin-top: 12px;
+    font-size: 0.85em;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 2px;
+    display: inline-block;
+}
+
+    .legend-color.solid {
+        background: #2e86ab;
+        height: 3px;
+    }
+
+    .legend-color.dashed {
+        background: none;
+        border-bottom: 2px dashed #e84855;
+        width: 20px;
+    }
+
+.practice-container {
+    margin-top: 20px;
+}
+
+.input-panel {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.graph-panel {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.graph-container {
+    width: 100%;
+    height: 450px;
+    border: 1px solid #e0edf5;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.results-panel {
+    margin-top: 25px;
+}
+
+.action-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.file-upload-btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+    .file-upload-btn input {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
