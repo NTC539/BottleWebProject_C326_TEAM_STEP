@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" href="/static/content/cpm_theory.css" />
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
-    <h2 style="margin:0;border:none;padding:0;">Метод критического пути (CPM)</h2>
+    <h2 style="margin:0;border:none;padding:0;">Метод критического пути (CPM) - Теория</h2>
     <a href="/cpm/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
 </div>
 

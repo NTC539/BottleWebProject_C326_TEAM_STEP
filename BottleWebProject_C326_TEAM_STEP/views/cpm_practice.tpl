@@ -1,6 +1,6 @@
 % rebase('layout.tpl', title='Критический путь (CPM) - Практика', year=year)
 
-<h2>Критический путь — Практика</h2>
+<h2>Метод критического пути (CPM) - Теория</h2>
 
 <form method="POST" action="/cpm/practice">
     <div class="theory-section">
@@ -9,14 +9,14 @@
             Введите задачи и их длительность (в любых единицах — днях, часах):
         </span>
         <div id="tasks-container">
-            <div class="input-row task-row">
+            <div class="input-row">
                 <input type="text" name="task_name[]" class="form-control node-input" placeholder="Название задачи">
                 <span class="edge-arrow">:</span>
                 <input type="number" name="task_dur[]" class="form-control" min="0" placeholder="Длительность" value="1" style="max-width:120px">
-                <button type="button" class="btn btn-danger btn-xs remove-row">✕</button>
+                <button type="button" class="btn-danger btn-xs remove-row">✕</button>
             </div>
         </div>
-        <button type="button" class="btn btn-success btn-sm add-row-btn">
+        <button type="button" class="btn-success btn-sm add-row-btn">
             + Добавить задачу
         </button>
     </div>
@@ -35,29 +35,28 @@
                 <select name="dep_to[]" class="form-control node-select">
                     <option value="Задача">Задача</option>
                 </select>
-                <button type="button" class="btn btn-danger btn-xs remove-row">✕</button>
+                <button type="button" class="btn-danger btn-xs remove-row">✕</button>
             </div>
         </div>
-        <button type="button" class="btn btn-success btn-sm add-row-btn">
+        <button type="button" class="btn-success btn-sm add-row-btn">
             + Добавить зависимость
         </button>
     </div>
 
-    <div class="theory-section" style="padding:10px 16px">
-        <button type="button" class="btn btn-default btn-sm">
+    <div style="padding:10px 0px">
+        <button type="button" class="btn-default btn-sm">
             🎲 Сгенирировать случайные данные
         </button>
+        <div style="margin-top:16px">
+        <button type="submit" class="btn-primary">Рассчитать</button>
     </div>
-
-    <div style="margin-top:16px">
-        <button type="submit" class="btn btn-primary">Рассчитать</button>
     </div>
 </form>
 
 <div class="alert alert-danger" style="margin-top:16px">(Ошибка)</div>
 
 <div style="margin-bottom:12px">
-    <button type="button" class="btn btn-default btn-sm">
+    <button type="button" class="btn-default btn-sm">
         💾 Скачать результат (JSON)
     </button>
 </div>
