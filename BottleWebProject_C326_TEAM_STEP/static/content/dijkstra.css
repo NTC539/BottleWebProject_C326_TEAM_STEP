@@ -383,3 +383,58 @@ h4 {
         border-bottom: 2px dashed #e84855;
         width: 20px;
     }
+
+.practice-container {
+    margin-top: 20px;
+}
+
+.input-panel {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.graph-panel {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.graph-container {
+    width: 100%;
+    height: 450px;
+    border: 1px solid #e0edf5;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.results-panel {
+    margin-top: 25px;
+}
+
+.action-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.file-upload-btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+    .file-upload-btn input {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
