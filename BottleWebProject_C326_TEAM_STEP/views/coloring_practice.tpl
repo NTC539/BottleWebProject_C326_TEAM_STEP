@@ -14,23 +14,78 @@
 </section>
 
 <form method="POST" action="/coloring/practice">
-    <div class="form-grid">
-        <section class="theory-section">
+    <div class="editor-grid">
+        <section class="theory-section editor-panel">
             <h2>Дисциплины</h2>
-            <label class="input-section-label" for="subjectsText">Список дисциплин</label>
-            <textarea id="subjectsText" name="subjects_text" class="form-control bulk-input" rows="9" spellcheck="false"
-                      placeholder="Математика; Иванов
-Физика; Петров
-Информатика; Сидорова"></textarea>
+            <div class="data-table-wrap">
+                <table class="table data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:48px">№</th>
+                            <th>Дисциплина</th>
+                            <th>Преподаватель</th>
+                            <th style="width:44px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="text" name="subject[]" class="form-control" value="Математика"></td>
+                            <td><input type="text" name="teacher[]" class="form-control" value="Иванов"></td>
+                            <td><button type="button" class="table-action" aria-label="Удалить дисциплину">×</button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><input type="text" name="subject[]" class="form-control" value="Физика"></td>
+                            <td><input type="text" name="teacher[]" class="form-control" value="Петров"></td>
+                            <td><button type="button" class="table-action" aria-label="Удалить дисциплину">×</button></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><input type="text" name="subject[]" class="form-control" value="Информатика"></td>
+                            <td><input type="text" name="teacher[]" class="form-control" value="Сидорова"></td>
+                            <td><button type="button" class="table-action" aria-label="Удалить дисциплину">×</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="inline-add-row">
+                <input type="text" class="form-control" placeholder="Новая дисциплина">
+                <input type="text" class="form-control" placeholder="Преподаватель">
+                <button type="button" class="btn btn-primary">Добавить</button>
+            </div>
         </section>
 
-        <section class="theory-section">
+        <section class="theory-section editor-panel">
             <h2>Конфликты</h2>
-            <label class="input-section-label" for="conflictsText">Пары конфликтов</label>
-            <textarea id="conflictsText" name="conflicts_text" class="form-control bulk-input" rows="9" spellcheck="false"
-                      placeholder="Математика; Физика
-Физика; Информатика
-Математика; Информатика"></textarea>
+            <div class="conflict-builder">
+                <select name="conflict_from" class="form-control">
+                    <option>Математика</option>
+                    <option>Физика</option>
+                    <option>Информатика</option>
+                </select>
+                <span class="edge-arrow">—</span>
+                <select name="conflict_to" class="form-control">
+                    <option>Физика</option>
+                    <option>Информатика</option>
+                    <option>Математика</option>
+                </select>
+                <button type="button" class="btn btn-primary">Добавить</button>
+            </div>
+            <div class="conflict-list">
+                <div class="conflict-item">
+                    <span>Математика — Физика</span>
+                    <button type="button" class="table-action" aria-label="Удалить конфликт">×</button>
+                </div>
+                <div class="conflict-item">
+                    <span>Физика — Информатика</span>
+                    <button type="button" class="table-action" aria-label="Удалить конфликт">×</button>
+                </div>
+                <div class="conflict-item">
+                    <span>Математика — Информатика</span>
+                    <button type="button" class="table-action" aria-label="Удалить конфликт">×</button>
+                </div>
+            </div>
         </section>
     </div>
 
