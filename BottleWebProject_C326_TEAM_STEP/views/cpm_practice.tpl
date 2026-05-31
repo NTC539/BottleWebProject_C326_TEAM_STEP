@@ -1,4 +1,4 @@
-% rebase('layout.tpl', title='Критический путь (CPM) - Практика', year=year)
+% rebase('layout.tpl', title=title, year=year, active_page=active_page)
 
 <h2>Метод критического пути (CPM) - Теория</h2>
 

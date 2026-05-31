@@ -42,10 +42,28 @@ def bridges():
 def cpm():
     return dict(year=_year())
 
-@route('/cpm/practice')
+@route('/cpm/practice', method=['GET', 'POST'])
 @view('cpm_practice')
-def cpm():
-    return dict(year=_year())
+def cpm_practice():
+    result = None
+    error = None
+    if request.method == 'POST':
+        return dict(
+        title='Критический путь — Практика (POST)',
+        active_page='cpm',
+        year=_year(),
+        result=result,
+        error=error,
+    )
+    elif request.method == 'GET':
+        return dict(
+        title='Критический путь — Практика (GET)',
+        active_page='cpm',
+        year=_year(),
+        result=result,
+        error=error,
+    )
+
 
 
 @route('/coloring')
