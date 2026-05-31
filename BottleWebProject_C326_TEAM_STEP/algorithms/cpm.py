@@ -125,7 +125,7 @@ def find_critical_path(tasks, dependencies):
     # ── 8. Возврат результата ──
     return {
         "duration": duration,
-        "critical_path": critical_paths,
+        "critical_paths": critical_paths,
         "critical_tasks": critical_tasks,
         "es": es,
         "ef": ef,

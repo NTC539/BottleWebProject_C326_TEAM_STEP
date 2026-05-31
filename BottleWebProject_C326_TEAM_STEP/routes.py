@@ -51,8 +51,12 @@ def cpm_practice():
     
     if request.method == 'POST':
         try:
-            names = request.forms.getunicode('task_name[]')
-            durations = request.forms.getunicode('task_dur[]')
+            # Создаем декодированную копию всех данных формы
+            forms = request.forms.decode()
+    
+            # Получаем списки в правильной UTF-8 кодировке
+            names = request.forms.getall('task_name[]')
+            durations = request.forms.getall('task_dur[]')
 
             tasks = {}
 
@@ -87,7 +91,7 @@ def cpm_practice():
 
             result['gv']     = _json.dumps(list(tasks.keys()))
             result['ge']     = _json.dumps([[a, b] for a, b in deps])
-            result['gcrit']  = _json.dumps(result['critical_path'])
+            result['gcrit']  = _json.dumps(result['critical_paths'])
             result['gtasks'] = _json.dumps(result['tasks'])
             result['ges']    = _json.dumps(result['es'])
             result['gef']    = _json.dumps(result['ef'])
