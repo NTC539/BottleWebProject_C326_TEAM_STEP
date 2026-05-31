@@ -14,7 +14,13 @@
                 <span class="edge-arrow">:</span>
                 <input type="number" name="task_dur[]" class="form-control" min="0" placeholder="Длительность" value="1" style="max-width:120px">
                 <button type="button" class="btn-danger btn-xs remove-row">✕</button>
-            </div>
+            </div>  
+            <div class="input-row">
+                <input type="text" name="task_name[]" class="form-control node-input" placeholder="Название задачи">
+                <span class="edge-arrow">:</span>
+                <input type="number" name="task_dur[]" class="form-control" min="0" placeholder="Длительность" value="1" style="max-width:120px">
+                <button type="button" class="btn-danger btn-xs remove-row">✕</button>
+            </div>  
         </div>
         <button type="button" class="btn-success btn-sm add-row-btn">
             + Добавить задачу
@@ -51,7 +57,9 @@
     </div>
 </form>
 
-<div class="alert alert-danger" style="margin-top:16px">(Ошибка)</div>
+% if error:
+<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
+% end
 
 <div class="theory-section">
     <h3>Результат</h3>
