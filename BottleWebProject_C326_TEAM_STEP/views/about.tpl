@@ -1,37 +1,141 @@
-% rebase('layout.tpl', title='О нас', year=year, active_page='about')
+% rebase('layout.tpl', title='О проекте', year=year, active_page='about')
 
-<section class="page-head">
-    <span class="page-label">О нас</span>
-    <h1>Команда разработчиков</h1>
-    <p>Разработчики проекта GraphAlgo и направления, над которыми работал каждый участник.</p>
-</section>
+<div class="theory-section">
+    <h2><span style="color:#2e86ab; margin-right:8px;">&#9432;</span> О проекте</h2>
+    <p>
+        Проект — многостраничное веб-приложение на фреймворке Bottle (Python).
+        Тематика — алгоритмы на графах:
+        маршрутизация, поиск мостов, критический путь в проекте, раскраска графа.
+    </p>
+</div>
 
-<section class="dev-grid">
-    <article class="dev-profile accent-blue">
-        <h2>Садеков Дмитрий</h2>
-        <p class="dev-role">Разработчик, тестирование</p>
-        <p>Алгоритм Дейкстры для поиска кратчайших путей во взвешенном графе.</p>
-        <a href="/dijkstra">Открыть задание</a>
-    </article>
+<div class="theory-section">
+    <h3>Состав команды</h3>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Участник</th>
+                <th>Роль</th>
+                <th>Алгоритм</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Садеков Дмитрий</td>
+                <td>Разработчик, тестирование</td>
+                <td>Алгоритм Дейкстры (OSPF)</td>
+            </tr>
+            <tr>
+                <td>Тигранян Эдуард</td>
+                <td>Разработчик, архитектура проекта</td>
+                <td>Мосты Тарьяна</td>
+            </tr>
+            <tr>
+                <td>Езерский Иван</td>
+                <td>Разработчик, документация</td>
+                <td>Критический путь (CPM)</td>
+            </tr>
+            <tr>
+                <td>Петренко Антон</td>
+                <td>Разработчик, дизайн интерфейса</td>
+                <td>Раскраска графа</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-    <article class="dev-profile accent-green">
-        <h2>Тигранян Эдуард</h2>
-        <p class="dev-role">Разработчик, архитектура</p>
-        <p>Поиск мостов Тарьяна и анализ устойчивости транспортной сети.</p>
-        <a href="/bridges">Открыть задание</a>
-    </article>
+<div class="panel panel-default author-panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Садеков Дмитрий</h3>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>ФИО</dt>
+            <dd>Садеков Дмитрий</dd>
+            <dt>Роль</dt>
+            <dd>Разработчик, тестирование</dd>
+            <dt>Алгоритм</dt>
+            <dd>Алгоритм Дейкстры (OSPF)</dd>
+            <dt>Задача</dt>
+            <dd>
+                Реализация алгоритма Дейкстры для нахождения маршрута
+                с минимальной задержкой в компьютерной сети, заданной взвешенным
+                ориентированным графом. Рёбра с весом ∞ считаются временно
+                недоступными (модификация для метрики OSPF).
+            </dd>
+        </dl>
+        <a href="/dijkstra" class="btn btn-primary">Перейти к алгоритму</a>
+    </div>
+</div>
 
-    <article class="dev-profile accent-yellow">
-        <h2>Езерский Иван</h2>
-        <p class="dev-role">Разработчик, документация</p>
-        <p>Метод критического пути для задач с зависимостями и длительностями.</p>
-        <a href="/cpm">Открыть задание</a>
-    </article>
+<div class="panel panel-default author-panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Тигранян Эдуард</h3>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>ФИО</dt>
+            <dd>Тигранян Эдуард</dd>
+            <dt>Роль</dt>
+            <dd>Разработчик, архитектура проекта</dd>
+            <dt>Алгоритм</dt>
+            <dd>Мосты Тарьяна</dd>
+            <dt>Задача</dt>
+            <dd>
+                Поиск всех мостов в неориентированном взвешенном графе дорог
+                алгоритмом Тарьяна. Для каждого моста вычисляется прирост суммарной
+                длины кратчайших путей между всеми парами вершин после его удаления
+                (алгоритм Флойда–Уоршелла).
+            </dd>
+        </dl>
+        <a href="/bridges" class="btn btn-primary">Перейти к алгоритму</a>
+    </div>
+</div>
 
-    <article class="dev-profile accent-red">
-        <h2>Петренко Антон</h2>
-        <p class="dev-role">Разработчик, интерфейс</p>
-        <p>Раскраска графа для распределения дисциплин по сменам без конфликтов.</p>
-        <a href="/coloring">Открыть задание</a>
-    </article>
-</section>
+<div class="panel panel-default author-panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Езерский Иван</h3>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>ФИО</dt>
+            <dd>Езерский Иван</dd>
+            <dt>Роль</dt>
+            <dd>Разработчик, документация</dd>
+            <dt>Алгоритм</dt>
+            <dd>Критический путь (CPM)</dd>
+            <dt>Задача</dt>
+            <dd>
+                Нахождение критического пути в ориентированном ациклическом
+                графе проекта — вершины соответствуют задачам, рёбра задают
+                зависимости, вес вершины — длительность задачи. Применяются
+                топологическая сортировка и динамическое программирование.
+            </dd>
+        </dl>
+        <a href="/cpm" class="btn btn-primary">Перейти к алгоритму</a>
+    </div>
+</div>
+
+<div class="panel panel-default author-panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Петренко Антон</h3>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>ФИО</dt>
+            <dd>Петренко Антон</dd>
+            <dt>Роль</dt>
+            <dd>Разработчик, дизайн интерфейса</dd>
+            <dt>Алгоритм</dt>
+            <dd>Раскраска графа</dd>
+            <dt>Задача</dt>
+            <dd>
+                Раскраска вершин графа конфликтов учебного расписания
+                в минимальное число цветов (смен) так, чтобы конфликтующие
+                дисциплины не попадали в одну смену. Алгоритм Welsh–Powell
+                с локальной оптимизацией.
+            </dd>
+        </dl>
+        <a href="/coloring" class="btn btn-primary">Перейти к алгоритму</a>
+    </div>
+</div>

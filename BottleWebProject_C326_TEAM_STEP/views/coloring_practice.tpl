@@ -1,7 +1,8 @@
 % rebase('layout.tpl', title='Практика — Раскраска графа', year=year, active_page='coloring')
+<link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css" />
 
 <section class="practice-hero">
-    <span class="page-label">Страница практики</span>
+    <span class="page-label">Раскраска графа — практика</span>
     <h1>Форма ввода данных для раскраски графа</h1>
     <p>
         Укажите дисциплины, преподавателей и пары конфликтов. Эти данные используются

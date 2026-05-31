@@ -1,55 +1,80 @@
 % rebase('layout.tpl', title='Главная', year=year, active_page='home')
 
-<section class="home-hero">
-    <div>
-        <span class="page-label">Главная страница</span>
-        <h1>Задачи на графах</h1>
-        <p>
-            Четыре алгоритма для работы с графами: маршруты, устойчивость сети,
-            критический путь и раскраска расписания.
-        </p>
+<div class="jumbotron">
+    <h1>Задачи на теории графов</h1>
+    <p class="lead">Алгоритмы на теории графов</p>
+    <p>
+        Сайт решает задачи маршрутизации сетей, анализа устойчивости и управления проектами
+        с помощью алгоритмов теории графов.
+        Каждый раздел содержит теоретическую базу и интерактивную практическую часть,
+        позволяющую запустить алгоритм на собственных данных.
+    </p>
+</div>
+
+<div class="row row-cards">
+    <div class="col-md-3">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Алгоритм Дейкстры</h3>
+            </div>
+            <div class="panel-body">
+                <p>Нахождение кратчайших путей в графе. Применяется в протоколе маршрутизации OSPF.</p>
+                <a href="/dijkstra" class="btn btn-primary btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Садеков</div>
+        </div>
     </div>
-    <a class="hero-link" href="/graph_theory">Общая теория</a>
-</section>
-
-<section class="task-grid">
-    <article class="task-card task-card-blue">
-        <span class="task-owner">Садеков</span>
-        <h2>Алгоритм Дейкстры</h2>
-        <p>Кратчайшие пути во взвешенном графе с недоступными каналами.</p>
-        <div class="task-actions">
-            <a href="/dijkstra">Теория</a>
-            <a href="/dijkstra/practice">Форма ввода</a>
+    <div class="col-md-3">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Мосты Тарьяна</h3>
+            </div>
+            <div class="panel-body">
+                <p>Поиск мостов и точек сочленения графа для анализа устойчивости сети.</p>
+                <a href="/bridges" class="btn btn-success btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Тигранян</div>
         </div>
-    </article>
-
-    <article class="task-card task-card-green">
-        <span class="task-owner">Тигранян</span>
-        <h2>Мосты Тарьяна</h2>
-        <p>Поиск слабых мест сети и оценка изменения маршрутов.</p>
-        <div class="task-actions">
-            <a href="/bridges">Теория</a>
-            <a href="/bridges/practice">Форма ввода</a>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">Критический путь</h3>
+            </div>
+            <div class="panel-body">
+                <p>Метод критического пути (CPM) для управления проектами и составления расписаний.</p>
+                <a href="/cpm" class="btn btn-warning btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Езерский</div>
         </div>
-    </article>
-
-    <article class="task-card task-card-yellow">
-        <span class="task-owner">Езерский</span>
-        <h2>Критический путь</h2>
-        <p>План задач, зависимости и минимальная длительность проекта.</p>
-        <div class="task-actions">
-            <a href="/cpm">Теория</a>
-            <a href="/cpm/practice">Форма ввода</a>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <h3 class="panel-title">Раскраска графа</h3>
+            </div>
+            <div class="panel-body">
+                <p>Раскраска вершин графа минимальным числом цветов. Применяется при составлении расписаний.</p>
+                <a href="/coloring" class="btn btn-danger btn-block">Подробнее &raquo;</a>
+            </div>
+            <div class="panel-footer text-muted">Петренко</div>
         </div>
-    </article>
+    </div>
+</div>
 
-    <article class="task-card task-card-red">
-        <span class="task-owner">Петренко</span>
-        <h2>Раскраска графа</h2>
-        <p>Распределение дисциплин по сменам без конфликтов.</p>
-        <div class="task-actions">
-            <a href="/coloring">Теория</a>
-            <a href="/coloring/practice">Форма ввода</a>
+<div class="row" style="margin-top: 24px;">
+    <div class="col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Теория графов: основные понятия и термины</h3>
+            </div>
+            <div class="panel-body" style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
+                <p style="margin:0;">
+                    Граф, вершина, ребро, путь, мост, хроматическое число, критический путь —
+                    все ключевые термины, которые используются в задачах этого сайта, собраны на одной странице.
+                </p>
+                <a href="/graph_theory" class="btn btn-info" style="white-space:nowrap;">Читать &raquo;</a>
+            </div>
         </div>
-    </article>
-</section>
+    </div>
+</div>

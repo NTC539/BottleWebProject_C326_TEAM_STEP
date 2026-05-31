@@ -1,14 +1,6 @@
-% rebase('layout.tpl', title='Практика — Критический путь', year=year, active_page='cpm')
+% rebase('layout.tpl', title='Критический путь (CPM) - Практика', year=year)
 
-<section class="practice-hero">
-    <span class="page-label">Страница практики</span>
-    <h1>Метод критического пути</h1>
-    <p>Введите задачи, длительности и зависимости между ними.</p>
-    <div class="mode-switch">
-        <span class="mode-current">Практика</span>
-        <a href="/cpm" class="secondary">Вернуться к теории</a>
-    </div>
-</section>
+<h2>Метод критического пути (CPM) - Теория</h2>
 
 <form method="POST" action="/cpm/practice">
     <div class="theory-section">

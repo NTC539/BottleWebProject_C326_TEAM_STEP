@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css" />
 
 <section class="theory-hero">
-    <span class="page-label">Страница теории</span>
+    <span class="page-label">Теория алгоритма</span>
     <h1>Раскраска графа для расписания</h1>
     <p>
         Идея простая: дисциплины считаем вершинами, конфликты между ними — рёбрами.

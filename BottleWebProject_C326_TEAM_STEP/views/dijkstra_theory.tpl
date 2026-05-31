@@ -1,30 +1,8 @@
 % rebase('layout.tpl', title='Алгоритм Дейкстры — OSPF маршрутизация', year=year, active_page='dijkstra')
 
 <link rel="stylesheet" href="/static/content/dijkstra.css">
-<style>
-    .theory-section,
-    .graph-metrics,
-    .step-content,
-    .context-note {
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-    }
 
-    .theory-section:hover {
-        box-shadow: none !important;
-    }
-</style>
-
-<section class="theory-hero">
-    <span class="page-label">Страница теории</span>
-    <h1>Алгоритм Дейкстры</h1>
-    <p>Коротко о поиске кратчайших путей во взвешенном графе.</p>
-    <div class="mode-switch">
-        <span class="mode-current">Теория</span>
-        <a href="/dijkstra/practice">Открыть форму ввода</a>
-    </div>
-</section>
+<h2>Алгоритм Дейкстры</h2>
 
 <!-- Блок 1 — Условие задачи (расширен) -->
 <div class="theory-section">

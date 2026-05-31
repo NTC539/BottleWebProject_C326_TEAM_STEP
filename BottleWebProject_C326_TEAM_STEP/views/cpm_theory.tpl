@@ -1,15 +1,10 @@
-% rebase('layout.tpl', title='Теория — Критический путь', year=year, active_page='cpm')
+% rebase('layout.tpl', title='Критический путь (CPM)', year=year)
 <link rel="stylesheet" type="text/css" href="/static/content/cpm_theory.css" />
 
-<section class="theory-hero">
-    <span class="page-label">Страница теории</span>
-    <h1>Метод критического пути</h1>
-    <p>Как найти самую длинную цепочку зависимых задач и понять минимальную длительность проекта.</p>
-    <div class="mode-switch">
-        <span class="mode-current">Теория</span>
-        <a href="/cpm/practice">Открыть форму ввода</a>
-    </div>
-</section>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <h2 style="margin:0;border:none;padding:0;">Метод критического пути (CPM) - Теория</h2>
+    <a href="/cpm/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
+</div>
 
 <div class="cpm-intro-box">
     <h3>Что такое метод критического пути?</h3>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +28,7 @@
                     <li class="{{ 'active' if ap == 'home' else '' }}"><a href="/">Главная</a></li>
                     <li class="{{ 'active' if ap == 'about' else '' }}"><a href="/about">О нас</a></li>
                     <li class="{{ 'active' if ap == 'graph_theory' else '' }}"><a href="/graph_theory">Теория графов</a></li>
-                    <li class="dropdown {{ 'active' if ap in ['dijkstra', 'bridges', 'cpm', 'coloring', 'algorithms'] else '' }}">
+                    <li class="dropdown {{ 'active' if ap == 'algorithms' else '' }}">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-haspopup="true" aria-expanded="false">
                             Алгоритмы <span class="caret"></span>
@@ -45,18 +45,17 @@
         </div>
     </div>
 
-    <main class="container body-content">
+    <div class="container body-content">
         {{!base}}
-    </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            GraphAlgo
-        </div>
-    </footer>
+        <hr />
+        <footer>
+            <p>&copy; {{ year }} - GraphAlgo</p>
+        </footer>
+    </div>
 
     <script src="/static/scripts/bootstrap.js"></script>
     <script src="/static/scripts/respond.js"></script>
     <script src="/static/scripts/graph-input.js"></script>
+
 </body>
 </html>

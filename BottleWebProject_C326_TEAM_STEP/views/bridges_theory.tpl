@@ -1,15 +1,11 @@
 % rebase('layout.tpl', title='Теория — Мосты Тарьяна', year=year, active_page='bridges')
 <link rel="stylesheet" type="text/css" href="/static/content/bridges_theory.css" />
 
-<section class="theory-hero">
-    <span class="page-label">Страница теории</span>
-    <h1>Мосты Тарьяна</h1>
-    <p>Как найти дороги или связи, удаление которых разрушает сеть.</p>
-    <div class="mode-switch">
-        <span class="mode-current">Теория</span>
-        <a href="/bridges/practice">Открыть форму ввода</a>
-    </div>
-</section>
+<!-- СЕКЦИЯ 1: Навигация -->
+<div class="bt-header">
+    <h2>Мосты Тарьяна &amp; Флойд&ndash;Уоршолл</h2>
+    <a href="/bridges/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
+</div>
 
 <!-- СЕКЦИЯ 2: Ошибка -->
 % if defined('error') and error:
