@@ -289,3 +289,35 @@
     text-align: center;
     min-width: 36px;
 }
+
+/* Compact pass: fewer framed blocks and less vertical whitespace */
+.bt-hero,
+.bt-algo-card,
+.bt-result-card,
+.bt-def-chip,
+.bt-case,
+.bt-note {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.bt-hero {
+    margin-bottom: 18px;
+}
+
+.bt-hero-left,
+.bt-hero-right {
+    padding: 18px 20px;
+}
+
+.bt-section-title {
+    margin: 18px 0 10px;
+    border-bottom: none;
+}
+
+.bt-defs,
+.bt-algo-grid,
+.bt-result-grid {
+    gap: 10px;
+}

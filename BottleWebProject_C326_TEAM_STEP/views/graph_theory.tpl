@@ -1,6 +1,10 @@
 % rebase('layout.tpl', title='Теория графов — основные понятия', year=year, active_page='graph_theory')
 
-<h2>Теория графов: основные понятия и термины</h2>
+<section class="theory-hero">
+    <span class="page-label">Страница теории</span>
+    <h1>Теория графов</h1>
+    <p>Базовые понятия, которые нужны для понимания алгоритмов на сайте.</p>
+</section>
 
 <!-- Блок 1 — Что такое граф -->
 <div class="theory-section">

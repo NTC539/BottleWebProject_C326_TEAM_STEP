@@ -1,6 +1,14 @@
 % rebase('layout.tpl', title='Практика — Мосты Тарьяна', year=year, active_page='bridges')
 
-<h2>Мосты Тарьяна &mdash; Практика</h2>
+<section class="practice-hero">
+    <span class="page-label">Страница практики</span>
+    <h1>Мосты Тарьяна</h1>
+    <p>Введите узлы сети и связи между ними.</p>
+    <div class="mode-switch">
+        <a href="/bridges" class="secondary">Вернуться к теории</a>
+        <a href="/bridges/practice">Практика</a>
+    </div>
+</section>
 
 <!-- ═══════════════════════════════════════════════════════════
      СЕКЦИЯ 1: Форма ввода

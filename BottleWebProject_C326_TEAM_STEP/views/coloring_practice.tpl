@@ -1,101 +1,83 @@
-% rebase('layout.tpl', title='Раскраска графа — Практика', year=year, active_page='coloring')
+% rebase('layout.tpl', title='Практика — Раскраска графа', year=year, active_page='coloring')
 
-<h2>Раскраска графа — Практика</h2>
-
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 1: Форма ввода
-     ═══════════════════════════════════════════════════════════ -->
-<form method="POST" action="/coloring/practice">
-
-<div class="theory-section">
-    <h3>Шаг 1 — Дисциплины</h3>
-    <span class="input-section-label">Добавьте дисциплины учебного расписания:</span>
-    <div id="nodes-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn">
-        + Добавить дисциплину
-    </button>
-</div>
-
-<div class="theory-section">
-    <h3>Шаг 2 — Конфликты</h3>
-    <span class="input-section-label">
-        Выберите пары дисциплин, которые нельзя ставить в одну смену:
-    </span>
-    <div id="edges-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn">
-        + Добавить конфликт
-    </button>
-</div>
-
-<div style="margin-top:16px">
-    <button type="submit" class="btn btn-primary">Составить расписание</button>
-</div>
-</form>
-
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 2: Ошибка
-     ═══════════════════════════════════════════════════════════ -->
-% if defined('error') and error:
-<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
-% end
-
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 3: Результат
-     ═══════════════════════════════════════════════════════════ -->
-
-<div style="margin-bottom:12px; margin-top:20px">
-    <button type="button" class="btn btn-default btn-sm">
-        💾 Скачать результат (JSON)
-    </button>
-    <button type="button" class="btn btn-default btn-sm">
-        📄 Скачать результат (TXT)
-    </button>
-</div>
-
-<div class="panel panel-success">
-    <div class="panel-heading"><strong>Итог</strong></div>
-    <div class="panel-body">
-        <p>Минимальное количество смен: <strong>3</strong></p>
-    </div>
-</div>
-
-<h4>Расписание по сменам</h4>
-
-<div class="theory-section" style="border-left: 4px solid #2e86ab; padding: 12px 16px; margin-bottom: 12px">
-    <h4 style="margin-top:0">Смена 1</h4>
-    <p>Информатика, Математика</p>
-</div>
-<div class="theory-section" style="border-left: 4px solid #2e86ab; padding: 12px 16px; margin-bottom: 12px">
-    <h4 style="margin-top:0">Смена 2</h4>
-    <p>Биология, Физика</p>
-</div>
-<div class="theory-section" style="border-left: 4px solid #2e86ab; padding: 12px 16px; margin-bottom: 12px">
-    <h4 style="margin-top:0">Смена 3</h4>
-    <p>Химия</p>
-</div>
-
-<h4>Таблица назначений</h4>
-<table class="table table-bordered table-striped table-hover">
-    <thead>
-        <tr>
-            <th>Дисциплина</th>
-            <th>Смена</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr><td>Информатика</td><td>Смена 1</td></tr>
-        <tr><td>Математика</td><td>Смена 1</td></tr>
-        <tr><td>Биология</td><td>Смена 2</td></tr>
-        <tr><td>Физика</td><td>Смена 2</td></tr>
-        <tr><td>Химия</td><td>Смена 3</td></tr>
-    </tbody>
-</table>
-
-<div class="theory-section">
-    <h4>Граф конфликтов (раскраска)</h4>
-    <p class="text-muted" style="font-size:13px">
-        Каждый цвет узла — отдельная смена. Рёбра соединяют конфликтующие дисциплины.
+<section class="practice-hero">
+    <span class="page-label">Страница практики</span>
+    <h1>Форма ввода данных для раскраски графа</h1>
+    <p>
+        Здесь можно подготовить данные для алгоритма: дисциплины, преподавателей и пары конфликтов.
+        Логика расчёта не подключена, форма нужна как интерфейсный макет.
     </p>
-    <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
-         border-radius:4px;background:#fafafa;margin-top:8px"></div>
-</div>
+    <div class="mode-switch">
+        <a href="/coloring" class="secondary">Вернуться к теории</a>
+        <a href="/coloring/practice">Практика</a>
+    </div>
+</section>
+
+<form method="POST" action="/coloring/practice">
+    <div class="form-grid">
+        <section class="theory-section">
+            <h2>Дисциплины</h2>
+            <p class="input-section-label">Название дисциплины и преподаватель</p>
+            <div class="input-row">
+                <input type="text" name="subject[]" class="form-control" placeholder="Математика">
+                <input type="text" name="teacher[]" class="form-control" placeholder="Иванов">
+            </div>
+            <div class="input-row">
+                <input type="text" name="subject[]" class="form-control" placeholder="Физика">
+                <input type="text" name="teacher[]" class="form-control" placeholder="Петров">
+            </div>
+            <div class="input-row">
+                <input type="text" name="subject[]" class="form-control" placeholder="Информатика">
+                <input type="text" name="teacher[]" class="form-control" placeholder="Сидорова">
+            </div>
+            <button type="button" class="btn btn-default btn-sm">Добавить дисциплину</button>
+        </section>
+
+        <section class="theory-section">
+            <h2>Конфликты</h2>
+            <p class="input-section-label">Пары дисциплин, которые нельзя ставить вместе</p>
+            <div class="input-row">
+                <input type="text" name="conflict_a[]" class="form-control" placeholder="Математика">
+                <span class="edge-arrow">—</span>
+                <input type="text" name="conflict_b[]" class="form-control" placeholder="Физика">
+            </div>
+            <div class="input-row">
+                <input type="text" name="conflict_a[]" class="form-control" placeholder="Физика">
+                <span class="edge-arrow">—</span>
+                <input type="text" name="conflict_b[]" class="form-control" placeholder="Информатика">
+            </div>
+            <div class="input-row">
+                <input type="text" name="conflict_a[]" class="form-control" placeholder="Математика">
+                <span class="edge-arrow">—</span>
+                <input type="text" name="conflict_b[]" class="form-control" placeholder="Информатика">
+            </div>
+            <button type="button" class="btn btn-default btn-sm">Добавить конфликт</button>
+        </section>
+    </div>
+
+    <section class="theory-section">
+        <h2>Дополнительные параметры</h2>
+        <div class="form-row-grid">
+            <div class="form-group">
+                <label for="maxSubjects">Максимум дисциплин</label>
+                <input id="maxSubjects" type="number" class="form-control" value="20" min="1" max="50">
+            </div>
+            <div class="form-group">
+                <label for="density">Плотность случайного графа</label>
+                <input id="density" type="number" class="form-control" value="0.35" min="0" max="1" step="0.05">
+            </div>
+            <div class="form-group">
+                <label for="format">Формат загрузки</label>
+                <select id="format" class="form-control">
+                    <option>JSON</option>
+                    <option>CSV</option>
+                </select>
+            </div>
+        </div>
+        <div class="mode-switch">
+            <button type="button" class="btn btn-default">Сгенерировать пример</button>
+            <button type="button" class="btn btn-default">Загрузить файл</button>
+            <button type="submit" class="btn btn-primary">Рассчитать</button>
+        </div>
+    </section>
+</form>

@@ -1,10 +1,27 @@
-% rebase('layout.tpl', title='Практика — Алгоритм Дейкстры (OSPF)', year=year, active_page='practice')
+% rebase('layout.tpl', title='Практика — Алгоритм Дейкстры (OSPF)', year=year, active_page='dijkstra')
 
 <link rel="stylesheet" href="/static/content/dijkstra.css">
 <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+<style>
+    .input-panel,
+    .graph-panel,
+    .result-panel,
+    .theory-section {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+</style>
 
-<h2>Практическое задание</h2>
-<p class="text-muted">Введите ориентированный взвешенный граф, выберите источник — получите кратчайшие пути по алгоритму Дейкстры с фильтрацией недоступных каналов (∞).</p>
+<section class="practice-hero">
+    <span class="page-label">Страница практики</span>
+    <h1>Алгоритм Дейкстры</h1>
+    <p>Введите ориентированный взвешенный граф и выберите источник.</p>
+    <div class="mode-switch">
+        <a href="/dijkstra" class="secondary">Вернуться к теории</a>
+        <a href="/dijkstra/practice">Практика</a>
+    </div>
+</section>
 
 <div class="row practice-container">
     <div class="col-md-5">
