@@ -6,6 +6,7 @@ import json as _json
 import os as _os
 from bottle import route, view, request
 from datetime import datetime
+from algorithms.cpm import find_critical_path
 
 
 def _year():
@@ -50,8 +51,8 @@ def cpm_practice():
     
     if request.method == 'POST':
         try:
-            names = request.forms.getall('task_name[]')
-            durations = request.forms.getall('task_dur[]')
+            names = request.forms.getunicode('task_name[]')
+            durations = request.forms.getunicode('task_dur[]')
 
             tasks = {}
 
@@ -73,6 +74,23 @@ def cpm_practice():
             if not tasks:
                 raise ValueError('Список задач не может быть пустым.')
 
+            df   = request.forms.getall('dep_from[]')
+            dt   = request.forms.getall('dep_to[]')
+            deps = [
+                (df[i], dt[i])
+                for i in range(len(df))
+                if i < len(dt) and df[i] and dt[i]
+            ]
+
+            result = find_critical_path(tasks, deps)
+            result['tasks'] = tasks   # для таблицы в шаблоне
+
+            result['gv']     = _json.dumps(list(tasks.keys()))
+            result['ge']     = _json.dumps([[a, b] for a, b in deps])
+            result['gcrit']  = _json.dumps(result['critical_path'])
+            result['gtasks'] = _json.dumps(result['tasks'])
+            result['ges']    = _json.dumps(result['es'])
+            result['gef']    = _json.dumps(result['ef'])
 
         except ValueError as e:
             error = str(e)

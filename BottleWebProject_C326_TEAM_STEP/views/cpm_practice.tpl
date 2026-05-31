@@ -61,6 +61,7 @@
 <div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
 % end
 
+% if result:
 <div class="theory-section">
     <h3>Результат</h3>
 
@@ -75,43 +76,17 @@
     <h4 style="margin-top: 40px;">Таблица ранних сроков</h4>
     <table class="table table-bordered table-striped table-hover">
         <thead>
-            <tr>
-                <th>Задача</th>
-                <th>Длительность</th>
-                <th>Ранний старт (ES)</th>
-                <th>Раннее окончание (EF)</th>
-                <th>На крит. пути</th>
+            % for task_name, duration in result['tasks'].items():
+            %   on_cp = 'Да' if task_name in result['critical_path'] else 'Нет'
+            %   row_class = 'success' if task_name in result['critical_path'] else ''
+            <tr class="{{row_class}}">
+                <td>{{task_name}}</td>
+                <td>{{duration}}</td>
+                <td>{{result['es'][task_name]}}</td>
+                <td>{{result['ef'][task_name]}}</td>
+                <td>{{on_cp}}</td>
             </tr>
-        </thead>
-        <tbody>
-            <tr class="success">
-                <td>(Имя задачи)</td>
-                <td>(Длительность)</td>
-                <td>(ES Задачи)</td>
-                <td>(EF Задачи)</td>
-                <td>(На критическом пути?)</td>
-            </tr>
-            <tr>
-                <td>(Имя задачи)</td>
-                <td>(Длительность)</td>
-                <td>(ES Задачи)</td>
-                <td>(EF Задачи)</td>
-                <td>(На критическом пути?)</td>
-            </tr>
-            <tr>
-                <td>(Имя задачи)</td>
-                <td>(Длительность)</td>
-                <td>(ES Задачи)</td>
-                <td>(EF Задачи)</td>
-                <td>(На критическом пути?)</td>
-            </tr>
-            <tr>
-                <td>(Имя задачи)</td>
-                <td>(Длительность)</td>
-                <td>(ES Задачи)</td>
-                <td>(EF Задачи)</td>
-                <td>(На критическом пути?)</td>
-            </tr>
+            % end
         </tbody>
     </table>
 
@@ -131,3 +106,4 @@
              border-radius:4px;background:#fafafa;margin-top:8px"></div>
     </div>
 </div>
+% end

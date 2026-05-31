@@ -29,10 +29,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="algorithms\cpm.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="algorithms\" />
+    <Folder Include="algorithms\__pycache__\" />
     <Folder Include="static\" />
     <Folder Include="static\content\" />
     <Folder Include="static\fonts\" />
@@ -41,6 +46,14 @@
     <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="algorithms\__init__.py %28algorithms%29">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="algorithms\__pycache__\bridges.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\coloring.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\cpm.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\dijkstra.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\__init__.cpython-312.pyc" />
     <Content Include="requirements.txt" />
     <Content Include="static\content\bootstrap.css" />
     <Content Include="static\content\bootstrap.min.css" />
