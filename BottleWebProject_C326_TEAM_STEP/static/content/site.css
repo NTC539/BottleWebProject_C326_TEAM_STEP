@@ -1,14 +1,22 @@
+html {
+    min-height: 100%;
+}
+
 body {
+    min-height: 100vh;
     padding-top: 50px;
     background: #f6f8fb;
     color: #25313f;
     font-size: 15px;
     line-height: 1.45;
+    display: flex;
+    flex-direction: column;
 }
 
 .body-content {
-    padding-top: 18px;
-    padding-bottom: 18px;
+    flex: 1 0 auto;
+    padding-top: 12px;
+    padding-bottom: 10px;
 }
 
 .navbar-inverse {
@@ -104,17 +112,17 @@ p {
 .theory-hero,
 .practice-hero {
     background: #ffffff;
-    border-left: 7px solid #2e86ab;
+    border-left: 6px solid #2e86ab;
     border-radius: 0;
-    padding: 18px 22px;
-    margin-bottom: 18px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
 }
 
 .home-hero {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
+    gap: 16px;
 }
 
 .home-hero p,
@@ -126,7 +134,6 @@ p {
 }
 
 .hero-link,
-.task-actions a,
 .dev-profile a,
 .mode-switch a,
 .btn-practice {
@@ -142,8 +149,6 @@ p {
 
 .hero-link:hover,
 .hero-link:focus,
-.task-actions a:hover,
-.task-actions a:focus,
 .dev-profile a:hover,
 .dev-profile a:focus,
 .mode-switch a:hover,
@@ -158,16 +163,16 @@ p {
 .task-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 18px;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
 .task-card,
 .dev-profile {
     background: #ffffff;
     border-radius: 0;
-    padding: 20px;
-    min-height: 210px;
+    padding: 14px 16px;
+    min-height: 150px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -175,8 +180,8 @@ p {
 
 .task-card h2,
 .dev-profile h2 {
-    font-size: 20px;
-    margin-bottom: 8px;
+    font-size: 18px;
+    margin-bottom: 6px;
 }
 
 .task-card p,
@@ -187,9 +192,9 @@ p {
 .task-owner,
 .dev-role {
     color: #2e86ab;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .task-card-blue,
@@ -214,16 +219,29 @@ p {
 
 .task-actions {
     display: flex;
-    gap: 8px;
+    gap: 14px;
     flex-wrap: wrap;
-    margin-top: 14px;
+    margin-top: 8px;
 }
 
 .task-actions a {
-    flex: 1;
-    min-width: 86px;
-    text-align: center;
-    padding: 9px 12px;
+    color: #1d3557;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
+}
+
+.task-actions a::after {
+    content: " →";
+    color: #2e86ab;
+}
+
+.task-actions a:hover,
+.task-actions a:focus {
+    color: #2e86ab;
+    border-bottom-color: #2e86ab;
+    text-decoration: none;
 }
 
 .dev-grid {
@@ -233,7 +251,8 @@ p {
 }
 
 .site-footer {
-    padding: 10px 0 14px;
+    flex-shrink: 0;
+    padding: 8px 0 12px;
     color: #758396;
     text-align: center;
     font-size: 13px;
@@ -287,11 +306,18 @@ p {
     gap: 8px;
     flex-wrap: wrap;
     margin-top: 12px;
+    align-items: center;
 }
 
 .mode-switch .secondary {
     background: #e8eef5;
     color: #1d3557;
+}
+
+.mode-current {
+    color: #2e86ab;
+    font-weight: 700;
+    padding: 8px 0;
 }
 
 .section-title {
@@ -439,6 +465,28 @@ button,
     background: #ffffff;
     padding: 12px;
     margin: 10px 0 14px;
+}
+
+.json-example {
+    margin: 10px 0 0;
+    padding: 12px 14px;
+    background: #f2f6fa;
+    color: #25313f;
+    border: none;
+    border-radius: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.future-graph-area {
+    min-height: 260px;
+    background:
+        linear-gradient(90deg, rgba(29, 53, 87, .06) 1px, transparent 1px),
+        linear-gradient(rgba(29, 53, 87, .06) 1px, transparent 1px),
+        #ffffff;
+    background-size: 28px 28px;
+    margin-top: 8px;
 }
 
 @media (max-width: 991px) {

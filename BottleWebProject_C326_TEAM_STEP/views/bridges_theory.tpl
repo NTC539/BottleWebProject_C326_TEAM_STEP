@@ -6,8 +6,8 @@
     <h1>Мосты Тарьяна</h1>
     <p>Как найти дороги или связи, удаление которых разрушает сеть.</p>
     <div class="mode-switch">
-        <a href="/bridges" class="secondary">Теория</a>
-        <a href="/bridges/practice">Перейти к практике</a>
+        <span class="mode-current">Теория</span>
+        <a href="/bridges/practice">Открыть форму ввода</a>
     </div>
 </section>
 

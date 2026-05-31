@@ -21,8 +21,8 @@
     <h1>Алгоритм Дейкстры</h1>
     <p>Коротко о поиске кратчайших путей во взвешенном графе.</p>
     <div class="mode-switch">
-        <a href="/dijkstra" class="secondary">Теория</a>
-        <a href="/dijkstra/practice">Перейти к практике</a>
+        <span class="mode-current">Теория</span>
+        <a href="/dijkstra/practice">Открыть форму ввода</a>
     </div>
 </section>
 

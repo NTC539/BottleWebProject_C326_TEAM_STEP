@@ -9,8 +9,8 @@
         Дисциплины, соединённые ребром, нельзя поставить в одну смену.
     </p>
     <div class="mode-switch">
-        <a href="/coloring" class="secondary">Теория</a>
-        <a href="/coloring/practice">Перейти к практике</a>
+        <span class="mode-current">Теория</span>
+        <a href="/coloring/practice">Открыть форму ввода</a>
     </div>
 </section>
 

@@ -6,8 +6,8 @@
     <h1>Метод критического пути</h1>
     <p>Как найти самую длинную цепочку зависимых задач и понять минимальную длительность проекта.</p>
     <div class="mode-switch">
-        <a href="/cpm" class="secondary">Теория</a>
-        <a href="/cpm/practice">Перейти к практике</a>
+        <span class="mode-current">Теория</span>
+        <a href="/cpm/practice">Открыть форму ввода</a>
     </div>
 </section>
 

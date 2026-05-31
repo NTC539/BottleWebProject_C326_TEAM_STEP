@@ -4,12 +4,12 @@
     <span class="page-label">Страница практики</span>
     <h1>Форма ввода данных для раскраски графа</h1>
     <p>
-        Здесь можно подготовить данные для алгоритма: дисциплины, преподавателей и пары конфликтов.
-        Логика расчёта не подключена, форма нужна как интерфейсный макет.
+        Укажите дисциплины, преподавателей и пары конфликтов. Эти данные используются
+        для распределения дисциплин по сменам.
     </p>
     <div class="mode-switch">
+        <span class="mode-current">Практика</span>
         <a href="/coloring" class="secondary">Вернуться к теории</a>
-        <a href="/coloring/practice">Практика</a>
     </div>
 </section>
 
@@ -56,28 +56,48 @@
     </div>
 
     <section class="theory-section">
-        <h2>Дополнительные параметры</h2>
-        <div class="form-row-grid">
-            <div class="form-group">
-                <label for="maxSubjects">Максимум дисциплин</label>
-                <input id="maxSubjects" type="number" class="form-control" value="20" min="1" max="50">
+        <h2>Импорт и генерация данных</h2>
+        <div class="form-grid">
+            <div>
+                <h3>Импорт из JSON</h3>
+                <p class="input-section-label">Файл со списком дисциплин, преподавателей и конфликтов</p>
+                <input type="file" name="json_file" class="form-control" accept=".json,application/json">
+                <p class="text-muted">Файл должен содержать дисциплины и пары конфликтов.</p>
+                <pre class="json-example"><code>{
+  "subjects": [
+    { "name": "Математика", "teacher": "Иванов" },
+    { "name": "Физика", "teacher": "Петров" },
+    { "name": "Информатика", "teacher": "Сидорова" }
+  ],
+  "conflicts": [
+    ["Математика", "Физика"],
+    ["Физика", "Информатика"]
+  ]
+}</code></pre>
             </div>
-            <div class="form-group">
-                <label for="density">Плотность случайного графа</label>
-                <input id="density" type="number" class="form-control" value="0.35" min="0" max="1" step="0.05">
-            </div>
-            <div class="form-group">
-                <label for="format">Формат загрузки</label>
-                <select id="format" class="form-control">
-                    <option>JSON</option>
-                    <option>CSV</option>
-                </select>
+
+            <div>
+                <h3>Случайная генерация</h3>
+                <div class="form-row-grid">
+                    <div class="form-group">
+                        <label for="subjectCount">Количество дисциплин</label>
+                        <input id="subjectCount" type="number" class="form-control" value="12" min="1" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="density">Плотность графа</label>
+                        <input id="density" type="number" class="form-control" value="0.35" min="0" max="1" step="0.05">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary">Сгенерировать данные</button>
             </div>
         </div>
-        <div class="mode-switch">
-            <button type="button" class="btn btn-default">Сгенерировать пример</button>
-            <button type="button" class="btn btn-default">Загрузить файл</button>
-            <button type="submit" class="btn btn-primary">Рассчитать</button>
-        </div>
+    </section>
+
+    <section class="theory-section">
+        <h2>Граф конфликтов</h2>
+        <p class="text-muted">
+            Здесь будет отображаться граф после импорта JSON или генерации случайных данных.
+        </p>
+        <div id="graph-canvas" class="graph-container future-graph-area"></div>
     </section>
 </form>

@@ -5,8 +5,8 @@
     <h1>Метод критического пути</h1>
     <p>Введите задачи, длительности и зависимости между ними.</p>
     <div class="mode-switch">
+        <span class="mode-current">Практика</span>
         <a href="/cpm" class="secondary">Вернуться к теории</a>
-        <a href="/cpm/practice">Практика</a>
     </div>
 </section>
 

@@ -5,8 +5,8 @@
     <h1>Мосты Тарьяна</h1>
     <p>Введите узлы сети и связи между ними.</p>
     <div class="mode-switch">
+        <span class="mode-current">Практика</span>
         <a href="/bridges" class="secondary">Вернуться к теории</a>
-        <a href="/bridges/practice">Практика</a>
     </div>
 </section>
 

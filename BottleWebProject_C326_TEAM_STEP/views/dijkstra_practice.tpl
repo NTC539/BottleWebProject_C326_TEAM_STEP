@@ -18,8 +18,8 @@
     <h1>Алгоритм Дейкстры</h1>
     <p>Введите ориентированный взвешенный граф и выберите источник.</p>
     <div class="mode-switch">
+        <span class="mode-current">Практика</span>
         <a href="/dijkstra" class="secondary">Вернуться к теории</a>
-        <a href="/dijkstra/practice">Практика</a>
     </div>
 </section>
 
