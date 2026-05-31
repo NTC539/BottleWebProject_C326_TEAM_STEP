@@ -17,41 +17,20 @@
     <div class="form-grid">
         <section class="theory-section">
             <h2>Дисциплины</h2>
-            <p class="input-section-label">Название дисциплины и преподаватель</p>
-            <div class="input-row">
-                <input type="text" name="subject[]" class="form-control" placeholder="Математика">
-                <input type="text" name="teacher[]" class="form-control" placeholder="Иванов">
-            </div>
-            <div class="input-row">
-                <input type="text" name="subject[]" class="form-control" placeholder="Физика">
-                <input type="text" name="teacher[]" class="form-control" placeholder="Петров">
-            </div>
-            <div class="input-row">
-                <input type="text" name="subject[]" class="form-control" placeholder="Информатика">
-                <input type="text" name="teacher[]" class="form-control" placeholder="Сидорова">
-            </div>
-            <button type="button" class="btn btn-default btn-sm">Добавить дисциплину</button>
+            <label class="input-section-label" for="subjectsText">Список дисциплин</label>
+            <textarea id="subjectsText" name="subjects_text" class="form-control bulk-input" rows="9" spellcheck="false"
+                      placeholder="Математика; Иванов
+Физика; Петров
+Информатика; Сидорова"></textarea>
         </section>
 
         <section class="theory-section">
             <h2>Конфликты</h2>
-            <p class="input-section-label">Пары дисциплин, которые нельзя ставить вместе</p>
-            <div class="input-row">
-                <input type="text" name="conflict_a[]" class="form-control" placeholder="Математика">
-                <span class="edge-arrow">—</span>
-                <input type="text" name="conflict_b[]" class="form-control" placeholder="Физика">
-            </div>
-            <div class="input-row">
-                <input type="text" name="conflict_a[]" class="form-control" placeholder="Физика">
-                <span class="edge-arrow">—</span>
-                <input type="text" name="conflict_b[]" class="form-control" placeholder="Информатика">
-            </div>
-            <div class="input-row">
-                <input type="text" name="conflict_a[]" class="form-control" placeholder="Математика">
-                <span class="edge-arrow">—</span>
-                <input type="text" name="conflict_b[]" class="form-control" placeholder="Информатика">
-            </div>
-            <button type="button" class="btn btn-default btn-sm">Добавить конфликт</button>
+            <label class="input-section-label" for="conflictsText">Пары конфликтов</label>
+            <textarea id="conflictsText" name="conflicts_text" class="form-control bulk-input" rows="9" spellcheck="false"
+                      placeholder="Математика; Физика
+Физика; Информатика
+Математика; Информатика"></textarea>
         </section>
     </div>
 
@@ -60,9 +39,9 @@
         <div class="form-grid">
             <div>
                 <h3>Импорт из JSON</h3>
-                <p class="input-section-label">Файл со списком дисциплин, преподавателей и конфликтов</p>
-                <input type="file" name="json_file" class="form-control" accept=".json,application/json">
-                <p class="text-muted">Файл должен содержать дисциплины и пары конфликтов.</p>
+                <label class="input-section-label" for="jsonFile">JSON-файл</label>
+                <input id="jsonFile" type="file" name="json_file" class="form-control" accept=".json,application/json">
+                <h4 class="json-example-title">Пример структуры</h4>
                 <pre class="json-example"><code>{
   "subjects": [
     { "name": "Математика", "teacher": "Иванов" },
@@ -95,9 +74,6 @@
 
     <section class="theory-section">
         <h2>Граф конфликтов</h2>
-        <p class="text-muted">
-            Здесь будет отображаться граф после импорта JSON или генерации случайных данных.
-        </p>
         <div id="graph-canvas" class="graph-container future-graph-area"></div>
     </section>
 </form>

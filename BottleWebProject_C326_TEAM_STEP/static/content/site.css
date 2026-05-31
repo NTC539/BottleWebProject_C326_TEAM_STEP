@@ -386,6 +386,29 @@ p {
     box-shadow: none;
 }
 
+.bulk-input {
+    min-height: 210px;
+    max-height: 210px;
+    resize: vertical;
+    overflow: auto;
+    font-family: Consolas, "Courier New", monospace;
+    line-height: 1.45;
+}
+
+.compact-help {
+    margin: 8px 0 0;
+    color: #697789;
+    font-size: 13px;
+}
+
+.json-example-title {
+    margin-top: 12px;
+    margin-bottom: 6px;
+    color: #526173;
+    font-size: 14px;
+    font-weight: 700;
+}
+
 .input-row {
     display: flex;
     align-items: center;
