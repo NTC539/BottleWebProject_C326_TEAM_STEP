@@ -43,23 +43,15 @@
         </button>
     </div>
 
-    <div style="padding:10px 0px">
+    <div style="padding:10px 0px; display: flex; gap: 16px;">
+        <button type="submit" class="btn-primary btn-lg">Рассчитать</button>
         <button type="button" class="btn-default btn-sm">
             🎲 Сгенирировать случайные данные
         </button>
-        <div style="margin-top:16px">
-        <button type="submit" class="btn-primary">Рассчитать</button>
-    </div>
     </div>
 </form>
 
 <div class="alert alert-danger" style="margin-top:16px">(Ошибка)</div>
-
-<div style="margin-bottom:12px">
-    <button type="button" class="btn-default btn-sm">
-        💾 Скачать результат (JSON)
-    </button>
-</div>
 
 <div class="theory-section">
     <h3>Результат</h3>
@@ -72,7 +64,7 @@
         </div>
     </div>
 
-    <h4>Таблица ранних сроков</h4>
+    <h4 style="margin-top: 40px;">Таблица ранних сроков</h4>
     <table class="table table-bordered table-striped table-hover">
         <thead>
             <tr>
@@ -114,6 +106,12 @@
             </tr>
         </tbody>
     </table>
+
+    <div style="margin-bottom:15px">
+        <button type="button" class="btn-default btn-sm">
+            💾 Скачать результат (JSON)
+        </button>
+    </div>
 
     <div class="theory-section">
         <h4>Граф проекта</h4>
