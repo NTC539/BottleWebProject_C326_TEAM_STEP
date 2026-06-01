@@ -1,4 +1,10 @@
+var MAX_TASKS = 20;
+
 function addTaskRow(containerId, name, dur) {
+    if ($('#' + containerId + ' .task-row').length >= MAX_TASKS) {
+        alert('Нельзя добавить больше ' + MAX_TASKS + ' задач');
+        return;
+    }
     var $nameInput = $('<input>', {
         type: 'text',
         name: 'task_name[]',

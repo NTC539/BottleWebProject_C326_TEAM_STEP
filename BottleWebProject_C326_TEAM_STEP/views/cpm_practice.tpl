@@ -10,10 +10,16 @@
         </span>
         <div id="tasks-container"> 
         </div>
-        <button type="button" class="btn-success btn-sm add-row-btn"
-                onclick="addTaskRow('tasks-container')">
-            + Добавить задачу
-        </button>
+        <div style="display:inline-flex;gap:8px;align-items:center">
+            <button type="button" class="btn-success btn-sm add-row-btn"
+                    onclick="addTaskRow('tasks-container')">
+                + Добавить задачу
+            </button>
+            <button type="button" class="btn-default btn-sm"
+                    onclick="$('#tasks-container').empty();addTaskRow('tasks-container');updateSelects();">
+                Очистить всё
+            </button>
+        </div>
     </div>
 
     <div class="theory-section">
@@ -23,10 +29,16 @@
         </span>
         <div id="deps-container">
         </div>
-        <button type="button" class="btn-success btn-sm add-row-btn"
-                onclick="addDepRow('deps-container')">
-            + Добавить зависимость
-        </button>
+        <div style="display:inline-flex;gap:8px;align-items:center">
+            <button type="button" class="btn-success btn-sm add-row-btn"
+                    onclick="addDepRow('deps-container')">
+                + Добавить зависимость
+            </button>
+            <button type="button" class="btn-default btn-sm"
+                    onclick="$('#deps-container').empty();updateSelects();">
+                Очистить всё
+            </button>
+        </div>
     </div>
 
     <div style="padding:10px 0px; display: flex; gap: 16px;">
