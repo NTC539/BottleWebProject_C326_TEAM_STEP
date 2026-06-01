@@ -32,6 +32,9 @@
     <Compile Include="algorithms\cpm.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="algorithms\cpm_generator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
   </ItemGroup>

@@ -1,9 +1,10 @@
-function addTaskRow(containerId) {
+function addTaskRow(containerId, name, dur) {
     var $nameInput = $('<input>', {
         type: 'text',
         name: 'task_name[]',
         class: 'form-control node-input',
-        placeholder: 'Название задачи'
+        placeholder: 'Название задачи',
+        value: (name != null ? name : '')
     });
 
     $nameInput.on('input', function () {
@@ -16,7 +17,7 @@ function addTaskRow(containerId) {
         class: 'form-control',
         min: '0',
         placeholder: 'Длительность',
-        value: '1',
+        value: (dur != null && dur !== '' ? dur : '1'),
         style: 'max-width:120px'
     });
 
@@ -35,7 +36,7 @@ function addTaskRow(containerId) {
     $('#' + containerId).append($row);
     updateSelects();
 }
-function addDepRow(containerId) {
+function addDepRow(containerId, fromVal, toVal) {
     var $from = $('<select>', { name: 'dep_from[]', class: 'form-control node-select' });
     var $to = $('<select>', { name: 'dep_to[]', class: 'form-control node-select' });
 
@@ -53,6 +54,10 @@ function addDepRow(containerId) {
 
     $('#' + containerId).append($row);
     updateSelects();
+
+    // Восстановление выбранных значений (если опции уже добавлены updateSelects).
+    if (fromVal != null) { $from.val(fromVal); }
+    if (toVal != null) { $to.val(toVal); }
 }
 
 $(document).on('click', '.remove-row', function () {
