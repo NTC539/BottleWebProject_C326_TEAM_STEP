@@ -1,5 +1,5 @@
 % rebase('layout.tpl', title='Практика — Раскраска графа', year=year, active_page='coloring')
-<link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css?v=11" />
+<link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css?v=12" />
 
 <section class="practice-hero">
     <span class="page-label">Раскраска графа - практика</span>
@@ -29,7 +29,7 @@
     <input type="hidden" name="form_action" id="formAction" value="calculate">
     <div class="editor-grid">
         <section class="theory-section editor-panel">
-            <h2>Дисциплины</h2>
+            <h2 class="section-title">Дисциплины <span class="section-count" data-subject-count>{{ len(subjects) }}</span></h2>
             <div class="data-table-wrap">
                 <table class="table data-table" id="subjectsTable">
                     <thead>
@@ -61,7 +61,7 @@
         </section>
 
         <section class="theory-section editor-panel">
-            <h2>Конфликты</h2>
+            <h2 class="section-title">Конфликты <span class="section-count" data-conflict-count>{{ len(conflicts) }}</span></h2>
             <div class="conflict-builder">
                 <select id="conflictFrom" class="form-control"></select>
                 <span class="edge-arrow">-</span>
@@ -124,6 +124,9 @@
 
     <div class="coloring-actions">
         <button type="submit" class="btn btn-primary btn-lg">Рассчитать расписание</button>
+        % if result:
+        <a href="#coloring-result" class="btn btn-default btn-lg result-jump">Показать результат</a>
+        % end
     </div>
 
     <section class="theory-section graph-section-wide">
@@ -142,7 +145,7 @@
 </form>
 
 % if result:
-<section class="theory-section result-section">
+<section class="theory-section result-section" id="coloring-result">
     <h2>Результат</h2>
     <div class="result-summary">
         <div>
@@ -227,4 +230,4 @@
 </section>
 % end
 
-<script src="/static/scripts/coloring_practice.js?v=20"></script>
+<script src="/static/scripts/coloring_practice.js?v=21"></script>

@@ -12,6 +12,8 @@
     var graphContainer = document.getElementById('graph-canvas');
     var fitGraphButton = document.getElementById('fitGraphBtn');
     var stabilizeGraphButton = document.getElementById('stabilizeGraphBtn');
+    var subjectCountLabel = document.querySelector('[data-subject-count]');
+    var conflictCountLabel = document.querySelector('[data-conflict-count]');
     var graphNetwork = null;
 
     var shiftColors = [
@@ -131,7 +133,17 @@
         refreshRowNumbers();
         refreshConflictOptions();
         refreshConflicts();
+        refreshCounts();
         drawGraph();
+    }
+
+    function refreshCounts() {
+        if (subjectCountLabel) {
+            subjectCountLabel.textContent = getSubjectItems().length;
+        }
+        if (conflictCountLabel) {
+            conflictCountLabel.textContent = getConflicts().length;
+        }
     }
 
     function addSubject(name, teacher) {
@@ -174,6 +186,7 @@
             '<button type="button" class="table-action" data-remove-conflict aria-label="Удалить конфликт">×</button>'
         ].join('');
         conflictList.appendChild(item);
+        refreshCounts();
         drawGraph();
     }
 
@@ -548,6 +561,7 @@
     conflictList.addEventListener('click', function (event) {
         if (event.target.matches('[data-remove-conflict]')) {
             event.target.closest('.conflict-item').remove();
+            refreshCounts();
             drawGraph();
         }
     });
