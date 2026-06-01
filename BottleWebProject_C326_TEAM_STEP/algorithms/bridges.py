@@ -1,22 +1,22 @@
 """
-algorithms/bridges.py — Bridge finding (Tarjan) + Floyd-Warshall impact analysis.
+algorithms/bridges.py — Bridge finding (Tarjan) + Floyd-Warshall matrices.
 Standard library only.
 
 Соответствует блок-схеме (algoritm_bridges_horiz.drawio) и ТЗ (разделы 2.2.1–2.2.4):
   • Тарьян: disc[v] == -1 — признак непосещённой вершины, мост при low[u] > disc[v];
-  • Флойд–Уоршелл: суммы база/новая_сумма берутся по парам i < j и ВКЛЮЧАЮТ ∞,
-    поэтому при потере связности сумма обращается в ∞ (ТЗ стр.233, 407);
-  • δ = новая_сумма − база; при разрыве сети δ = ∞ (мост критический);
-  • δ_отн = δ / база — относительное увеличение (ТЗ стр.231).
-Так как удаление любого моста по определению разрывает граф, для каждого моста
-δ = ∞ — это и есть наглядный признак потери связности сети.
+  • Флойд–Уоршелл: матрица кратчайших путей для каждого графа;
+  • суммарная длина кратчайших путей считается ОДИН РАЗ — для исходного графа
+    (по парам i < j, ВКЛЮЧАЯ ∞: при несвязности исходной сети сумма равна ∞).
+Для исходного графа и для каждого графа после удаления одного из мостов выдаются
+три матрицы (весов, смежности 0/1, кратчайших путей) и список рёбер графа.
 """
 
 
 def analyze_network(vertices: list, edges: list) -> dict:
     """
-    Analyse a weighted undirected graph: find all bridges (Tarjan's DFS)
-    and estimate the impact of each bridge removal (Floyd-Warshall).
+    Analyse a weighted undirected graph: find all bridges (Tarjan's DFS) and,
+    for the original graph and for the graph after removing each bridge, build
+    three matrices (weights, adjacency 0/1, shortest paths) plus the edge list.
 
     Parameters
     ----------
@@ -26,12 +26,20 @@ def analyze_network(vertices: list, edges: list) -> dict:
     Returns
     -------
     {
-        "bridges"       : list[tuple[str, str, float]],
-        "bridge_impact" : list[{"edge": ..., "delta": float, "delta_rel": float}],
-        "total_path_sum": float,            # база; ∞, если исходный граф несвязен
-        "all_pairs"     : dict[str, dict[str, float]],
+        "bridges"        : list[tuple[str, str, float]],
+        "total_path_sum" : float,           # сумма кратч. путей ИСХОДНОГО графа;
+                                             # ∞, если исходный граф несвязен
+        "states"         : list[{
+            "removed": None | tuple[str, str, float],   # удалённый мост (None — исходный)
+            "edges"  : list[tuple[str, str, float]],    # рёбра этого графа (для vis.js)
+            "weight" : dict[str, dict[str, float]],     # матрица весов (прямые рёбра)
+            "adj"    : dict[str, dict[str, int]],       # матрица смежности 0/1
+            "dist"   : dict[str, dict[str, float]],     # матрица кратчайших путей
+        }],
     }
-    delta / delta_rel могут быть равны float('inf') при потере связности.
+    states[0] всегда описывает исходный граф (removed=None); далее по одному
+    элементу на каждый найденный мост в порядке списка bridges.
+    Значения матриц весов и кратчайших путей могут быть float('inf').
 
     Raises
     ------
@@ -81,32 +89,61 @@ def analyze_network(vertices: list, edges: list) -> dict:
         if disc[v] == -1:
             dfs(v, None)
 
-    # ── Stage 2: Floyd-Warshall ───────────────────────────────────────────────
-    def floyd_warshall(verts, edge_list):
-        d = {u: {v: (0.0 if u == v else INF) for v in verts} for u in verts}
+    # ── Stage 2: matrices for a given edge list ───────────────────────────────
+    def floyd_warshall(edge_list):
+        """Матрица кратчайших путей: диагональ 0, нет пути — ∞ (узлы b*/d*)."""
+        d = {u: {v: (0.0 if u == v else INF) for v in vertices} for u in vertices}
         for u, v, w in edge_list:
             fw = float(w)
             if fw < d[u][v]:
                 d[u][v] = fw
                 d[v][u] = fw
-        for k in verts:
+        for k in vertices:
             dk = d[k]
-            for i in verts:
+            for i in vertices:
                 di = d[i]
                 dik = di[k]
                 if dik == INF:
                     continue
-                for j in verts:
+                for j in vertices:
                     candidate = dik + dk[j]
                     if candidate < di[j]:
                         di[j] = candidate
         return d
 
+    def weight_matrix(edge_list):
+        """Матрица весов: вес прямого ребра, 0 на диагонали, ∞ при отсутствии ребра."""
+        w_m = {u: {v: (0.0 if u == v else INF) for v in vertices} for u in vertices}
+        for u, v, w in edge_list:
+            fw = float(w)
+            if fw < w_m[u][v]:
+                w_m[u][v] = fw
+                w_m[v][u] = fw
+        return w_m
+
+    def adjacency_matrix(edge_list):
+        """Матрица смежности 0/1: 1 при наличии прямого ребра, иначе 0."""
+        a_m = {u: {v: 0 for v in vertices} for u in vertices}
+        for u, v, w in edge_list:
+            a_m[u][v] = 1
+            a_m[v][u] = 1
+        return a_m
+
+    def make_state(removed, edge_list):
+        """Описание одного графа: рёбра + три матрицы."""
+        return {
+            "removed": removed,
+            "edges":   list(edge_list),
+            "weight":  weight_matrix(edge_list),
+            "adj":     adjacency_matrix(edge_list),
+            "dist":    floyd_warshall(edge_list),
+        }
+
     def path_sum(dist):
         """Сумма кратчайших путей по парам i < j, ВКЛЮЧАЯ ∞.
 
         Если хотя бы одна пара недостижима, сумма равна ∞ — это наглядно
-        показывает потерю связности сети (ТЗ стр.233, узлы c4/d19 блок-схемы).
+        показывает несвязность исходной сети (ТЗ раздел 2.2.2, узлы c1–c7).
         """
         total = 0.0
         for idx, i in enumerate(vertices):
@@ -117,12 +154,12 @@ def analyze_network(vertices: list, edges: list) -> dict:
                 total += d
         return total
 
-    all_pairs = floyd_warshall(vertices, edges)
-    base = path_sum(all_pairs)            # «база»
-    total_path_sum = base
+    # ── Stage 3: original graph + graph per bridge ────────────────────────────
+    states = [make_state(None, edges)]
 
-    # ── Bridge impact ─────────────────────────────────────────────────────────
-    bridge_impact = []
+    # Сумма кратчайших путей считается ОДИН РАЗ — на исходном графе.
+    total_path_sum = path_sum(states[0]["dist"])
+
     for b_u, b_v, b_w in bridges:
         edges_without = [
             (u, v, w) for u, v, w in edges
@@ -131,32 +168,10 @@ def analyze_network(vertices: list, edges: list) -> dict:
                 (u == b_v and v == b_u and w == b_w)
             )
         ]
-        d_new = floyd_warshall(vertices, edges_without)
-        new_sum = path_sum(d_new)         # «новая_сумма»
-
-        # δ = новая_сумма − база; при разрыве сети новая_сумма == ∞ → δ = ∞.
-        if new_sum == INF:
-            delta = INF
-        else:
-            delta = new_sum - base
-
-        # Относительное увеличение δ / база (ТЗ стр.231).
-        if base == 0:
-            delta_rel = 0.0
-        elif delta == INF or base == INF:
-            delta_rel = INF
-        else:
-            delta_rel = delta / base
-
-        bridge_impact.append({
-            "edge":      (b_u, b_v, b_w),
-            "delta":     delta,
-            "delta_rel": delta_rel,
-        })
+        states.append(make_state((b_u, b_v, b_w), edges_without))
 
     return {
         "bridges":        bridges,
-        "bridge_impact":  bridge_impact,
         "total_path_sum": total_path_sum,
-        "all_pairs":      all_pairs,
+        "states":         states,
     }

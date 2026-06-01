@@ -8,7 +8,9 @@ import os
 from bottle import route, view, request, template, response
 from datetime import datetime
 from algorithms.cpm import find_critical_path
+from algorithms.bridges import analyze_network
 from cpm_generator import generate_random_cpm
+from bridges_generator import generate_random_bridges
 
 def _year():
     return datetime.now().year
@@ -50,10 +52,149 @@ def coloring_practice():
     return dict(year=_year())
 
 
+def _fmt_num(x):
+    """Форматирует число для матрицы: ∞ для бесконечности, без .0 для целых."""
+    if x == float('inf'):
+        return '∞'
+    f = float(x)
+    return str(int(f)) if f.is_integer() else str(f)
+
+
+def _prepare_bridges_result(vertices, data):
+    """Готовит данные analyze_network для шаблона (матрицы и JSON для vis.js)."""
+    bridges = data['bridges']
+    bridge_pairs = [sorted((u, v)) for (u, v, w) in bridges]
+
+    state_views = []
+    download_states = []
+    for st in data['states']:
+        removed = st['removed']
+        title = 'Исходная сеть' if removed is None \
+            else 'Без моста %s—%s' % (removed[0], removed[1])
+        weight, adj, dist = st['weight'], st['adj'], st['dist']
+        weight_rows = [[_fmt_num(weight[i][j]) for j in vertices] for i in vertices]
+        adj_rows = [[adj[i][j] for j in vertices] for i in vertices]
+        dist_rows = [[_fmt_num(dist[i][j]) for j in vertices] for i in vertices]
+        state_views.append({
+            'title':       title,
+            'removed':     removed,
+            'weight_rows': weight_rows,
+            'adj_rows':    adj_rows,
+            'dist_rows':   dist_rows,
+            'gv':          json.dumps(vertices, ensure_ascii=False),
+            'ge':          json.dumps([[u, v, w] for (u, v, w) in st['edges']],
+                                      ensure_ascii=False),
+        })
+        # Структура для экспорта в JSON (∞ записывается строкой для валидного JSON)
+        download_states.append({
+            'removed': list(removed) if removed is not None else None,
+            'edges':   [[u, v, w] for (u, v, w) in st['edges']],
+            'weight':  {i: {j: _fmt_num(weight[i][j]) for j in vertices} for i in vertices},
+            'adj':     {i: {j: adj[i][j] for j in vertices} for i in vertices},
+            'dist':    {i: {j: _fmt_num(dist[i][j]) for j in vertices} for i in vertices},
+        })
+
+    download = {
+        'vertices':       vertices,
+        'total_path_sum': _fmt_num(data['total_path_sum']),
+        'bridges':        [list(b) for b in bridges],
+        'states':         download_states,
+    }
+
+    return {
+        'vertices':       vertices,
+        'total_path_sum': _fmt_num(data['total_path_sum']),
+        'bridges':        bridges,
+        'bridge_count':   len(bridges),
+        'states':         state_views,
+        'gbridges':       json.dumps(bridge_pairs, ensure_ascii=False),
+        'gdownload':      json.dumps(download, ensure_ascii=False),
+    }
+
+
+@route('/bridges/generate')
+def bridges_generate():
+    """Возвращает случайный взвешенный связный граф (узлы и рёбра) в JSON."""
+    response.content_type = 'application/json'
+    return json.dumps(generate_random_bridges(), ensure_ascii=False)
+
+
 @route('/bridges/practice', method=['GET', 'POST'])
 @view('bridges_practice')
 def bridges_practice():
-    return dict(year=_year())
+    result = None
+    error = None
+    nodes_input = []   # ['A', 'B', ...]
+    edges_input = []   # [['A', 'B', '4'], ...]
+
+    if request.method == 'POST':
+        nodes = request.forms.getall('node[]')
+        ef = request.forms.getall('edge_from[]')
+        et = request.forms.getall('edge_to[]')
+        ew = request.forms.getall('edge_weight[]')
+
+        # Запоминаем сырой ввод, чтобы форма не очищалась после отправки
+        nodes_input = list(nodes)
+        for i in range(len(ef)):
+            edges_input.append([
+                ef[i] if i < len(ef) else '',
+                et[i] if i < len(et) else '',
+                ew[i] if i < len(ew) else '',
+            ])
+
+        try:
+            vertices = []
+            for n in nodes:
+                name = n.strip()
+                if not name:
+                    continue
+                if name in vertices:
+                    raise ValueError(f'Город «{name}» указан дважды.')
+                vertices.append(name)
+            if not vertices:
+                raise ValueError('Добавьте хотя бы один город.')
+
+            edges = []
+            for i in range(len(ef)):
+                frm = (ef[i] if i < len(ef) else '').strip()
+                to = (et[i] if i < len(et) else '').strip()
+                wraw = (ew[i] if i < len(ew) else '').strip()
+                if not frm and not to and not wraw:
+                    continue
+                if not frm or not to:
+                    raise ValueError('У каждой дороги должны быть указаны оба города.')
+                try:
+                    w = float(wraw)
+                except (ValueError, TypeError):
+                    raise ValueError(f'Вес дороги {frm}—{to} должен быть числом.')
+                edges.append((frm, to, w))
+
+            data = analyze_network(vertices, edges)
+            result = _prepare_bridges_result(vertices, data)
+
+        except ValueError as e:
+            error = str(e)
+            result = None
+        except Exception as e:
+            error = f'Ошибка: {e}'
+            result = None
+    else:
+        # Пример по умолчанию (две «области», соединённые мостом C—D)
+        nodes_input = ['A', 'B', 'C', 'D', 'E']
+        edges_input = [
+            ['A', 'B', '4'], ['A', 'C', '2'], ['B', 'C', '1'],
+            ['C', 'D', '5'], ['D', 'E', '3'],
+        ]
+
+    return dict(
+        title='Мосты Тарьяна — Практика',
+        active_page='bridges',
+        year=_year(),
+        result=result,
+        error=error,
+        nodes_input=json.dumps(nodes_input, ensure_ascii=False),
+        edges_input=json.dumps(edges_input, ensure_ascii=False),
+    )
 
 
 @route('/cpm')

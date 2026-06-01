@@ -55,7 +55,7 @@
 
     <script src="/static/scripts/bootstrap.js"></script>
     <script src="/static/scripts/respond.js"></script>
-    <script src="/static/scripts/graph-input.js"></script>
+    <script src="/static/scripts/graph-input.js?v=2"></script>
 
 </body>
 </html>

@@ -2,10 +2,11 @@
 tests/test_bridges.py — Unit tests for algorithms/bridges.py
 Run: python -m pytest tests/test_bridges.py -v
 
-Контракт (Вариант A, соответствует блок-схеме и ТЗ 2.2.1–2.2.4):
-  • суммы база/новая_сумма берутся по парам i < j и включают ∞;
-  • удаление любого моста разрывает граф → delta = float('inf');
-  • delta_rel = delta / база (тоже ∞ при разрыве).
+Контракт (соответствует блок-схеме и ТЗ 2.2.1–2.2.4):
+  • bridges — список мостов (Тарьян);
+  • total_path_sum — сумма кратчайших путей ИСХОДНОГО графа (i < j, включая ∞);
+  • states[0] — исходный граф (removed=None), далее по одному на каждый мост;
+    в каждом состоянии: removed, edges и три матрицы weight / adj / dist.
 """
 
 import unittest
@@ -17,6 +18,15 @@ INF = float('inf')
 def _bridge_set(bridges):
     """Convert bridge list to a set of frozensets for order-independent comparison."""
     return {frozenset((u, v)) for u, v, w in bridges}
+
+
+def _find_state(result, pair):
+    """Return the state whose removed bridge connects the two vertices in `pair`."""
+    target = frozenset(pair)
+    for state in result['states']:
+        if state['removed'] is not None and frozenset(state['removed'][:2]) == target:
+            return state
+    raise AssertionError(f"Нет состояния с удалённым мостом {pair}")
 
 
 class TestPathAllBridges(unittest.TestCase):
@@ -34,22 +44,50 @@ class TestPathAllBridges(unittest.TestCase):
         expected = {frozenset({'A', 'B'}), frozenset({'B', 'C'}), frozenset({'C', 'D'})}
         self.assertEqual(_bridge_set(self.result['bridges']), expected)
 
-    def test_all_deltas_infinite(self):
-        # Удаление любого моста разрывает путь → delta = ∞.
-        for item in self.result['bridge_impact']:
-            self.assertEqual(item['delta'], INF,
-                             f"Expected delta=inf for bridge {item['edge']}")
-
-    def test_all_deltas_rel_infinite(self):
-        for item in self.result['bridge_impact']:
-            self.assertEqual(item['delta_rel'], INF)
-
-    def test_impact_count_matches_bridges(self):
-        self.assertEqual(len(self.result['bridge_impact']), 3)
-
     def test_base_sum_pairs_i_lt_j(self):
         # Пары i<j: AB=1, AC=3, AD=6, BC=2, BD=5, CD=3 → 20.
         self.assertEqual(self.result['total_path_sum'], 20.0)
+
+    def test_states_count(self):
+        # Исходный граф + по одному на каждый мост.
+        self.assertEqual(len(self.result['states']), 4)
+
+    def test_first_state_is_original(self):
+        original = self.result['states'][0]
+        self.assertIsNone(original['removed'])
+        self.assertEqual(len(original['edges']), 3)
+
+    def test_original_dist_matrix(self):
+        dist = self.result['states'][0]['dist']
+        self.assertEqual(dist['A']['A'], 0.0)
+        self.assertEqual(dist['A']['D'], 6.0)   # 1+2+3
+        self.assertEqual(dist['B']['D'], 5.0)   # 2+3
+
+    def test_original_adjacency_matrix(self):
+        adj = self.result['states'][0]['adj']
+        self.assertEqual(adj['A']['B'], 1)
+        self.assertEqual(adj['B']['C'], 1)
+        self.assertEqual(adj['A']['C'], 0)      # нет прямого ребра
+        self.assertEqual(adj['A']['A'], 0)      # диагональ матрицы смежности
+
+    def test_original_weight_matrix(self):
+        weight = self.result['states'][0]['weight']
+        self.assertEqual(weight['B']['C'], 2.0)
+        self.assertEqual(weight['A']['A'], 0.0)
+        self.assertEqual(weight['A']['C'], INF)  # нет прямого ребра
+
+    def test_removing_bc_breaks_path(self):
+        state = _find_state(self.result, {'B', 'C'})
+        # B–C делит {A,B}|{C,D}: A→D становится недостижимым.
+        self.assertEqual(state['dist']['A']['D'], INF)
+        self.assertEqual(state['adj']['B']['C'], 0)   # ребро удалено
+        self.assertEqual(state['adj']['A']['B'], 1)   # остальные на месте
+        self.assertEqual(len(state['edges']), 2)
+
+    def test_removing_ab_isolates_a(self):
+        state = _find_state(self.result, {'A', 'B'})
+        self.assertEqual(state['dist']['A']['B'], INF)
+        self.assertEqual(state['dist']['B']['D'], 5.0)  # хвост связен
 
 
 class TestTriangleNoBridges(unittest.TestCase):
@@ -63,13 +101,20 @@ class TestTriangleNoBridges(unittest.TestCase):
     def test_no_bridges(self):
         self.assertEqual(self.result['bridges'], [])
 
-    def test_bridge_impact_empty(self):
-        self.assertEqual(self.result['bridge_impact'], [])
+    def test_only_original_state(self):
+        # Мостов нет → только исходный граф.
+        self.assertEqual(len(self.result['states']), 1)
+        self.assertIsNone(self.result['states'][0]['removed'])
 
     def test_total_path_sum_finite(self):
-        s = self.result['total_path_sum']
-        self.assertNotEqual(s, INF)
-        self.assertGreater(s, 0.0)
+        # AB=1, BC=2, AC=min(3, 1+2)=3 → 1+2+3 = 6.
+        self.assertEqual(self.result['total_path_sum'], 6.0)
+
+    def test_adjacency_full(self):
+        adj = self.result['states'][0]['adj']
+        self.assertEqual(adj['A']['B'], 1)
+        self.assertEqual(adj['A']['C'], 1)
+        self.assertEqual(adj['B']['C'], 1)
 
 
 class TestTwoTrianglesOneBridge(unittest.TestCase):
@@ -93,41 +138,27 @@ class TestTwoTrianglesOneBridge(unittest.TestCase):
         self.assertEqual(len(self.result['bridges']), 1)
 
     def test_correct_bridge(self):
-        bs = _bridge_set(self.result['bridges'])
-        self.assertIn(frozenset({'C', 'D'}), bs)
+        self.assertIn(frozenset({'C', 'D'}), _bridge_set(self.result['bridges']))
 
-    def test_bridge_delta_infinite(self):
-        # Removing C–D splits the graph → delta = ∞.
-        self.assertEqual(self.result['bridge_impact'][0]['delta'], INF)
+    def test_two_states(self):
+        self.assertEqual(len(self.result['states']), 2)
 
     def test_base_sum_finite(self):
         # Исходный граф связен → база конечна.
         self.assertNotEqual(self.result['total_path_sum'], INF)
 
+    def test_original_cross_distance(self):
+        # A→D = A–C(1) + C–D(5) = 6.
+        self.assertEqual(self.result['states'][0]['dist']['A']['D'], 6.0)
+        self.assertEqual(self.result['states'][0]['adj']['C']['D'], 1)
+        self.assertEqual(self.result['states'][0]['weight']['C']['D'], 5.0)
 
-class TestBridgeIsolatesLeaf(unittest.TestCase):
-    """
-    Star graph: A connected only to B, B also connected in a triangle B–C–D.
-    Edge A–B is a bridge (removing it isolates A).
-    """
-
-    def setUp(self):
-        self.vertices = ['A', 'B', 'C', 'D']
-        self.edges = [
-            ('A', 'B', 2.0),
-            ('B', 'C', 1.0), ('C', 'D', 1.0), ('B', 'D', 1.0),
-        ]
-        self.result = analyze_network(self.vertices, self.edges)
-
-    def test_one_bridge(self):
-        self.assertEqual(len(self.result['bridges']), 1)
-
-    def test_bridge_is_ab(self):
-        bs = _bridge_set(self.result['bridges'])
-        self.assertIn(frozenset({'A', 'B'}), bs)
-
-    def test_delta_infinite_leaf_isolated(self):
-        self.assertEqual(self.result['bridge_impact'][0]['delta'], INF)
+    def test_removed_bridge_disconnects(self):
+        state = _find_state(self.result, {'C', 'D'})
+        self.assertEqual(state['dist']['A']['D'], INF)   # сеть распалась
+        self.assertEqual(state['adj']['C']['D'], 0)      # мост удалён
+        self.assertEqual(state['weight']['C']['D'], INF)
+        self.assertEqual(state['dist']['A']['C'], 1.0)   # треугольник 1 цел
 
 
 class TestSingleVertex(unittest.TestCase):
@@ -139,11 +170,17 @@ class TestSingleVertex(unittest.TestCase):
     def test_no_bridges(self):
         self.assertEqual(self.result['bridges'], [])
 
+    def test_only_original_state(self):
+        self.assertEqual(len(self.result['states']), 1)
+
     def test_total_path_sum_zero(self):
         self.assertEqual(self.result['total_path_sum'], 0.0)
 
-    def test_all_pairs_diagonal_zero(self):
-        self.assertEqual(self.result['all_pairs']['A']['A'], 0.0)
+    def test_matrices_diagonal(self):
+        state = self.result['states'][0]
+        self.assertEqual(state['dist']['A']['A'], 0.0)
+        self.assertEqual(state['weight']['A']['A'], 0.0)
+        self.assertEqual(state['adj']['A']['A'], 0)
 
 
 class TestTwoDisconnectedComponents(unittest.TestCase):
@@ -160,18 +197,23 @@ class TestTwoDisconnectedComponents(unittest.TestCase):
     def test_two_bridges(self):
         self.assertEqual(len(self.result['bridges']), 2)
 
-    def test_both_bridges_present(self):
-        bs = _bridge_set(self.result['bridges'])
-        self.assertIn(frozenset({'A', 'B'}), bs)
-        self.assertIn(frozenset({'C', 'D'}), bs)
+    def test_three_states(self):
+        self.assertEqual(len(self.result['states']), 3)
 
     def test_base_sum_infinite(self):
         # Исходный граф уже несвязен (A↔C недостижимы) → база = ∞.
         self.assertEqual(self.result['total_path_sum'], INF)
 
-    def test_both_deltas_infinite(self):
-        for item in self.result['bridge_impact']:
-            self.assertEqual(item['delta'], INF)
+    def test_original_adjacency(self):
+        adj = self.result['states'][0]['adj']
+        self.assertEqual(adj['A']['B'], 1)
+        self.assertEqual(adj['C']['D'], 1)
+        self.assertEqual(adj['A']['C'], 0)
+
+    def test_removing_ab_isolates_pair(self):
+        state = _find_state(self.result, {'A', 'B'})
+        self.assertEqual(state['dist']['A']['B'], INF)
+        self.assertEqual(state['dist']['C']['D'], 2.0)   # вторая компонента цела
 
 
 class TestUnknownVertexRaises(unittest.TestCase):
