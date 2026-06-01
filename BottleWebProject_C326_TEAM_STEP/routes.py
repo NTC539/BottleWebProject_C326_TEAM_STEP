@@ -77,6 +77,7 @@ def coloring():
 @route('/dijkstra/practice', method=['GET', 'POST'])
 @view('dijkstra_practice')
 def dijkstra_practice():
+    # Значения по умолчанию
     stage = 'input_count'
     edge_count = 0
     source = 'A'
@@ -88,41 +89,51 @@ def dijkstra_practice():
     if request.method == 'POST':
         action = request.forms.get('action', '')
 
-        # 1. Пользователь указал количество рёбер (без источника)
+        # 1. Пользователь указал количество рёбер
         if action == 'generate_count':
             try:
-                edge_count = int(request.forms.get('edge_count', '0'))
-                if edge_count <= 0:
-                    errors.append('Количество рёбер должно быть положительным.')
-                    stage = 'input_count'
+                count_str = request.forms.getunicode('edge_count', '').strip()
+                if not count_str:
+                    errors.append('Введите количество рёбер.')
                 else:
-                    # Восстанавливаем рёбра из скрытых полей (если были)
-                    edges = []
-                    for i in range(edge_count):
-                        from_val = request.forms.get(f'from_{i}', '')
-                        to_val = request.forms.get(f'to_{i}', '')
-                        weight_val = request.forms.get(f'weight_{i}', '')
-                        edges.append((from_val, to_val, weight_val))
-                    if all(f == '' and t == '' and w == '' for f, t, w in edges):
-                        edges = [('', '', '') for _ in range(edge_count)]
-                    # Восстанавливаем источник, если он был передан скрытым полем
-                    source = request.forms.get('source', 'A').strip()
-                    if not source:
-                        source = 'A'
-                    stage = 'input_edges'
+                    edge_count = int(count_str)
+                    if edge_count <= 0:
+                        errors.append('Количество рёбер должно быть положительным числом.')
+                    elif edge_count > 25:
+                        errors.append('Количество рёбер не может превышать 25.')
+                    else:
+                        source = request.forms.getunicode('source', 'A').strip()
+                        if not source:
+                            errors.append('Вершина-источник не может быть пустой.')
+                        else:
+                            # Восстанавливаем рёбра из скрытых полей (если были)
+                            edges = []
+                            for i in range(edge_count):
+                                from_val = request.forms.getunicode(f'from_{i}', '')
+                                to_val = request.forms.getunicode(f'to_{i}', '')
+                                weight_val = request.forms.getunicode(f'weight_{i}', '')
+                                edges.append((from_val, to_val, weight_val))
+                            if all(f == '' and t == '' and w == '' for f, t, w in edges):
+                                edges = [('', '', '') for _ in range(edge_count)]
+                            stage = 'input_edges'
             except ValueError:
-                errors.append('Некорректное количество рёбер.')
+                errors.append('Количество рёбер должно быть целым числом.')
+
+            if errors:
                 stage = 'input_count'
+                # Сохраняем уже введённые данные для повторного показа
+                edge_count = int(request.forms.getunicode('edge_count', 0)) if request.forms.getunicode('edge_count', '').isdigit() else 0
+                source = request.forms.getunicode('source', 'A').strip()
 
         # 2. Назад с шага 2 на шаг 1
         elif action == 'back_to_count':
-            edge_count = int(request.forms.get('edge_count', '0'))
-            source = request.forms.get('source', 'A').strip()
+            edge_count = int(request.forms.getunicode('edge_count', '0'))
+            source = request.forms.getunicode('source', 'A').strip()
             edges = []
             for i in range(edge_count):
-                from_val = request.forms.get(f'from_{i}', '')
-                to_val = request.forms.get(f'to_{i}', '')
-                weight_val = request.forms.get(f'weight_{i}', '')
+                from_val = request.forms.getunicode(f'from_{i}', '')
+                to_val = request.forms.getunicode(f'to_{i}', '')
+                weight_val = request.forms.getunicode(f'weight_{i}', '')
                 edges.append((from_val, to_val, weight_val))
             stage = 'input_count'
 
@@ -130,6 +141,7 @@ def dijkstra_practice():
         elif action == 'random':
             vertices = ['A', 'B', 'C', 'D', 'E', 'F']
             edge_count = random.randint(4, 9)
+            source = random.choice(vertices)
             edges = []
             used_pairs = set()
             for _ in range(edge_count):
@@ -140,17 +152,11 @@ def dijkstra_practice():
                 used_pairs.add((from_v, to_v))
                 weight = str(random.randint(1, 20)) if random.random() < 0.85 else 'inf'
                 edges.append((from_v, to_v, weight))
-            # Автоматически выбираем источник как первую вершину в алфавитном порядке
-            all_vertices = set()
-            for f, t, _ in edges:
-                all_vertices.add(f)
-                all_vertices.add(t)
-            source = sorted(all_vertices)[0] if all_vertices else 'A'
             stage = 'input_edges'
 
         # 4. Загрузка файла
         elif action == 'upload':
-            upload = request.files.get('file')
+            upload = request.files.getunicode('file')
             if not upload:
                 errors.append('Файл не выбран.')
                 stage = 'input_count'
@@ -171,28 +177,32 @@ def dijkstra_practice():
                     else:
                         errors.append(f'Строка {line_num}: игнорируется (не хватает данных)')
                 if edges:
-                    edge_count = len(edges)
-                    all_vertices = set()
-                    for f, t, _ in edges:
-                        all_vertices.add(f)
-                        all_vertices.add(t)
-                    source = sorted(all_vertices)[0] if all_vertices else 'A'
-                    stage = 'input_edges'
+                    if len(edges) > 100:
+                        errors.append('Файл содержит более 100 рёбер, это слишком много.')
+                        stage = 'input_count'
+                    else:
+                        edge_count = len(edges)
+                        all_vertices = set()
+                        for f, t, _ in edges:
+                            all_vertices.add(f)
+                            all_vertices.add(t)
+                        source = sorted(all_vertices)[0] if all_vertices else 'A'
+                        stage = 'input_edges'
                 else:
                     errors.append('Файл не содержит корректных рёбер.')
                     stage = 'input_count'
 
         # 5. Расчёт алгоритма
         elif action == 'calculate':
-            edge_count = int(request.forms.get('edge_count', '0'))
-            source = request.forms.get('source', 'A').strip()
+            edge_count = int(request.forms.getunicode('edge_count', '0'))
+            source = request.forms.getunicode('source', 'A').strip()
             edges_raw = []
             parse_errors = []
 
             for i in range(edge_count):
-                from_v = request.forms.get(f'from_{i}', '').strip()
-                to_v = request.forms.get(f'to_{i}', '').strip()
-                w_str = request.forms.get(f'weight_{i}', '').strip().lower()
+                from_v = request.forms.getunicode(f'from_{i}', '').strip()
+                to_v = request.forms.getunicode(f'to_{i}', '').strip()
+                w_str = request.forms.getunicode(f'weight_{i}', '').strip().lower()
                 if not from_v or not to_v or not w_str:
                     parse_errors.append(f'Ребро {i+1}: все поля должны быть заполнены.')
                     continue
@@ -210,9 +220,9 @@ def dijkstra_practice():
                 edges_raw.append((from_v, to_v, w))
 
             # Сохраняем введённые строки
-            edges = [(request.forms.get(f'from_{i}', ''),
-                      request.forms.get(f'to_{i}', ''),
-                      request.forms.get(f'weight_{i}', '')) for i in range(edge_count)]
+            edges = [(request.forms.getunicode(f'from_{i}', ''),
+                      request.forms.getunicode(f'to_{i}', ''),
+                      request.forms.getunicode(f'weight_{i}', '')) for i in range(edge_count)]
 
             if parse_errors:
                 errors.extend(parse_errors)
@@ -248,13 +258,13 @@ def dijkstra_practice():
 
         # 6. Назад с шага 3 на шаг 2
         elif action == 'back_to_edges':
-            edge_count = int(request.forms.get('edge_count', '0'))
-            source = request.forms.get('source', 'A').strip()
+            edge_count = int(request.forms.getunicode('edge_count', '0'))
+            source = request.forms.getunicode('source', 'A').strip()
             edges = []
             for i in range(edge_count):
-                from_v = request.forms.get(f'from_{i}', '')
-                to_v = request.forms.get(f'to_{i}', '')
-                weight = request.forms.get(f'weight_{i}', '')
+                from_v = request.forms.getunicode(f'from_{i}', '')
+                to_v = request.forms.getunicode(f'to_{i}', '')
+                weight = request.forms.getunicode(f'weight_{i}', '')
                 edges.append((from_v, to_v, weight))
             stage = 'input_edges'
 
@@ -266,6 +276,7 @@ def dijkstra_practice():
             edges = []
             errors = []
 
+    # Подготовка graph_edges для JSON (замена inf на 'inf')
     graph_edges_for_json = None
     if graph_edges:
         graph_edges_for_json = [(u, v, w if w != float('inf') else 'inf') for (u, v, w) in graph_edges]

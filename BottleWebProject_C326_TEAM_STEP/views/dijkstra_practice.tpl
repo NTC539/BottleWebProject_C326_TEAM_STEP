@@ -12,7 +12,6 @@
 <div class="row practice-container">
   <div class="col-md-5">
     <div class="input-panel">
-
       % if stage == 'input_count':
         <!-- ШАГ 1: только количество рёбер -->
         <form method="post" action="/dijkstra/practice">
@@ -70,15 +69,13 @@
           
           <div class="action-buttons">
             <button type="submit" class="btn-practice">Рассчитать</button>
-            <button type="submit" name="action" value="back_to_count" class="btn-secondary">← Назад (изменить кол-во)</button>
+            <button type="submit" name="action" value="back_to_count" class="btn-secondary">← Назад</button>
             <button type="submit" name="action" value="random" class="btn-secondary">🎲 Случайный граф</button>
-            <button type="submit" name="action" value="reset" class="btn-secondary">⟳ Начать заново</button>
-          </div>
-          <div class="mt-2">
+            <button type="submit" name="action" value="reset" class="btn-secondary">⟳ Сброс</button>
             <label for="fileUpload" class="btn btn-secondary" style="cursor:pointer;">📂 Загрузить файл</label>
             <input type="file" name="file" id="fileUpload" accept=".txt,.csv" style="display:none" onchange="this.form.action.value='upload'; this.form.submit();">
-            <small class="text-muted">.txt или .csv (формат: from,to,weight)</small>
           </div>
+          <small class="text-muted d-block mt-2">Файл: каждая строка "from,to,weight" (разделители запятая или пробел)</small>
         </form>
         <script>
           document.getElementById('fileUpload')?.addEventListener('change', function() {
@@ -88,11 +85,11 @@
         </script>
 
       % elif stage == 'results':
-        <!-- ШАГ 3: результаты -->
+        <!-- ШАГ 3: результаты (сообщение + таблица маршрутов слева) -->
         <div class="alert alert-success">
-          <strong>✅ Маршруты построены</strong> – граф и кратчайшие пути показаны справа.
+          <strong>✅ Маршруты построены</strong> – граф показан справа.
         </div>
-        <form method="post" action="/dijkstra/practice">
+        <form method="post" action="/dijkstra/practice" class="mb-3">
           <input type="hidden" name="action" value="back_to_edges">
           <input type="hidden" name="edge_count" value="{{ edge_count }}">
           <input type="hidden" name="source" value="{{ source }}">
@@ -106,71 +103,85 @@
             <button type="submit" name="action" value="reset" class="btn-secondary">⟳ Новый расчёт</button>
           </div>
         </form>
+
+        % if results:
+        <div class="results-panel">
+          <h4>Результаты маршрутизации</h4>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped result-table">
+              <thead>
+                <tr><th>Узел</th><th>Задержка</th><th>Маршрут</th></tr>
+              </thead>
+              <tbody>
+                % for node, data in results.items():
+                <tr>
+                  <td><strong>{{ node }}</strong></td>
+                  <td>{{ data['dist_display'] }}</td>
+                  <td>{{ data['path_display'] }}</td>
+                </tr>
+                % end
+              </tbody>
+            </table>
+          </div>
+        </div>
+        % end
       % end
 
+      % if errors:
+      <div class="error-block mt-3">
+        <strong>Ошибки:</strong>
+        <ul class="mb-0 mt-2">
+          % for err in errors:
+            <li>{{ err }}</li>
+          % end
+        </ul>
+      </div>
+      % end
     </div>
   </div>
 
   <div class="col-md-7">
     <div class="graph-panel">
-      <div id="graphContainer" class="graph-container"></div>
-      <div class="graph-legend mt-2">
-        <span class="legend-item"><span class="legend-color solid"></span> Доступный канал</span>
-        <span class="legend-item"><span style="background:#e84855; width:16px; height:16px; display:inline-block; border-radius:50%;"></span> Источник</span>
-        <span class="legend-item"><span style="background:#97c2e0; width:16px; height:16px; display:inline-block; border-radius:50%;"></span> Обычная вершина</span>
-      </div>
+      % if stage == 'results':
+        <!-- На этапе результатов показываем граф со всеми рёбрами -->
+        <div id="graphContainer" class="graph-container"></div>
+        <div class="graph-legend mt-2">
+          <span class="legend-item"><span class="legend-color solid"></span> Доступный канал</span>
+          <span class="legend-item"><span class="legend-color dashed"></span> Недоступный канал (∞)</span>
+          <span class="legend-item"><span style="background:#e84855; width:16px; height:16px; display:inline-block; border-radius:50%;"></span> Источник</span>
+          <span class="legend-item"><span style="background:#97c2e0; width:16px; height:16px; display:inline-block; border-radius:50%;"></span> Обычная вершина</span>
+        </div>
+      % else:
+        <!-- На первых двух этапах показываем информационную заглушку -->
+        <div class="graph-placeholder text-center p-5 bg-light rounded">
+          <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">Граф будет построен после расчёта</h5>
+          <p class="small text-muted">Заполните данные слева и нажмите «Рассчитать»</p>
+        </div>
+      % end
     </div>
   </div>
 </div>
-
-% if errors:
-<div class="error-block mt-3">
-  <strong>Ошибки в данных:</strong>
-  <ul>
-    % for err in errors:
-      <li>{{ err }}</li>
-    % end
-  </ul>
-</div>
-% end
-
-% if stage == 'results' and results:
-<div class="theory-section results-panel">
-  <h3>Результаты маршрутизации от источника <code>{{ source }}</code></h3>
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped result-table">
-      <thead>
-        <tr><th>Узел назначения</th><th>Минимальная задержка</th><th>Маршрут</th></tr>
-      </thead>
-      <tbody>
-        % for node, data in results.items():
-        <tr>
-          <td><strong>{{ node }}</strong></td>
-          <td>{{ data['dist_display'] }}</td>
-          <td>{{ data['path_display'] }}</td>
-        </tr>
-        % end
-      </tbody>
-    </table>
-  </div>
-</div>
-% end
 
 <script>
 function drawGraphFromEdges(edgesList, sourceVertex) {
     if (!edgesList || edgesList.length === 0) return;
     const verticesSet = new Set();
-    const validEdges = [];
+    const regularEdges = [];
+    const infEdges = [];
     for (let e of edgesList) {
         const from = e[0];
         const to = e[1];
         let weight = e[2];
-        if (weight === 'inf' || weight === Infinity) continue;
-        const weightNum = parseFloat(weight);
-        if (isNaN(weightNum)) continue;
-        validEdges.push({ from, to, weight: weightNum });
         verticesSet.add(from);
         verticesSet.add(to);
+        if (weight === 'inf' || weight === Infinity) {
+            infEdges.push({ from, to, label: '∞' });
+        } else {
+            const weightNum = parseFloat(weight);
+            if (isNaN(weightNum)) continue;
+            regularEdges.push({ from, to, weight: weightNum });
+        }
     }
     const vertices = Array.from(verticesSet);
     const nodes = vertices.map(v => ({
@@ -180,7 +191,9 @@ function drawGraphFromEdges(edgesList, sourceVertex) {
         font: { color: 'white', size: 16 },
         size: 28
     }));
-    const visEdges = validEdges.map(e => ({
+    
+    // Обычные рёбра (доступные)
+    const visEdges = regularEdges.map(e => ({
         from: e.from,
         to: e.to,
         label: e.weight.toString(),
@@ -188,8 +201,23 @@ function drawGraphFromEdges(edgesList, sourceVertex) {
         font: { align: 'middle', size: 12 },
         color: { color: '#2e86ab' }
     }));
+    
+    // Рёбра с inf (недоступные) – пунктирные, серые
+    const infVisEdges = infEdges.map(e => ({
+        from: e.from,
+        to: e.to,
+        label: 'inf',
+        arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+        font: { align: 'middle', size: 12, color: '#888' },
+        color: { color: '#aaaaaa' },
+        dashes: true,
+        width: 1.5
+    }));
+    
+    const allEdges = visEdges.concat(infVisEdges);
     const container = document.getElementById('graphContainer');
-    const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(visEdges) };
+    if (!container) return;
+    const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(allEdges) };
     const options = {
         physics: false,
         interaction: { dragNodes: true, dragView: true, zoomView: true },
@@ -202,7 +230,7 @@ function drawGraphFromEdges(edgesList, sourceVertex) {
 window.addEventListener('DOMContentLoaded', function() {
     var graphEdges = {{ !json.dumps(graph_edges_json) if graph_edges_json else 'null' }};
     var sourceVertex = "{{ source }}";
-    if (graphEdges) {
+    if (graphEdges && document.getElementById('graphContainer')) {
         drawGraphFromEdges(graphEdges, sourceVertex);
     }
 });
