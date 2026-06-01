@@ -104,6 +104,10 @@
 </div>
 
 <div class="theory-section">
+    <img src="static\images\cpm_ex_sheme_1.png"/>
+</div>
+
+<div class="theory-section">
     <h4>Шаг 1 &mdash; Топологический порядок (алгоритм Кана)</h4>
     <pre class="algo-block">in_degree: A=0, B=0, C=1, D=2, E=1, F=1
 Очередь: [A, B]  (оба in_degree=0, сортировка по алфавиту)
