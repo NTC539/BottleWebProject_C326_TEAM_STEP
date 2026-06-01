@@ -28,7 +28,7 @@ function addTaskRow(containerId, name, dur) {
         .append(
             $('<button>', {
                 type: 'button',
-                class: 'btn btn-danger btn-xs remove-row',
+                class: 'btn-danger btn-xs remove-row',
                 text: '✕'
             })
         );
@@ -47,7 +47,7 @@ function addDepRow(containerId, fromVal, toVal) {
         .append(
             $('<button>', {
                 type: 'button',
-                class: 'btn btn-danger btn-xs remove-row',
+                class: 'btn-danger btn-xs remove-row',
                 text: '✕'
             })
         );
