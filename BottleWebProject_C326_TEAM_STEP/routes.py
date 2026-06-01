@@ -206,6 +206,12 @@ def dijkstra_practice():
                 if not from_v or not to_v or not w_str:
                     parse_errors.append(f'Ребро {i+1}: все поля должны быть заполнены.')
                     continue
+                if len(from_v) > 10:
+                    parse_errors.append(f'Ребро {i+1}: название вершины ({from_v}) не должно превышать 10 символов')
+                    continue
+                if len(to_v) > 10:
+                    parse_errors.append(f'Ребро {i+1}: название вершины ({to_v}) не должно превышать 10 символов')
+                    continue
                 try:
                     if w_str == 'inf':
                         w = float('inf')
