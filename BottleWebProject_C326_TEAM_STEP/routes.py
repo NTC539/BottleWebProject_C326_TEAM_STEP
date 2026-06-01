@@ -55,8 +55,8 @@ def cpm_practice():
             forms = request.forms.decode()
     
             # Получаем списки в правильной UTF-8 кодировке
-            names = request.forms.getall('task_name[]')
-            durations = request.forms.getall('task_dur[]')
+            names = forms.getall('task_name[]')
+            durations = forms.getall('task_dur[]')
 
             tasks = {}
 
@@ -78,8 +78,8 @@ def cpm_practice():
             if not tasks:
                 raise ValueError('Список задач не может быть пустым.')
 
-            df   = request.forms.getall('dep_from[]')
-            dt   = request.forms.getall('dep_to[]')
+            df   = forms.getall('dep_from[]')
+            dt   = forms.getall('dep_to[]')
             deps = [
                 (df[i], dt[i])
                 for i in range(len(df))
