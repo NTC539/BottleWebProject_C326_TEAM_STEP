@@ -1,5 +1,5 @@
 % rebase('layout.tpl', title='Теория — Мосты Тарьяна', year=year, active_page='bridges')
-<link rel="stylesheet" type="text/css" href="/static/content/bridges_theory.css" />
+<link rel="stylesheet" type="text/css" href="/static/content/bridges_theory.css?v=2" />
 
 <!-- СЕКЦИЯ 1: Навигация -->
 <div class="bt-header">
@@ -14,7 +14,6 @@
 
 <!-- СЕКЦИЯ 3: Содержание -->
 
-<!-- Hero: split box -->
 <div class="bt-hero">
     <div class="bt-hero-left">
         <div class="bt-hero-label">Ключевое понятие</div>
@@ -31,23 +30,24 @@
         <div class="bt-hero-label">Алгоритм в 4 шага</div>
         <ol class="bt-hero-steps">
             <li>Поиск мостов &mdash; алгоритм Тарьяна (DFS)</li>
-            <li>Базовая сумма путей &mdash; Флойд&ndash;Уоршолл</li>
-            <li>Оценка каждого моста: &delta;&nbsp;=&nbsp;новая_сумма&nbsp;&minus;&nbsp;база</li>
-            <li>Результат &mdash; список (u,&nbsp;v,&nbsp;w,&nbsp;&delta;) для каждого моста</li>
+            <li>Для исходной сети &mdash; матрицы весов, смежности и кратчайших
+                путей (Флойд&ndash;Уоршолл) и сумма путей <code>total_path_sum</code></li>
+            <li>Для каждого графа без одного моста &mdash; те же три матрицы</li>
+            <li>Вывод матриц и графа по каждому состоянию сети</li>
         </ol>
     </div>
 </div>
 
-<!-- Definitions row -->
 <div class="bt-section-title">Ключевые переменные</div>
 <div class="bt-defs">
     <div class="bt-def-chip"><code>disc[v]</code> &mdash; момент первого посещения вершины v (таймер DFS)</div>
     <div class="bt-def-chip"><code>low[v]</code> &mdash; минимальный disc, достижимый из поддерева v</div>
+    <div class="bt-def-chip"><code>weight[i][j]</code> &mdash; вес прямого ребра (0 на диагонали, &infin; если ребра нет)</div>
+    <div class="bt-def-chip"><code>adj[i][j]</code> &mdash; матрица смежности (1 если есть ребро, иначе 0)</div>
     <div class="bt-def-chip"><code>dist[i][j]</code> &mdash; кратчайшее расстояние от i до j</div>
-    <div class="bt-def-chip"><code>&delta;</code> &mdash; прирост суммарной длины путей после удаления моста</div>
+    <div class="bt-def-chip"><code>total_path_sum</code> &mdash; суммарная длина кратчайших путей исходной сети (пары i&nbsp;&lt;&nbsp;j, с учётом &infin;)</div>
 </div>
 
-<!-- Two-column algorithm grid -->
 <div class="bt-section-title">Алгоритмы</div>
 <div class="bt-algo-grid">
 
@@ -66,30 +66,30 @@
 
     <div class="bt-algo-card">
         <div class="bt-algo-head bt-algo-head--floyd">
-            Флойд&ndash;Уоршолл &mdash; все пути
+            Флойд&ndash;Уоршолл &mdash; матрицы
             <span class="bt-algo-complexity">O(V&sup3;) / O(V&sup2;)</span>
         </div>
         <div class="bt-algo-body">
-            <p>Инициализация: <code>dist[i][i]&nbsp;=&nbsp;0</code>,
-            <code>dist[i][j]&nbsp;=&nbsp;w</code> если ребро есть, иначе <code>&infin;</code>.</p>
-            <p><strong>База</strong> = &Sigma;&nbsp;dist[i][j] для всех пар i&nbsp;&lt;&nbsp;j
-            при dist[i][j]&nbsp;&ne;&nbsp;&infin;.</p>
+            <p>Для каждого графа строятся три матрицы:
+            <code>weight[i][j]</code> (вес прямого ребра),
+            <code>adj[i][j]</code> (смежность 0/1) и
+            <code>dist[i][j]</code> (кратчайшие пути).</p>
+            <p><code>dist[i][i]&nbsp;=&nbsp;0</code>, <code>dist[i][j]&nbsp;=&nbsp;w</code>
+            если ребро есть, иначе <code>&infin;</code>; затем уточняется через
+            промежуточную вершину <em>k</em>.</p>
         </div>
     </div>
 
 </div>
 
-<!-- Algorithm description -->
 <div class="bt-section-title">Описание алгоритма</div>
 <div class="bt-description">
     <p>
         <strong>Шаг 1. Подготовка.</strong>
         Граф задаётся списком рёбер вида (u,&nbsp;v,&nbsp;w), где w &mdash;
-        вес (длина). Для алгоритма Тарьяна каждому узлу присваивается начальное
-        значение <code>disc[v]&nbsp;=&nbsp;&minus;1</code> (не посещён) и заводится
+        вес (длина). Для алгоритма Тарьяна каждой вершине присваивается начальное
+        значение <code>disc[v]&nbsp;=&nbsp;&minus;1</code> (не посещена) и заводится
         глобальный счётчик <code>timer&nbsp;=&nbsp;0</code>.
-        Параллельно строится матрица смежности для Флойда: диагональ равна нулю,
-        известные рёбра &mdash; своему весу, остальные &mdash; бесконечности.
     </p>
     <p>
         <strong>Шаг 2. Поиск мостов &mdash; DFS Тарьяна.</strong>
@@ -101,66 +101,64 @@
         это отражает, насколько «высоко» поддерево <em>u</em> может дотянуться
         по обратным рёбрам. Если сосед уже посещён и это не родитель по DFS-дереву,
         значит найдено обратное ребро &mdash; <code>low[v]</code> снижается до
-        <code>disc[u]</code>.
+        <code>disc[u]</code>. Сразу после возврата из потомка <em>u</em> проверяется
+        условие моста: если <code>low[u]&nbsp;&gt;&nbsp;disc[v]</code>, то ребро
+        {v,&nbsp;u} &mdash; мост, и оно сохраняется в список.
     </p>
     <p>
-        <strong>Шаг 3. Определение мостов.</strong>
-        Сразу после возврата из потомка <em>u</em> проверяется условие:
-        если <code>low[u]&nbsp;&gt;&nbsp;disc[v]</code>, то из поддерева <em>u</em>
-        нет ни одного обратного ребра, ведущего выше вершины <em>v</em>.
-        Значит, единственный путь от <em>u</em> к остальной части графа &mdash;
-        именно через ребро {v,&nbsp;u}, и это ребро является мостом.
-        Все найденные мосты сохраняются в список.
-    </p>
-    <p>
-        <strong>Шаг 4. Базовая сумма путей &mdash; Флойд&ndash;Уоршолл.</strong>
-        На исходном (полном) графе запускается алгоритм Флойда&ndash;Уоршолла:
+        <strong>Шаг 3. Матрицы исходной сети.</strong>
+        Для исходного графа строятся три матрицы: матрица весов
+        <code>weight[i][j]</code> (вес прямого ребра, 0 на диагонали,
+        <code>&infin;</code> при отсутствии ребра), матрица смежности
+        <code>adj[i][j]</code> (1 при наличии прямого ребра, иначе 0) и
+        матрица кратчайших путей <code>dist[i][j]</code> (Флойд&ndash;Уоршолл:
         вводится промежуточная вершина <em>k</em>, и для каждой пары
-        (i,&nbsp;j) проверяется, не короче ли путь через <em>k</em>.
-        После трёх вложенных циклов матрица <code>dist[i][j]</code> содержит
-        длины всех кратчайших путей. Сумма конечных значений при
-        <em>i&nbsp;&lt;&nbsp;j</em> образует <strong>базовую сумму</strong> &mdash;
-        эталон связности исходного графа.
+        (i,&nbsp;j) проверяется, не короче ли путь через <em>k</em>).
     </p>
     <p>
-        <strong>Шаг 5. Оценка каждого моста.</strong>
-        Для каждого ребра из списка мостов строится копия матрицы смежности,
-        из которой удаляется это ребро. Флойд&ndash;Уоршолл запускается повторно
-        на уменьшенном графе. После этого суммируются только конечные пары
-        расстояний, а результат сравнивается с базой:
-        <strong>&delta;&nbsp;=&nbsp;новая_сумма&nbsp;&minus;&nbsp;база</strong>.
-        Чем больше &delta;, тем сильнее удаление ребра ухудшает связность сети.
+        <strong>Шаг 4. Суммарная длина путей &mdash; один раз.</strong>
+        По матрице <code>dist</code> исходной сети считается
+        <code>total_path_sum</code> &mdash; сумма кратчайших расстояний по всем
+        парам <em>i&nbsp;&lt;&nbsp;j</em> с учётом <code>&infin;</code>.
+        Если хотя бы одна пара недостижима, сумма равна <code>&infin;</code>.
+        Эта величина вычисляется <strong>только для исходного графа</strong>.
     </p>
     <p>
-        <strong>Шаг 6. Граф распался.</strong>
-        Если после удаления моста хотя бы одна пара вершин стала недостижима
-        (расстояние между ними осталось бесконечным), новая сумма не имеет
-        конечного значения. В этом случае &delta; полагается равным
-        <strong>&infin;</strong>, что сигнализирует: граф утратил связность
-        полностью или частично.
+        <strong>Шаг 5. Графы без мостов.</strong>
+        Для каждого ребра из списка мостов строится копия списка рёбер, из
+        которой удаляется это ребро. Для полученного графа заново строятся те же
+        три матрицы &mdash; <code>weight</code>, <code>adj</code> и
+        <code>dist</code>. Так наглядно видно, какие пары вершин теряют связь:
+        в матрице <code>dist</code> между разорванными компонентами появляется
+        <code>&infin;</code>.
     </p>
     <p>
-        <strong>Шаг 7. Итоговый результат.</strong>
-        Все найденные мосты возвращаются в виде списка записей
-        (u,&nbsp;v,&nbsp;w,&nbsp;&delta;), упорядоченных по убыванию &delta;.
-        Мосты с &delta;&nbsp;=&nbsp;&infin; выводятся первыми как наиболее
-        критичные &mdash; их удаление разрушает граф; за ними следуют мосты
-        с наибольшим конечным приростом суммарной длины путей.
+        <strong>Шаг 6. Вывод.</strong>
+        Результат &mdash; набор состояний сети: исходный граф и по одному графу
+        на каждый мост. Для каждого состояния выводятся три матрицы и сам граф;
+        мосты на графе выделяются красным.
     </p>
 </div>
 
-<!-- Example 1: Tarjan -->
-<div class="bt-section-title">Пример &mdash; поиск мостов (граф из 5 вершин)</div>
+<!-- ═══════════════════════════════════════════════════════════
+     СЕКЦИЯ: Разбор примера — зеркало практики на конкретном графе
+     ═══════════════════════════════════════════════════════════ -->
+<div class="bt-section-title">Разбор примера</div>
 <div class="bt-example">
     <p>
         <strong>Рёбра:</strong> A&ndash;B:2, B&ndash;C:3, A&ndash;C:1, C&ndash;D:5, D&ndash;E:4.<br>
         Подграф {A,&nbsp;B,&nbsp;C} образует цикл &mdash; обратные рёбра снижают low.
         Цепочка C&ndash;D&ndash;E без обходных путей.
     </p>
+
+    <!-- (а) Тарьян: трассировка DFS -->
+    <p><strong>Шаг 1. Поиск мостов (Тарьян, DFS).</strong>
+        Обход стартует из A. После возврата из каждого потомка <em>u</em> к
+        родителю <em>v</em> проверяется условие <code>low[u]&nbsp;&gt;&nbsp;disc[v]</code>.</p>
     <table class="table table-bordered table-condensed">
         <thead>
             <tr>
-                <th>Ребро</th>
+                <th>Ребро (v&ndash;u)</th>
                 <th>disc[v]</th>
                 <th>low[u]</th>
                 <th>low[u] &gt; disc[v]?</th>
@@ -168,15 +166,9 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>A&ndash;B</td><td>0</td><td>0</td><td>Нет</td><td>Нет</td>
-            </tr>
-            <tr>
-                <td>B&ndash;C</td><td>1</td><td>0</td><td>Нет</td><td>Нет</td>
-            </tr>
-            <tr>
-                <td>A&ndash;C</td><td>0</td><td>0</td><td>Нет</td><td>Нет</td>
-            </tr>
+            <tr><td>A&ndash;B</td><td>0</td><td>0</td><td>Нет</td><td>Нет</td></tr>
+            <tr><td>B&ndash;C</td><td>1</td><td>0</td><td>Нет</td><td>Нет</td></tr>
+            <tr><td>A&ndash;C <span class="bt-note">(обратное ребро)</span></td><td>0</td><td>0</td><td>Нет</td><td>Нет</td></tr>
             <tr class="bt-row-bridge">
                 <td>C&ndash;D</td><td>2</td><td>3</td><td><strong>Да</strong></td><td><strong>Да</strong></td>
             </tr>
@@ -185,91 +177,140 @@
             </tr>
         </tbody>
     </table>
-    <p>Мосты &mdash; C&ndash;D и D&ndash;E. {A,&nbsp;B,&nbsp;C} связаны циклом; D и E изолируются.</p>
-</div>
+    <p>Условие срабатывает на рёбрах C&ndash;D и D&ndash;E: из поддеревьев D и E
+        нет обратных рёбер выше. <strong>Мосты &mdash; C&ndash;D и D&ndash;E.</strong>
+        {A,&nbsp;B,&nbsp;C} связаны циклом, D и E держатся только на мостах.</p>
 
-<!-- Example 2: Floyd-Warshall -->
-<div class="bt-section-title">Пример &mdash; Флойд&ndash;Уоршолл и оценка моста</div>
-<div class="bt-example">
-    <p>Тот же граф. <strong>Начальная матрица dist:</strong></p>
-    <table class="table table-bordered table-condensed bt-matrix">
-        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
-        <tbody>
-            <tr><td><strong>A</strong></td><td>0</td><td>2</td><td>1</td><td>&infin;</td><td>&infin;</td></tr>
-            <tr><td><strong>B</strong></td><td>2</td><td>0</td><td>3</td><td>&infin;</td><td>&infin;</td></tr>
-            <tr><td><strong>C</strong></td><td>1</td><td>3</td><td>0</td><td>5</td><td>&infin;</td></tr>
-            <tr><td><strong>D</strong></td><td>&infin;</td><td>&infin;</td><td>5</td><td>0</td><td>4</td></tr>
-            <tr><td><strong>E</strong></td><td>&infin;</td><td>&infin;</td><td>&infin;</td><td>4</td><td>0</td></tr>
-        </tbody>
-    </table>
+    <!-- (б) Состояния сети: те же матрицы и граф, что выдаёт практика -->
+    <p><strong>Шаг 2. Матрицы и графы по состояниям сети.</strong>
+        Для исходной сети и для каждого графа без моста строятся те же три
+        матрицы и граф, что и на практике.</p>
 
-    <div class="bt-iter-row">
-        <div class="bt-iter-step">
-            <div class="bt-iter-label">k = C</div>
-            <p>dist[A][D]&nbsp;=&nbsp;min(&infin;,&nbsp;1+5)&nbsp;=&nbsp;<strong>6</strong><br>
-            dist[B][D]&nbsp;=&nbsp;min(&infin;,&nbsp;3+5)&nbsp;=&nbsp;<strong>8</strong></p>
+    % verts = ['A', 'B', 'C', 'D', 'E']
+    % INF = 'н/д'   # метка недостижимости в матрицах — как на практике
+    %
+    % states = [
+    %   {
+    %     'title': 'Исходная сеть',
+    %     'gid': 'orig',
+    %     'note': 'Сумма кратчайших путей <code>total_path_sum</code> = '
+    %             '2+1+6+10+3+8+12+5+9+4 = <strong>60</strong> (пары i &lt; j).',
+    %     'weight': [['0','2','1',INF,INF],['2','0','3',INF,INF],['1','3','0','5',INF],[INF,INF,'5','0','4'],[INF,INF,INF,'4','0']],
+    %     'adj':    [['0','1','1','0','0'],['1','0','1','0','0'],['1','1','0','1','0'],['0','0','1','0','1'],['0','0','0','1','0']],
+    %     'dist':   [['0','2','1','6','10'],['2','0','3','8','12'],['1','3','0','5','9'],['6','8','5','0','4'],['10','12','9','4','0']],
+    %   },
+    %   {
+    %     'title': 'Без моста C–D',
+    %     'gid': 'no_cd',
+    %     'note': 'Сеть распалась на компоненты {A,&nbsp;B,&nbsp;C} и {D,&nbsp;E}; '
+    %             'в <code>dist</code> между ними &mdash; <code>н/д</code>.',
+    %     'weight': [['0','2','1',INF,INF],['2','0','3',INF,INF],['1','3','0',INF,INF],[INF,INF,INF,'0','4'],[INF,INF,INF,'4','0']],
+    %     'adj':    [['0','1','1','0','0'],['1','0','1','0','0'],['1','1','0','0','0'],['0','0','0','0','1'],['0','0','0','1','0']],
+    %     'dist':   [['0','2','1',INF,INF],['2','0','3',INF,INF],['1','3','0',INF,INF],[INF,INF,INF,'0','4'],[INF,INF,INF,'4','0']],
+    %   },
+    %   {
+    %     'title': 'Без моста D–E',
+    %     'gid': 'no_de',
+    %     'note': 'Вершина E недостижима из остальных &mdash; в <code>dist</code> '
+    %             'её строка и столбец равны <code>н/д</code>.',
+    %     'weight': [['0','2','1',INF,INF],['2','0','3',INF,INF],['1','3','0','5',INF],[INF,INF,'5','0',INF],[INF,INF,INF,INF,'0']],
+    %     'adj':    [['0','1','1','0','0'],['1','0','1','0','0'],['1','1','0','1','0'],['0','0','1','0','0'],['0','0','0','0','0']],
+    %     'dist':   [['0','2','1','6',INF],['2','0','3','8',INF],['1','3','0','5',INF],['6','8','5','0',INF],[INF,INF,INF,INF,'0']],
+    %   },
+    % ]
+
+    % for st in states:
+    <div class="bt-state">
+        <div class="bt-state-title">{{ st['title'] }}</div>
+
+        <div class="bt-matrix-grid">
+            % mats = [('Матрица весов', st['weight'], True), ('Матрица смежности', st['adj'], False), ('Кратчайшие пути', st['dist'], True)]
+            % for mtitle, rows, mark_inf in mats:
+            <div class="bt-matrix-card">
+                <h5>{{ mtitle }}</h5>
+                <table class="table table-bordered table-condensed bt-matrix">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            % for v in verts:
+                            <th>{{ v }}</th>
+                            % end
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for ri, rv in enumerate(verts):
+                        <tr>
+                            <th>{{ rv }}</th>
+                            % for cell in rows[ri]:
+                            <td class="{{ 'bt-inf' if mark_inf and cell == INF else '' }}">{{ cell }}</td>
+                            % end
+                        </tr>
+                        % end
+                    </tbody>
+                </table>
+            </div>
+            % end
         </div>
-        <div class="bt-iter-sep">&rarr;</div>
-        <div class="bt-iter-step">
-            <div class="bt-iter-label">k = D</div>
-            <p>dist[A][E]&nbsp;=&nbsp;6+4&nbsp;=&nbsp;<strong>10</strong><br>
-            dist[B][E]&nbsp;=&nbsp;8+4&nbsp;=&nbsp;<strong>12</strong><br>
-            dist[C][E]&nbsp;=&nbsp;5+4&nbsp;=&nbsp;<strong>9</strong></p>
-        </div>
-        <div class="bt-iter-sep">&rarr;</div>
-        <div class="bt-iter-step">
-            <div class="bt-iter-label">итог</div>
-            <p><strong>база</strong>&nbsp;=<br>2+1+6+10+3+8<br>+12+5+9+4&nbsp;=&nbsp;<strong>60</strong></p>
-        </div>
+
+        <p class="bt-state-note">{{!st['note']}}</p>
+        <p class="bt-graph-hint">
+            Красные рёбра &mdash; мосты, серые &mdash; обычные дороги.
+            Подписи на рёбрах &mdash; веса.
+        </p>
+        <div class="bt-graph" id="bt-graph-{{ st['gid'] }}"></div>
     </div>
-
-    <p><strong>Удаляем мост C&ndash;D.</strong> Компоненты {A,B,C} и {D,E} теряют связность:</p>
-    <table class="table table-bordered table-condensed bt-matrix">
-        <thead><tr><th>dist&prime;</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
-        <tbody>
-            <tr><td><strong>A</strong></td><td>0</td><td>2</td><td>1</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td></tr>
-            <tr><td><strong>B</strong></td><td>2</td><td>0</td><td>3</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td></tr>
-            <tr><td><strong>C</strong></td><td>1</td><td>3</td><td>0</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td></tr>
-            <tr><td><strong>D</strong></td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td>0</td><td>4</td></tr>
-            <tr><td><strong>E</strong></td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td class="bt-inf">&infin;</td><td>4</td><td>0</td></tr>
-        </tbody>
-    </table>
-    <p>
-        новая_сумма конечных пар&nbsp;=&nbsp;10;&nbsp;&nbsp;
-        &delta;&nbsp;=&nbsp;&infin;&nbsp;&mdash;
-        <strong>граф распался, связность нарушена полностью</strong>.
-    </p>
+    % end
 </div>
 
-<!-- Complexity -->
-<div class="bt-section-title">Сложность алгоритмов</div>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Этап</th>
-            <th>Время</th>
-            <th>Память</th>
-            <th>Назначение</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Тарьян (мосты)</td>
-            <td>O(V&nbsp;+&nbsp;E)</td>
-            <td>O(V)</td>
-            <td>Поиск всех мостов</td>
-        </tr>
-        <tr>
-            <td>Флойд&ndash;Уоршолл</td>
-            <td>O(V&sup3;)</td>
-            <td>O(V&sup2;)</td>
-            <td>Все кратчайшие пути; базовая сумма</td>
-        </tr>
-        <tr>
-            <td>Оценка N мостов</td>
-            <td>O(N&middot;V&sup3;)</td>
-            <td>O(V&sup2;)</td>
-            <td>N &mdash; количество найденных мостов</td>
-        </tr>
-    </tbody>
-</table>
+<!-- Визуализация графов по состояниям (vis-network, локальный файл из layout.tpl) -->
+<script>
+(function () {
+    if (typeof vis === 'undefined') { return; }
+
+    // Мосты исходной сети — выделяются красным во всех состояниях (как на практике)
+    var BRIDGES = { 'C|D': true, 'D|E': true };
+    function keyOf(a, b) { return a < b ? a + '|' + b : b + '|' + a; }
+
+    var VERTS = ['A', 'B', 'C', 'D', 'E'];
+
+    var STATES = [
+        { gid: 'orig',  E: [['A','B',2],['B','C',3],['A','C',1],['C','D',5],['D','E',4]] },
+        { gid: 'no_cd', E: [['A','B',2],['B','C',3],['A','C',1],['D','E',4]] },
+        { gid: 'no_de', E: [['A','B',2],['B','C',3],['A','C',1],['C','D',5]] }
+    ];
+
+    function buildNet(s) {
+        var container = document.getElementById('bt-graph-' + s.gid);
+        if (!container) { return; }
+
+        var nodes = VERTS.map(function (n) {
+            return {
+                id: n, label: n, shape: 'ellipse',
+                color: { background: '#e8f4fb', border: '#2e86ab' },
+                font: { color: '#1a3a5c', size: 16 }
+            };
+        });
+
+        var edges = s.E.map(function (e) {
+            var isBridge = BRIDGES[keyOf(e[0], e[1])];
+            return {
+                from: e[0], to: e[1], label: String(e[2]),
+                font: { align: 'top', size: 12, color: '#526173' },
+                width: isBridge ? 3 : 1,
+                color: { color: isBridge ? '#e84855' : '#9bb8cc' },
+                smooth: { type: 'continuous' }
+            };
+        });
+
+        var data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
+        var options = {
+            physics: { enabled: true, stabilization: true },
+            interaction: { dragNodes: true, dragView: true, zoomView: true }
+        };
+        var net = new vis.Network(container, data, options);
+        net.once('afterDrawing', function () { net.fit({ animation: false }); });
+    }
+
+    STATES.forEach(buildNet);
+})();
+</script>
