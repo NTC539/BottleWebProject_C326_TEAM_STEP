@@ -20,7 +20,6 @@
             <label for="edge_count">Количество рёбер</label>
             <input type="number" id="edge_count" name="edge_count" class="form-control" min="1" value="{{ edge_count if edge_count else 5 }}" required>
           </div>
-          <!-- Скрытые поля для восстановления рёбер и источника, если были -->
           % for i, (from_val, to_val, weight_val) in enumerate(edges):
             <input type="hidden" name="from_{{ i }}" value="{{ from_val }}">
             <input type="hidden" name="to_{{ i }}" value="{{ to_val }}">
@@ -32,42 +31,42 @@
 
       % elif stage == 'input_edges':
         <!-- ШАГ 2: таблица рёбер + поле источника -->
-    <form method="post" action="/dijkstra/practice" enctype="multipart/form-data">
-        <input type="hidden" name="action" id="actionField" value="">
-        <input type="hidden" name="edge_count" value="{{ edge_count }}">
-        
-        <div class="form-group mb-3">
+        <form method="post" action="/dijkstra/practice" enctype="multipart/form-data">
+          <input type="hidden" name="action" id="actionField" value="">
+          <input type="hidden" name="edge_count" value="{{ edge_count }}">
+          
+          <div class="form-group mb-3">
             <label for="source">Вершина-источник</label>
             <input type="text" id="source" name="source" class="form-control" value="{{ source }}" required>
-        </div>
+          </div>
 
-        <div class="form-group mb-3">
+          <div class="form-group mb-3">
             <label>Таблица рёбер (от → до, вес)</label>
             <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <thead>
-                        <tr><th>#</th><th>От</th><th>До</th><th>Вес</th></tr>
-                    </thead>
-                    <tbody>
-                        % for i in range(edge_count):
-                        <%
-                            from_val = edges[i][0] if i < len(edges) else ''
-                            to_val = edges[i][1] if i < len(edges) else ''
-                            weight_val = edges[i][2] if i < len(edges) else ''
-                        %>
-                        <tr>
-                            <td>{{ i+1 }}</td>
-                            <td><input type="text" name="from_{{ i }}" class="form-control" value="{{ from_val }}"></td>
-                            <td><input type="text" name="to_{{ i }}" class="form-control" value="{{ to_val }}"></td>
-                            <td><input type="text" name="weight_{{ i }}" class="form-control" value="{{ weight_val }}" placeholder="число или inf"></td>
-                        </tr>
-                        % end
-                    </tbody>
-                </table>
+              <table class="table table-bordered table-sm">
+                <thead>
+                  <tr><th>#</th><th>От</th><th>До</th><th>Вес</th></tr>
+                </thead>
+                <tbody>
+                  % for i in range(edge_count):
+                    <%
+                        from_val = edges[i][0] if i < len(edges) else ''
+                        to_val = edges[i][1] if i < len(edges) else ''
+                        weight_val = edges[i][2] if i < len(edges) else ''
+                    %>
+                    <tr>
+                      <td>{{ i+1 }}</td>
+                      <td><input type="text" name="from_{{ i }}" class="form-control" value="{{ from_val }}"></td>
+                      <td><input type="text" name="to_{{ i }}" class="form-control" value="{{ to_val }}"></td>
+                      <td><input type="text" name="weight_{{ i }}" class="form-control" value="{{ weight_val }}" placeholder="число или inf"></td>
+                    </tr>
+                  % end
+                </tbody>
+              </table>
             </div>
-        </div>
-        
-        <div class="action-buttons">
+          </div>
+          
+          <div class="action-buttons">
             <button type="submit" name="action" value="calculate" class="btn-practice">Рассчитать</button>
             <button type="submit" name="action" value="back_to_count" class="btn-secondary">← Назад</button>
             <button type="submit" name="action" value="random" class="btn-secondary">🎲 Случайный граф</button>
@@ -75,18 +74,12 @@
             <label for="fileUpload" class="btn btn-secondary" style="cursor:pointer;">📂 Загрузить файл</label>
             <input type="file" name="file" id="fileUpload" accept=".txt,.csv" style="display:none" 
                    onchange="document.getElementById('actionField').value='upload'; this.form.submit();">
-        </div>
-        <small class="text-muted d-block mt-2">Файл: каждая строка "from,to,weight" (разделители запятая или пробел)</small>
-    </form>
-        <script>
-          document.getElementById('fileUpload')?.addEventListener('change', function() {
-            this.form.action.value = 'upload';
-            this.form.submit();
-          });
-        </script>
+          </div>
+          <small class="text-muted d-block mt-2">Файл: каждая строка "from,to,weight" (разделители запятая или пробел)</small>
+        </form>
 
       % elif stage == 'results':
-        <!-- ШАГ 3: результаты (сообщение + таблица маршрутов слева) -->
+        <!-- ШАГ 3: результаты -->
         <div class="alert alert-success">
           <strong>✅ Маршруты построены</strong> – граф показан справа.
         </div>
@@ -145,7 +138,6 @@
   <div class="col-md-7">
     <div class="graph-panel">
       % if stage == 'results':
-        <!-- На этапе результатов показываем граф со всеми рёбрами -->
         <div id="graphContainer" class="graph-container"></div>
         <div class="graph-legend mt-2">
           <span class="legend-item"><span class="legend-color solid"></span> Доступный канал</span>
@@ -154,7 +146,6 @@
           <span class="legend-item"><span style="background:#97c2e0; width:16px; height:16px; display:inline-block; border-radius:50%;"></span> Обычная вершина</span>
         </div>
       % else:
-        <!-- На первых двух этапах показываем информационную заглушку -->
         <div class="graph-placeholder text-center p-5 bg-light rounded">
           <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
           <h5 class="text-muted">Граф будет построен после расчёта</h5>
@@ -194,7 +185,6 @@ function drawGraphFromEdges(edgesList, sourceVertex) {
         size: 28
     }));
     
-    // Обычные рёбра (доступные)
     const visEdges = regularEdges.map(e => ({
         from: e.from,
         to: e.to,
@@ -204,7 +194,6 @@ function drawGraphFromEdges(edgesList, sourceVertex) {
         color: { color: '#2e86ab' }
     }));
     
-    // Рёбра с inf (недоступные) – пунктирные, серые
     const infVisEdges = infEdges.map(e => ({
         from: e.from,
         to: e.to,

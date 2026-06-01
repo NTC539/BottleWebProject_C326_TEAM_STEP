@@ -87,6 +87,8 @@ def dijkstra_practice():
 
     if request.method == 'POST':
         action = request.forms.get('action', '')
+
+        # 1. generate_count
         if action == 'generate_count':
             try:
                 count_str = request.forms.getunicode('edge_count', '').strip()
@@ -103,7 +105,6 @@ def dijkstra_practice():
                         if not source:
                             errors.append('Вершина-источник не может быть пустой.')
                         else:
-                            # Восстанавливаем рёбра из скрытых полей (если были)
                             edges = []
                             for i in range(edge_count):
                                 from_val = request.forms.getunicode(f'from_{i}', '')
@@ -118,11 +119,10 @@ def dijkstra_practice():
 
             if errors:
                 stage = 'input_count'
-                # Сохраняем уже введённые данные для повторного показа
                 edge_count = int(request.forms.getunicode('edge_count', 0)) if request.forms.getunicode('edge_count', '').isdigit() else 0
                 source = request.forms.getunicode('source', 'A').strip()
 
-        # 2. Назад с шага 2 на шаг 1
+        # 2. back_to_count
         elif action == 'back_to_count':
             edge_count = int(request.forms.getunicode('edge_count', '0'))
             source = request.forms.getunicode('source', 'A').strip()
@@ -134,11 +134,10 @@ def dijkstra_practice():
                 edges.append((from_val, to_val, weight_val))
             stage = 'input_count'
 
-        # 3. Случайный граф
+        # 3. random
         elif action == 'random':
             vertices = ['A', 'B', 'C', 'D', 'E', 'F']
             edge_count = random.randint(4, 9)
-            source = random.choice(vertices)
             edges = []
             used_pairs = set()
             for _ in range(edge_count):
@@ -149,11 +148,13 @@ def dijkstra_practice():
                 used_pairs.add((from_v, to_v))
                 weight = str(random.randint(1, 20)) if random.random() < 0.85 else 'inf'
                 edges.append((from_v, to_v, weight))
+
+            source = random.choice(random.choice(edges))
             stage = 'input_edges'
 
-        # 4. Загрузка файла
+        # 4. upload
         elif action == 'upload':
-            upload = request.files.getunicode('file')
+            upload = request.files.get('file')
             if not upload:
                 errors.append('Файл не выбран.')
                 stage = 'input_count'
@@ -189,7 +190,7 @@ def dijkstra_practice():
                     errors.append('Файл не содержит корректных рёбер.')
                     stage = 'input_count'
 
-        # 5. Расчёт алгоритма
+        # 5. calculate
         elif action == 'calculate':
             edge_count = int(request.forms.getunicode('edge_count', '0'))
             source = request.forms.getunicode('source', 'A').strip()
@@ -204,7 +205,7 @@ def dijkstra_practice():
                     parse_errors.append(f'Ребро {i+1}: все поля должны быть заполнены.')
                     continue
                 if len(from_v) > 10:
-                    parse_errors.append(f'Ребро {i+1}: название вершины ( {from_v}) не должно превышать 10 символов')
+                    parse_errors.append(f'Ребро {i+1}: название вершины ({from_v}) не должно превышать 10 символов')
                     continue
                 if len(to_v) > 10:
                     parse_errors.append(f'Ребро {i+1}: название вершины ({to_v}) не должно превышать 10 символов')
@@ -222,7 +223,6 @@ def dijkstra_practice():
                     continue
                 edges_raw.append((from_v, to_v, w))
 
-            # Сохраняем введённые строки
             edges = [(request.forms.getunicode(f'from_{i}', ''),
                       request.forms.getunicode(f'to_{i}', ''),
                       request.forms.getunicode(f'weight_{i}', '')) for i in range(edge_count)]
@@ -259,7 +259,7 @@ def dijkstra_practice():
                         errors.append(str(e))
                         stage = 'input_edges'
 
-        # 6. Назад с шага 3 на шаг 2
+        # 6. back_to_edges
         elif action == 'back_to_edges':
             edge_count = int(request.forms.getunicode('edge_count', '0'))
             source = request.forms.getunicode('source', 'A').strip()
@@ -271,7 +271,7 @@ def dijkstra_practice():
                 edges.append((from_v, to_v, weight))
             stage = 'input_edges'
 
-        # 7. Сброс
+        # 7. reset
         elif action == 'reset':
             stage = 'input_count'
             edge_count = 0
@@ -279,6 +279,7 @@ def dijkstra_practice():
             edges = []
             errors = []
 
+        # 8. export
         elif action == 'export':
             edge_count = int(request.forms.getunicode('edge_count', '0'))
             source = request.forms.getunicode('source', 'A').strip()
@@ -296,7 +297,6 @@ def dijkstra_practice():
             response.headers['Content-Disposition'] = 'attachment; filename="graph_export.txt"'
             return "\n".join(edges_list)
 
-    # Подготовка graph_edges для JSON (замена inf на 'inf')
     graph_edges_for_json = None
     if graph_edges:
         graph_edges_for_json = [(u, v, w if w != float('inf') else 'inf') for (u, v, w) in graph_edges]
@@ -310,6 +310,6 @@ def dijkstra_practice():
         graph_edges=graph_edges,
         graph_edges_json=graph_edges_for_json,
         results=results,
-        year=2025,
+        year=2026,
         json=json
     )
