@@ -96,6 +96,19 @@ def cpm_practice():
                 if i < len(dt) and df[i] and dt[i]
             ]
 
+            # Проверки зависимостей
+            seen_deps = set()
+            for a, b in deps:
+                if a == b:
+                    raise ValueError(f'Задача «{a}» не может зависеть от самой себя.')
+                if (a, b) in seen_deps:
+                    raise ValueError(f'Зависимость «{a} → {b}» указана несколько раз.')
+                seen_deps.add((a, b))
+                if (b, a) in seen_deps:
+                    raise ValueError(
+                        f'Обнаружена встречная зависимость: «{b} → {a}» и «{a} → {b}».'
+                    )
+
             result = find_critical_path(tasks, deps)
             result['tasks'] = tasks   # для таблицы в шаблоне
 
