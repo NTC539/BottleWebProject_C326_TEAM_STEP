@@ -5,7 +5,7 @@ Routes and views for the bottle application.
 from cmath import inf
 import json
 import os
-from bottle import route, view, request, template
+from bottle import route, view, request, response, template
 from datetime import datetime
 from algorithms.coloring import (
     ColoringInputError,
@@ -81,6 +81,15 @@ def coloring_practice():
                 errors.append('Файл должен быть сохранён в кодировке UTF-8.')
             except ColoringInputError as exc:
                 errors.extend(exc.errors)
+        elif action == 'export_json':
+            subjects, conflicts = _read_coloring_form()
+            try:
+                result = solve_coloring(subjects, conflicts)
+                subjects = result['subjects']
+                conflicts = result['conflicts']
+                return _export_coloring_json(subjects, conflicts, result)
+            except ColoringInputError as exc:
+                errors.extend(exc.errors)
         else:
             subjects, conflicts = _read_coloring_form()
             try:
@@ -118,6 +127,28 @@ def _read_coloring_form():
         conflicts.append((left, right))
 
     return subjects, conflicts
+
+
+def _export_coloring_json(subjects, conflicts, result):
+    data = {
+        'subjects': subjects,
+        'conflicts': [[left, right] for left, right in conflicts],
+        'result': {
+            'algorithm': 'Welsh-Powell',
+            'num_colors': result['num_colors'],
+            'colors': result['colors'],
+            'schedule': result['schedule'],
+            'teacher_shifts': result['teacher_shifts'],
+            'teacher_cost': result['teacher_cost'],
+            'order': result['order'],
+            'degrees': result['degrees'],
+        },
+    }
+    filename = 'coloring_result_{}.json'.format(datetime.now().strftime('%Y%m%d_%H%M%S'))
+
+    response.content_type = 'application/json; charset=utf-8'
+    response.set_header('Content-Disposition', 'attachment; filename="{}"'.format(filename))
+    return json.dumps(data, ensure_ascii=False, indent=2)
 
 
 def _save_coloring_history(subjects, conflicts, result):

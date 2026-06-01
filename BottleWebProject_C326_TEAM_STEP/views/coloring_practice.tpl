@@ -1,5 +1,5 @@
 % rebase('layout.tpl', title='Практика — Раскраска графа', year=year, active_page='coloring')
-<link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css?v=12" />
+<link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css?v=13" />
 
 <section class="practice-hero">
     <span class="page-label">Раскраска графа - практика</span>
@@ -126,6 +126,7 @@
         <button type="submit" class="btn btn-primary btn-lg">Рассчитать расписание</button>
         % if result:
         <a href="#coloring-result" class="btn btn-default btn-lg result-jump">Показать результат</a>
+        <button type="button" data-submit-action="export_json" class="btn btn-default btn-lg export-json-btn">Скачать JSON</button>
         % end
     </div>
 
@@ -230,4 +231,4 @@
 </section>
 % end
 
-<script src="/static/scripts/coloring_practice.js?v=21"></script>
+<script src="/static/scripts/coloring_practice.js?v=22"></script>
