@@ -5,9 +5,10 @@ Routes and views for the bottle application.
 from cmath import inf
 import json
 import os
-from bottle import route, view, request, template
+from bottle import route, view, request, template, response
 from datetime import datetime
 from algorithms.cpm import find_critical_path
+from cpm_generator import generate_random_cpm
 
 def _year():
     return datetime.now().year
@@ -60,23 +61,39 @@ def bridges_practice():
 def cpm():
     return dict(year=_year())
 
+@route('/cpm/generate')
+def cpm_generate():
+    """Возвращает случайный набор задач и зависимостей (без циклов) в JSON."""
+    response.content_type = 'application/json'
+    return json.dumps(generate_random_cpm(), ensure_ascii=False)
+
+
 @route('/cpm/practice', method=['GET', 'POST'])
 @view('cpm_practice')
 def cpm_practice():
     result = None
     error = None
-    
+    # Введённые данные сохраняем для повторного отображения формы (не очищать поля)
+    tasks_input = []   # [[имя, длительность], ...] в исходном порядке
+    deps_input = []    # [[откуда, куда], ...]
+
     if request.method == 'POST':
+        # Получаем списки в правильной UTF-8 кодировке
+        names = request.forms.getall('task_name[]')
+        durations = request.forms.getall('task_dur[]')
+        df = request.forms.getall('dep_from[]')
+        dt = request.forms.getall('dep_to[]')
+
+        # Запоминаем сырой ввод, чтобы форма не очищалась после отправки
+        for i in range(len(names)):
+            dur_raw = durations[i] if i < len(durations) else ''
+            tasks_input.append([names[i], dur_raw])
+        for i in range(len(df)):
+            if i < len(dt):
+                deps_input.append([df[i], dt[i]])
+
         try:
-            # Создаем декодированную копию всех данных формы
-            forms = request.forms.decode()
-    
-            # Получаем списки в правильной UTF-8 кодировке
-            names = request.forms.getall('task_name[]')
-            durations = request.forms.getall('task_dur[]')
-
             tasks = {}
-
             for i in range(len(names)):
                 name = names[i].strip() if i < len(names) else ''
                 if not name:
@@ -95,8 +112,6 @@ def cpm_practice():
             if not tasks:
                 raise ValueError('Список задач не может быть пустым.')
 
-            df   = request.forms.getall('dep_from[]')
-            dt   = request.forms.getall('dep_to[]')
             deps = [
                 (df[i], dt[i])
                 for i in range(len(df))
@@ -106,24 +121,46 @@ def cpm_practice():
             result = find_critical_path(tasks, deps)
             result['tasks'] = tasks   # для таблицы в шаблоне
 
-            result['gv']     = _json.dumps(list(tasks.keys()))
-            result['ge']     = _json.dumps([[a, b] for a, b in deps])
-            result['gcrit']  = _json.dumps(result['critical_paths'])
-            result['gtasks'] = _json.dumps(result['tasks'])
-            result['ges']    = _json.dumps(result['es'])
-            result['gef']    = _json.dumps(result['ef'])
+            # JSON для отрисовки графа через vis.js (вставляется в шаблон через {{!...}})
+            result['gv']     = json.dumps(list(tasks.keys()))
+            result['ge']     = json.dumps([[a, b] for a, b in deps])
+            result['gcrit']  = json.dumps(result['critical_paths'])
+            result['gtasks'] = json.dumps(result['tasks'])
+            result['ges']    = json.dumps(result['es'])
+            result['gef']    = json.dumps(result['ef'])
+            result['gls']    = json.dumps(result['ls'])
+            result['glf']    = json.dumps(result['lf'])
+            result['gfloat'] = json.dumps(result['total_float'])
+
+            # Полный результат для скачивания в .json (set → отсортированный список)
+            download = {
+                'duration':       result['duration'],
+                'critical_paths': result['critical_paths'],
+                'critical_tasks': sorted(result['critical_tasks']),
+                'tasks':          result['tasks'],
+                'es':             result['es'],
+                'ef':             result['ef'],
+                'ls':             result['ls'],
+                'lf':             result['lf'],
+                'total_float':    result['total_float'],
+            }
+            result['gdownload'] = json.dumps(download, ensure_ascii=False)
 
         except ValueError as e:
             error = str(e)
+            result = None
         except Exception as e:
             error = f'Ошибка: {e}'
+            result = None
 
     return dict(
-    title='Критический путь — Практика (POST)',
-    active_page='cpm',
-    year=_year(),
-    result=result,
-    error=error,
+        title='Критический путь — Практика (POST)',
+        active_page='cpm',
+        year=_year(),
+        result=result,
+        error=error,
+        tasks_input=json.dumps(tasks_input, ensure_ascii=False),
+        deps_input=json.dumps(deps_input, ensure_ascii=False),
     )
 
 

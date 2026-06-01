@@ -11,7 +11,7 @@ class TestFindCriticalPath(unittest.TestCase):
         result = find_critical_path(tasks, deps)
 
         self.assertEqual(result["duration"], 9)
-        self.assertEqual(result["critical_path"], ["A", "B", "C"])
+        self.assertEqual(result["critical_paths"], [["A", "B", "C"]])
         self.assertEqual(result["es"], {"A": 0, "B": 2, "C": 5})
 
     def test_diamond_two_branches(self):
@@ -21,7 +21,7 @@ class TestFindCriticalPath(unittest.TestCase):
         result = find_critical_path(tasks, deps)
 
         self.assertEqual(result["duration"], 9)
-        self.assertEqual(result["critical_path"], ["A", "C", "E"])
+        self.assertEqual(result["critical_paths"], [["A", "C", "E"]])
 
     def test_single_vertex(self):
         """Одна вершина без зависимостей."""
@@ -29,21 +29,21 @@ class TestFindCriticalPath(unittest.TestCase):
         result = find_critical_path(tasks, [])
 
         self.assertEqual(result["duration"], 7)
-        self.assertEqual(result["critical_path"], ["X"])
+        self.assertEqual(result["critical_paths"], [["X"]])
         self.assertEqual(result["es"], {"X": 0})
 
     def test_parallel_equal_paths(self):
-        """S→A→F и S→B→F одинаковой длины — любой путь длиной 3 допустим."""
+        """S→A→F и S→B→F одинаковой длины — оба пути критические."""
         tasks = {"S": 0, "A": 5, "B": 5, "F": 0}
         deps  = [("S", "A"), ("S", "B"), ("A", "F"), ("B", "F")]
         result = find_critical_path(tasks, deps)
 
         self.assertEqual(result["duration"], 5)
-        self.assertEqual(len(result["critical_path"]), 3)
-        path = result["critical_path"]
-        self.assertEqual(path[0], "S")
-        self.assertEqual(path[-1], "F")
-        self.assertIn(path[1], ("A", "B"))
+        # Оба параллельных пути одинаковой длины должны попасть в результат.
+        self.assertIn(["S", "A", "F"], result["critical_paths"])
+        self.assertIn(["S", "B", "F"], result["critical_paths"])
+        # Все четыре задачи критические (нулевой резерв).
+        self.assertEqual(result["critical_tasks"], {"S", "A", "B", "F"})
 
     def test_cycle_raises_value_error(self):
         """Цикл A→B→C→A должен вызывать ValueError с упоминанием цикла."""
@@ -65,7 +65,7 @@ class TestFindCriticalPath(unittest.TestCase):
         result = find_critical_path(tasks, [])
 
         self.assertEqual(result["duration"], 3)
-        self.assertEqual(result["critical_path"], ["B"])
+        self.assertEqual(result["critical_paths"], [["B"]])
 
 
 if __name__ == "__main__":

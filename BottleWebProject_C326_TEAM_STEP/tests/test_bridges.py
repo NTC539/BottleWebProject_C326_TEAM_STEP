@@ -1,10 +1,17 @@
 """
 tests/test_bridges.py — Unit tests for algorithms/bridges.py
 Run: python -m pytest tests/test_bridges.py -v
+
+Контракт (Вариант A, соответствует блок-схеме и ТЗ 2.2.1–2.2.4):
+  • суммы база/новая_сумма берутся по парам i < j и включают ∞;
+  • удаление любого моста разрывает граф → delta = float('inf');
+  • delta_rel = delta / база (тоже ∞ при разрыве).
 """
 
 import unittest
 from algorithms.bridges import analyze_network
+
+INF = float('inf')
 
 
 def _bridge_set(bridges):
@@ -27,13 +34,22 @@ class TestPathAllBridges(unittest.TestCase):
         expected = {frozenset({'A', 'B'}), frozenset({'B', 'C'}), frozenset({'C', 'D'})}
         self.assertEqual(_bridge_set(self.result['bridges']), expected)
 
-    def test_all_deltas_none(self):
+    def test_all_deltas_infinite(self):
+        # Удаление любого моста разрывает путь → delta = ∞.
         for item in self.result['bridge_impact']:
-            self.assertIsNone(item['delta'],
-                              f"Expected delta=None for bridge {item['edge']}")
+            self.assertEqual(item['delta'], INF,
+                             f"Expected delta=inf for bridge {item['edge']}")
+
+    def test_all_deltas_rel_infinite(self):
+        for item in self.result['bridge_impact']:
+            self.assertEqual(item['delta_rel'], INF)
 
     def test_impact_count_matches_bridges(self):
         self.assertEqual(len(self.result['bridge_impact']), 3)
+
+    def test_base_sum_pairs_i_lt_j(self):
+        # Пары i<j: AB=1, AC=3, AD=6, BC=2, BD=5, CD=3 → 20.
+        self.assertEqual(self.result['total_path_sum'], 20.0)
 
 
 class TestTriangleNoBridges(unittest.TestCase):
@@ -52,7 +68,7 @@ class TestTriangleNoBridges(unittest.TestCase):
 
     def test_total_path_sum_finite(self):
         s = self.result['total_path_sum']
-        self.assertNotEqual(s, float('inf'))
+        self.assertNotEqual(s, INF)
         self.assertGreater(s, 0.0)
 
 
@@ -80,9 +96,13 @@ class TestTwoTrianglesOneBridge(unittest.TestCase):
         bs = _bridge_set(self.result['bridges'])
         self.assertIn(frozenset({'C', 'D'}), bs)
 
-    def test_bridge_delta_none(self):
-        # Removing C–D splits the graph → delta must be None
-        self.assertIsNone(self.result['bridge_impact'][0]['delta'])
+    def test_bridge_delta_infinite(self):
+        # Removing C–D splits the graph → delta = ∞.
+        self.assertEqual(self.result['bridge_impact'][0]['delta'], INF)
+
+    def test_base_sum_finite(self):
+        # Исходный граф связен → база конечна.
+        self.assertNotEqual(self.result['total_path_sum'], INF)
 
 
 class TestBridgeIsolatesLeaf(unittest.TestCase):
@@ -106,8 +126,8 @@ class TestBridgeIsolatesLeaf(unittest.TestCase):
         bs = _bridge_set(self.result['bridges'])
         self.assertIn(frozenset({'A', 'B'}), bs)
 
-    def test_delta_none_leaf_isolated(self):
-        self.assertIsNone(self.result['bridge_impact'][0]['delta'])
+    def test_delta_infinite_leaf_isolated(self):
+        self.assertEqual(self.result['bridge_impact'][0]['delta'], INF)
 
 
 class TestSingleVertex(unittest.TestCase):
@@ -145,9 +165,13 @@ class TestTwoDisconnectedComponents(unittest.TestCase):
         self.assertIn(frozenset({'A', 'B'}), bs)
         self.assertIn(frozenset({'C', 'D'}), bs)
 
-    def test_both_deltas_none(self):
+    def test_base_sum_infinite(self):
+        # Исходный граф уже несвязен (A↔C недостижимы) → база = ∞.
+        self.assertEqual(self.result['total_path_sum'], INF)
+
+    def test_both_deltas_infinite(self):
         for item in self.result['bridge_impact']:
-            self.assertIsNone(item['delta'])
+            self.assertEqual(item['delta'], INF)
 
 
 class TestUnknownVertexRaises(unittest.TestCase):
