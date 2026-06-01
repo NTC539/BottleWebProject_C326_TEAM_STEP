@@ -76,7 +76,7 @@ A,E,inf">{{ edges or '' }}</textarea>
                     <td>{{ frm }}</td>
                     <td>{{ to }}</td>
                     <td>{{ weight_display }}</td>
-                    <td>{{ !status }}</td>   <!-- ! для вывода HTML (цветные теги) -->
+                    <td>{{ !status }}</td>   
                 </tr>
             % end
             </tbody>
@@ -107,7 +107,6 @@ A,E,inf">{{ edges or '' }}</textarea>
 </div>
 % end
 
-<!-- скрипт отрисовки графа остаётся без изменений -->
 <script>
 function drawGraph(edgesText, sourceVertex) {
     const lines = edgesText.trim().split(/\r?\n/);
