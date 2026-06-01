@@ -7,7 +7,7 @@ import json
 import os
 import random
 import json
-from bottle import route, view, request, template
+from bottle import route, view, request, template, response
 from datetime import datetime
 from algorithms.dijkstra import route_network
 
@@ -77,7 +77,6 @@ def coloring():
 @route('/dijkstra/practice', method=['GET', 'POST'])
 @view('dijkstra_practice')
 def dijkstra_practice():
-    # Значения по умолчанию
     stage = 'input_count'
     edge_count = 0
     source = 'A'
@@ -88,8 +87,6 @@ def dijkstra_practice():
 
     if request.method == 'POST':
         action = request.forms.get('action', '')
-
-        # 1. Пользователь указал количество рёбер
         if action == 'generate_count':
             try:
                 count_str = request.forms.getunicode('edge_count', '').strip()
@@ -207,7 +204,7 @@ def dijkstra_practice():
                     parse_errors.append(f'Ребро {i+1}: все поля должны быть заполнены.')
                     continue
                 if len(from_v) > 10:
-                    parse_errors.append(f'Ребро {i+1}: название вершины ({from_v}) не должно превышать 10 символов')
+                    parse_errors.append(f'Ребро {i+1}: название вершины ( {from_v}) не должно превышать 10 символов')
                     continue
                 if len(to_v) > 10:
                     parse_errors.append(f'Ребро {i+1}: название вершины ({to_v}) не должно превышать 10 символов')
@@ -281,6 +278,23 @@ def dijkstra_practice():
             source = 'A'
             edges = []
             errors = []
+
+        elif action == 'export':
+            edge_count = int(request.forms.getunicode('edge_count', '0'))
+            source = request.forms.getunicode('source', 'A').strip()
+            edges_list = []
+            for i in range(edge_count):
+                from_v = request.forms.getunicode(f'from_{i}', '').strip()
+                to_v = request.forms.getunicode(f'to_{i}', '').strip()
+                weight = request.forms.getunicode(f'weight_{i}', '').strip()
+                if from_v and to_v and weight:
+                    edges_list.append(f"{from_v},{to_v},{weight}")
+            if not edges_list:
+                response.status = 400
+                return "Нет данных для экспорта."
+            response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+            response.headers['Content-Disposition'] = 'attachment; filename="graph_export.txt"'
+            return "\n".join(edges_list)
 
     # Подготовка graph_edges для JSON (замена inf на 'inf')
     graph_edges_for_json = None
