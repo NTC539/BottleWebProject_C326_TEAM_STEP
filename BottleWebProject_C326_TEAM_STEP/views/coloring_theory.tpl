@@ -1,188 +1,121 @@
-% rebase('layout.tpl', title='Теория — Раскраска графа Welsh–Powell', year=year, active_page='coloring')
+% rebase('layout.tpl', title='Теория — Раскраска графа', year=year, active_page='coloring')
 <link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css" />
 
-<!-- СЕКЦИЯ 1: Навигация -->
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
-    <h2 style="margin:0;border:none;padding:0;">Раскраска графа &mdash; Welsh&ndash;Powell</h2>
-    <a href="/coloring/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
-</div>
-
-<!-- СЕКЦИЯ 2: Ошибка -->
-% if defined('error') and error:
-<div class="alert alert-danger">{{error}}</div>
-% end
-
-<!-- СЕКЦИЯ 3: Содержание -->
-
-<div class="ct-intro-box">
-    <h3>Что такое раскраска графа?</h3>
+<section class="theory-hero">
+    <span class="page-label">Теория алгоритма</span>
+    <h1>Раскраска графа для расписания</h1>
     <p>
-        Раскраска графа G&nbsp;=&nbsp;(V,&nbsp;E) &mdash; отображение
-        c:&nbsp;V&nbsp;&rarr;&nbsp;{1,&nbsp;2,&nbsp;&hellip;,&nbsp;k}
-        такое, что для каждого ребра {u,&nbsp;v}&nbsp;&isin;&nbsp;E
-        выполняется c(u)&nbsp;&ne;&nbsp;c(v). Смежные вершины получают разные цвета.
-        Минимальное число цветов &chi;(G) называется <strong>хроматическим числом</strong>.
-        Точное вычисление &chi;(G) &mdash; <strong>NP-полная</strong> задача.
+        Идея простая: дисциплины считаем вершинами, конфликты между ними — рёбрами.
+        Дисциплины, соединённые ребром, нельзя поставить в одну смену.
     </p>
-</div>
-
-<div class="ct-section-title">Хроматическое число: частные случаи</div>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Тип графа</th>
-            <th>&chi;(G)</th>
-            <th>Пример</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Пустой граф (нет рёбер)</td>
-            <td>1</td>
-            <td>Изолированные вершины</td>
-        </tr>
-        <tr>
-            <td>Дерево / двудольный граф</td>
-            <td>2</td>
-            <td>Дорожная сеть без циклов</td>
-        </tr>
-        <tr>
-            <td>Нечётный цикл</td>
-            <td>3</td>
-            <td>C<sub>5</sub> (пятиугольник)</td>
-        </tr>
-        <tr>
-            <td>Полный граф K<sub>n</sub></td>
-            <td>n</td>
-            <td>K<sub>4</sub> &rarr; &chi;&nbsp;=&nbsp;4</td>
-        </tr>
-    </tbody>
-</table>
-
-<div class="ct-section-title">Алгоритм Welsh&ndash;Powell</div>
-<p>Жадная эвристика, хорошее приближение к &chi;(G) за <strong>O(V&sup2;&nbsp;+&nbsp;E)</strong>.</p>
-
-<div class="ct-step">
-    <div class="ct-step-num">1</div>
-    <div class="ct-step-body">
-        <strong>Сортировка по степени.</strong>
-        Упорядочить все вершины по убыванию степени deg(v).
-        При равной степени &mdash; в алфавитном порядке для детерминированности результата.
+    <div class="mode-switch">
+        <span class="mode-current">Теория</span>
+        <a href="/coloring/practice">Открыть форму ввода</a>
     </div>
-</div>
-<div class="ct-step">
-    <div class="ct-step-num">2</div>
-    <div class="ct-step-body">
-        <strong>Выбор первой неокрашенной вершины.</strong>
-        Взять первую вершину из отсортированного списка, ещё не получившую цвет.
-        Назначить ей наименьший свободный цвет c.
-    </div>
-</div>
-<div class="ct-step">
-    <div class="ct-step-num">3</div>
-    <div class="ct-step-body">
-        <strong>Распространение цвета c.</strong>
-        Просмотреть оставшиеся неокрашенные вершины в том же порядке.
-        Если вершина <em>не конфликтует</em> ни с одной уже окрашенной в цвет c &mdash;
-        назначить ей цвет c.
-    </div>
-</div>
-<div class="ct-step">
-    <div class="ct-step-num">4</div>
-    <div class="ct-step-body">
-        <strong>Повтор.</strong>
-        Увеличить номер цвета и вернуться к шагу&nbsp;2.
-        Продолжать до тех пор, пока все вершины не получат цвет.
-    </div>
-</div>
+</section>
 
-<div class="ct-section-title">Гарантии и оптимальность</div>
-<p>
-    Welsh&ndash;Powell <strong>не гарантирует</strong> оптимальной раскраски &mdash;
-    результат зависит от порядка вершин и структуры графа.
-    Тем не менее алгоритм даёт результат, близкий к оптимальному,
-    для большинства реальных задач и работает значительно быстрее методов полного перебора.
-</p>
-<div class="ct-formula">
-    &chi;(G) &le; k(WP) &le; &Delta;(G) + 1
-</div>
-<p>
-    где <strong>k(WP)</strong> &mdash; число цветов, использованных алгоритмом,
-    а <strong>&Delta;(G)</strong> &mdash; максимальная степень вершины графа.
-</p>
+<section class="theory-layout">
+    <div>
+        <h2>Как это работает</h2>
+        <div class="simple-steps">
+            <div class="ct-step">
+                <span class="ct-step-num">1</span>
+                <p><strong>Собираем граф.</strong> Вершины — дисциплины, рёбра — пары, которые конфликтуют.</p>
+            </div>
+            <div class="ct-step">
+                <span class="ct-step-num">2</span>
+                <p><strong>Сортируем вершины.</strong> Сначала берём дисциплины с большим числом конфликтов.</p>
+            </div>
+            <div class="ct-step">
+                <span class="ct-step-num">3</span>
+                <p><strong>Назначаем смену.</strong> Выбираем первый свободный номер смены, где нет соседей-конфликтов.</p>
+            </div>
+            <div class="ct-step">
+                <span class="ct-step-num">4</span>
+                <p><strong>Улучшаем результат.</strong> Пробуем перенести дисциплины так, чтобы преподавателям было удобнее.</p>
+            </div>
+        </div>
+    </div>
 
-<div class="ct-section-title">Пример: граф из 6 вершин</div>
-<p>
-    <strong>Вершины:</strong> A, B, C, D, E, F.<br>
-    <strong>Рёбра:</strong> A&ndash;B, A&ndash;C, B&ndash;C, B&ndash;D,
-    C&ndash;E, D&ndash;E, D&ndash;F, E&ndash;F.<br>
-    <strong>Степени:</strong> B&nbsp;=&nbsp;3, C&nbsp;=&nbsp;3, D&nbsp;=&nbsp;3,
-    E&nbsp;=&nbsp;3, A&nbsp;=&nbsp;2, F&nbsp;=&nbsp;2.<br>
-    <strong>Порядок Welsh&ndash;Powell:</strong> B, C, D, E, A, F.
-</p>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Вершина</th>
-            <th>Степень</th>
-            <th>Назначенный цвет</th>
-            <th>Причина</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr class="danger">
-            <td>B</td><td>3</td>
-            <td><span class="color-badge cb-red">Смена&nbsp;1</span></td>
-            <td>Первая вершина &mdash; цвет 1</td>
-        </tr>
-        <tr class="danger">
-            <td>E</td><td>3</td>
-            <td><span class="color-badge cb-red">Смена&nbsp;1</span></td>
-            <td>Нет ребра с B(1) &rarr; цвет 1</td>
-        </tr>
-        <tr class="success">
-            <td>C</td><td>3</td>
-            <td><span class="color-badge cb-green">Смена&nbsp;2</span></td>
-            <td>Смежна с B(1) &rarr; новый цвет 2</td>
-        </tr>
-        <tr class="success">
-            <td>D</td><td>3</td>
-            <td><span class="color-badge cb-green">Смена&nbsp;2</span></td>
-            <td>Смежна с B(1); нет ребра C&ndash;D &rarr; цвет 2</td>
-        </tr>
-        <tr class="info">
-            <td>A</td><td>2</td>
-            <td><span class="color-badge cb-blue">Смена&nbsp;3</span></td>
-            <td>Смежна с B(1) и C(2) &rarr; новый цвет 3</td>
-        </tr>
-        <tr class="info">
-            <td>F</td><td>2</td>
-            <td><span class="color-badge cb-blue">Смена&nbsp;3</span></td>
-            <td>Смежна с E(1) и D(2); нет ребра A&ndash;F &rarr; цвет 3</td>
-        </tr>
-    </tbody>
-</table>
-<p>
-    Итоговая раскраска:
-    <span class="color-badge cb-red">B &mdash; Смена&nbsp;1</span>
-    <span class="color-badge cb-red">E &mdash; Смена&nbsp;1</span>
-    <span class="color-badge cb-green">C &mdash; Смена&nbsp;2</span>
-    <span class="color-badge cb-green">D &mdash; Смена&nbsp;2</span>
-    <span class="color-badge cb-blue">A &mdash; Смена&nbsp;3</span>
-    <span class="color-badge cb-blue">F &mdash; Смена&nbsp;3</span>
-</p>
-<div class="chi-display">
-    3
-    <span class="chi-label">&chi;(G) = 3 цвета</span>
-</div>
-
-<div class="ct-section-title">Применение раскраски графов</div>
-<div class="row">
-    <div class="col-sm-4">
+    <aside class="theory-note">
+        <h3>Главное правило</h3>
         <p>
-            <strong>Расписания экзаменов</strong><br>
-            Распределение дисциплин по временным слотам без конфликтов:
-            смежные вершины (конфликтующие дисциплины) &mdash; разные слоты.
+            Если две дисциплины соединены ребром, они всегда должны быть в разных сменах.
+            Всё остальное — попытка сделать расписание компактнее.
         </p>
+    </aside>
+</section>
+
+<section>
+    <h2>Разобранный пример</h2>
+    <p>
+        Возьмём шесть дисциплин: A, B, C, D, E, F.
+        Конфликты: A-B, A-C, B-C, B-D, C-E, D-E, D-F, E-F.
+    </p>
+
+    <div class="example-grid">
+        <div class="example-graph" role="img" aria-label="Граф примера раскраски">
+            <svg viewBox="0 0 420 260" class="graph-svg">
+                <line x1="92" y1="58" x2="210" y2="44" />
+                <line x1="92" y1="58" x2="160" y2="140" />
+                <line x1="210" y1="44" x2="160" y2="140" />
+                <line x1="210" y1="44" x2="278" y2="142" />
+                <line x1="160" y1="140" x2="302" y2="214" />
+                <line x1="278" y1="142" x2="302" y2="214" />
+                <line x1="278" y1="142" x2="374" y2="90" />
+                <line x1="302" y1="214" x2="374" y2="90" />
+
+                <circle class="node-blue" cx="92" cy="58" r="24" />
+                <circle class="node-red" cx="210" cy="44" r="24" />
+                <circle class="node-green" cx="160" cy="140" r="24" />
+                <circle class="node-green" cx="278" cy="142" r="24" />
+                <circle class="node-red" cx="302" cy="214" r="24" />
+                <circle class="node-blue" cx="374" cy="90" r="24" />
+
+                <text x="92" y="64">A</text>
+                <text x="210" y="50">B</text>
+                <text x="160" y="146">C</text>
+                <text x="278" y="148">D</text>
+                <text x="302" y="220">E</text>
+                <text x="374" y="96">F</text>
+            </svg>
+        </div>
+
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Смена</th>
+                        <th>Дисциплины</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="color-badge cb-red">1</span></td>
+                        <td>B, E</td>
+                    </tr>
+                    <tr>
+                        <td><span class="color-badge cb-green">2</span></td>
+                        <td>C, D</td>
+                    </tr>
+                    <tr>
+                        <td><span class="color-badge cb-blue">3</span></td>
+                        <td>A, F</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                Получилось три смены. Внутри каждой смены нет дисциплин, которые соединены ребром.
+            </p>
+        </div>
     </div>
-</div>
+</section>
+
+<section>
+    <h2>Что делает оптимизация</h2>
+    <div class="compact-points">
+        <p><strong>Уменьшает число смен,</strong> если дисциплину можно безопасно перенести раньше.</p>
+        <p><strong>Смотрит на преподавателей,</strong> чтобы один преподаватель не был разбросан по лишним сменам.</p>
+        <p><strong>Не ломает расписание:</strong> конфликтующие дисциплины всё равно остаются в разных сменах.</p>
+    </div>
+</section>

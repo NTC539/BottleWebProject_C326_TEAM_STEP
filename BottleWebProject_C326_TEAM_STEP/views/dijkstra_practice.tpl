@@ -1,220 +1,183 @@
-% rebase('layout.tpl', title=title, year=year, active_page=active_page)
+% rebase('layout.tpl', title='Практика — Алгоритм Дейкстры (OSPF)', year=year, active_page='practice')
 
-<h2>Алгоритм Дейкстры — Практика</h2>
+<link rel="stylesheet" href="/static/content/dijkstra.css">
+<script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
 
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 1: Форма ввода (динамические строки)
-     ═══════════════════════════════════════════════════════════ -->
-<form method="POST" action="/dijkstra/practice" id="form-dijkstra">
-<input type="hidden" name="edge_count" id="edge-count" value="0">
+<h2>Практическое задание</h2>
+<p class="text-muted">Введите ориентированный взвешенный граф, выберите источник — получите кратчайшие пути по алгоритму Дейкстры с фильтрацией недоступных каналов (∞).</p>
 
-<div class="theory-section">
-    <h3>Шаг 1 — Узлы сети</h3>
-    <span class="input-section-label">Добавьте маршрутизаторы / узлы:</span>
-    <div id="nodes-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn"
-            onclick="addNodeRow('nodes-container','Название узла (A, Router-1...)')">
-        + Добавить узел
-    </button>
+<div class="row practice-container">
+    <div class="col-md-5">
+        <div class="input-panel">
+            <form method="post" action="/dijkstra/practice" id="dijkstraForm">
+                <div class="form-group mb-3">
+                    <label for="edgesInput">Рёбра графа (from,to,weight)</label>
+                    <textarea id="edgesInput" name="edges" rows="8" class="form-control" placeholder="A,B,4
+A,C,2
+C,B,1
+B,D,5
+C,D,8
+D,E,2
+A,E,inf">{{ edges or '' }}</textarea>
+                    <small class="text-muted">inf — недоступный канал. Каждое ребро с новой строки.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="sourceInput">Вершина-источник</label>
+                    <input type="text" id="sourceInput" name="source" class="form-control" value="{{ source or 'A' }}" placeholder="например, A">
+                </div>
+
+                <div class="action-buttons">
+                    <a href="/dijkstra/random" class="btn-secondary">🎲 Случайный граф</a>
+                    <span class="btn btn-secondary file-upload-btn">
+                        📂 Загрузить файл
+                        <input type="file" name="file" accept=".txt,.csv" formaction="/dijkstra/upload" formmethod="post" onchange="this.form.submit()">
+                    </span>
+                    <button type="submit" class="btn-practice" style="background:#1a3a5c;">Рассчитать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="graph-panel">
+            <div id="graphContainer" class="graph-container"></div>
+            <div class="graph-legend mt-2">
+                <span class="legend-item"><span class="legend-color solid"></span> Доступный канал</span>
+                <span class="legend-item"><span style="background:#e84855; width:16px; height:16px; display:inline-block; border-radius:50%;"></span> Вершина-источник</span>
+                <span class="legend-item"><span style="background:#97c2e0; width:16px; height:16px; display:inline-block; border-radius:50%;"></span> Обычная вершина</span>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="theory-section">
-    <h3>Шаг 2 — Каналы связи</h3>
-    <span class="input-section-label">
-        Добавьте направленные каналы. Отметьте «недоступен» для временно
-        отключённых каналов (вес = ∞):
-    </span>
-    <div id="edges-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn"
-            onclick="addEdgeRow('edges-container', true, true, true)">
-        + Добавить канал
-    </button>
+% if errors:
+<div class="error-block mt-3">
+    <strong>Ошибки в данных:</strong>
+    <ul class="mb-0 mt-2">
+    % for err in errors:
+        <li>{{ err }}</li>
+    % end
+    </ul>
 </div>
+% end
 
-<div class="theory-section">
-    <h3>Шаг 3 — Источник</h3>
-    <span class="input-section-label">Выберите узел, от которого строить маршруты:</span>
-    <select name="source" class="form-control node-select" style="max-width:250px"></select>
+% if prepared_edges:
+<div class="graph-preview mt-3">
+    <h4>Введённый граф (после фильтрации недоступных каналов)</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr><th>От</th><th>К</th><th>Вес</th><th>Статус</th></tr>
+            </thead>
+            <tbody>
+            % for (frm, to, weight_display, status) in prepared_edges:
+                <tr>
+                    <td>{{ frm }}</td>
+                    <td>{{ to }}</td>
+                    <td>{{ weight_display }}</td>
+                    <td>{{ !status }}</td>   <!-- ! для вывода HTML (цветные теги) -->
+                </tr>
+            % end
+            </tbody>
+        </table>
+    </div>
 </div>
+% end
 
-<div class="theory-section" style="padding:10px 16px">
-    <span style="font-weight:600; margin-right:8px">Данные:</span>
-    <button type="button" class="btn btn-default btn-sm" onclick="randomDijkstra()">
-        🎲 Случайные данные
-    </button>
-    <button type="button" class="btn btn-default btn-sm" onclick="loadFileDijkstra()">
-        📂 Загрузить из файла
-    </button>
-    <span class="text-muted" style="font-size:12px; margin-left:8px">
-        JSON: { "vertices":[...], "edges":[{"from","to","weight","inf"}], "source":"A" }
-    </span>
+% if prepared_results:
+<div class="theory-section results-panel">
+    <h3>Результаты маршрутизации от источника <code>{{ source }}</code></h3>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped result-table">
+            <thead>
+                <tr><th>Узел назначения</th><th>Минимальная задержка</th><th>Маршрут</th></tr>
+            </thead>
+            <tbody>
+            % for node, data in prepared_results.items():
+            <tr>
+                <td><strong>{{ node }}</strong></td>
+                <td>{{ data['dist_display'] }}</td>
+                <td>{{ data['path_display'] }}</td>
+            </tr>
+            % end
+            </tbody>
+        </table>
+    </div>
 </div>
+% end
 
-<div style="margin-top:16px">
-    <button type="submit" class="btn btn-primary">Построить маршруты</button>
-</div>
-</form>
-
+<!-- скрипт отрисовки графа остаётся без изменений -->
 <script>
-$(function () {
-    // Добавить 3 узла и 2 канала по умолчанию
-    addNodeRow('nodes-container', 'Название узла');
-    addNodeRow('nodes-container', 'Название узла');
-    addNodeRow('nodes-container', 'Название узла');
-    addEdgeRow('edges-container', true, true, true);
-    addEdgeRow('edges-container', true, true, true);
+function drawGraph(edgesText, sourceVertex) {
+    const lines = edgesText.trim().split(/\r?\n/);
+    const edges = [];
+    const verticesSet = new Set();
+    for (let line of lines) {
+        line = line.trim();
+        if (line === '') continue;
+        const parts = line.split(',');
+        if (parts.length < 3) continue;
+        const from = parts[0].trim();
+        const to = parts[1].trim();
+        const weightStr = parts[2].trim().toLowerCase();
+        if (weightStr === 'inf') continue;
+        const weight = parseFloat(weightStr);
+        if (isNaN(weight)) continue;
+        edges.push({ from, to, weight });
+        verticesSet.add(from);
+        verticesSet.add(to);
+    }
+    
+    const vertices = Array.from(verticesSet);
+    const nodes = vertices.map(v => ({
+        id: v,
+        label: v,
+        color: v === sourceVertex ? '#e84855' : '#97c2e0',
+        font: { color: 'white', size: 16 },
+        size: 28
+    }));
+    const visEdges = edges.map(e => ({
+        from: e.from,
+        to: e.to,
+        label: e.weight.toString(),
+        arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+        font: { align: 'middle', size: 12 },
+        color: { color: '#2e86ab' }
+    }));
+    
+    const container = document.getElementById('graphContainer');
+    const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(visEdges) };
+    const options = {
+        physics: false,
+        interaction: {
+            dragNodes: true,
+            dragView: true,
+            zoomView: true,
+            minZoom: 0.5,
+            maxZoom: 2.0
+        },
+        edges: { smooth: { type: 'continuous', roundness: 0.2 } }
+    };
+    if (window.network) window.network.destroy();
+    window.network = new vis.Network(container, data, options);
+}
 
-    // Перед отправкой: нумеруем checkbox-ы и фиксируем edge_count
-    $('#form-dijkstra').on('submit', function () {
-        var count = $('#edges-container .edge-row').length;
-        $('#edge-count').val(count);
-        $('#edges-container .edge-row').each(function (i) {
-            $(this).find('input[type=checkbox]').attr('name', 'edge_inf_' + i);
-        });
-    });
+window.addEventListener('DOMContentLoaded', () => {
+    const edgesText = document.getElementById('edgesInput').value;
+    const source = document.getElementById('sourceInput').value.trim();
+    drawGraph(edgesText, source);
+});
+document.getElementById('edgesInput').addEventListener('input', function() {
+    const source = document.getElementById('sourceInput').value.trim();
+    drawGraph(this.value, source);
+});
+document.getElementById('sourceInput').addEventListener('input', function() {
+    const edgesText = document.getElementById('edgesInput').value;
+    drawGraph(edgesText, this.value.trim());
 });
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 2: Ошибка
-     ═══════════════════════════════════════════════════════════ -->
-% if defined('error') and error:
-<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
-% end
-
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 3: Результат (не трогать)
-     ═══════════════════════════════════════════════════════════ -->
-% if defined('result') and result is not None:
-
-<div style="margin-bottom:12px">
-    <button type="button" class="btn btn-default btn-sm"
-            onclick="downloadResult('dijkstra')">
-        💾 Скачать результат (JSON)
-    </button>
-    <button type="button" class="btn btn-default btn-sm"
-            onclick="downloadResultTxt('dijkstra')">
-        📄 Скачать результат (TXT)
-    </button>
+<div class="btn-practice-wrap mt-4 text-center">
+    <a href="/dijkstra" class="btn-secondary" style="background:#6c757d;">← Вернуться к теории</a>
 </div>
-<script>
-window._resultData = window._resultData || {};
-window._resultData['dijkstra'] = {
-    source:    '{{source_val}}',
-    distances: {{!result['g_distances']}},
-    paths:     {{!result['g_paths']}}
-};
-</script>
-
-% if result["skipped_edges"]:
-<div class="alert alert-warning">
-    <strong>Исключены недоступные каналы (∞):</strong>
-    % for se_u, se_v, se_w in result["skipped_edges"]:
-    {{se_u}}→{{se_v}}&nbsp;&nbsp;
-    % end
-</div>
-% end
-
-% if result["unreachable"]:
-<div class="alert alert-danger">
-    <strong>Недостижимые узлы:</strong> {{', '.join(result["unreachable"])}}
-</div>
-% end
-
-<div class="theory-section">
-    <h3>Таблица кратчайших маршрутов от узла {{source_val}}</h3>
-    <table class="table table-bordered table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Узел назначения</th>
-                <th>Задержка (мс)</th>
-                <th>Маршрут</th>
-            </tr>
-        </thead>
-        <tbody>
-            % for v in result["distances"]:
-            %   dist = result["distances"][v]
-            %   path = result["paths"][v]
-            %   if v == source_val:
-            <tr class="active">
-                <td><strong>{{v}}</strong> (источник)</td>
-                <td>0</td>
-                <td>{{v}}</td>
-            </tr>
-            %   elif dist == float('inf'):
-            <tr class="danger">
-                <td>{{v}}</td>
-                <td>∞</td>
-                <td>Недостижим</td>
-            </tr>
-            %   else:
-            %     dist_display = int(dist) if dist == int(dist) else dist
-            <tr>
-                <td>{{v}}</td>
-                <td>{{dist_display}}</td>
-                <td>{{ ' → '.join(path) }}</td>
-            </tr>
-            %   end
-            % end
-        </tbody>
-    </table>
-</div>
-
-<div class="theory-section">
-    <h4>Граф сети</h4>
-    <p class="text-muted" style="font-size:13px">
-        Синие стрелки — кратчайшие маршруты. Серые — остальные рёбра.
-        Красные пунктиры — недоступные каналы (∞). Золотой узел — источник.
-    </p>
-    <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
-         border-radius:4px;background:#fafafa;margin-top:8px"></div>
-</div>
-
-<script>
-(function() {
-    var vertices  = {{!result['gv']}};
-    var edges     = {{!result['ge']}};
-    var pathEdges = {{!result['gpe']}};
-    var source    = '{{source_val}}';
-    var peSet = {};
-    pathEdges.forEach(function(e){ peSet[e[0]+'→'+e[1]] = true; });
-
-    var nodes = new vis.DataSet(vertices.map(function(v){
-        return {
-            id: v, label: v,
-            color: v === source
-                ? { background:'#f0ad4e', border:'#d48a00' }
-                : { background:'#d6eaf8', border:'#2e86ab' },
-            font: { size: 14, bold: v === source }
-        };
-    }));
-
-    var edgesDS = new vis.DataSet(edges.map(function(e, i){
-        var u=e[0], v=e[1], w=e[2];
-        var isInf  = (w === null);
-        var isPath = peSet[u+'→'+v] || false;
-        return {
-            id: i, from: u, to: v,
-            label: isInf ? '∞' : String(w),
-            arrows: 'to',
-            dashes: isInf,
-            color: isInf
-                ? { color:'#e74c3c' }
-                : isPath
-                    ? { color:'#2e86ab' }
-                    : { color:'#aaaaaa' },
-            width: isPath ? 3 : 1,
-            font: { align: 'middle', size: 11 }
-        };
-    }));
-
-    var container = document.getElementById('graph-canvas');
-    new vis.Network(container, { nodes: nodes, edges: edgesDS }, {
-        layout: { improvedLayout: true },
-        edges: { smooth: { type: 'curvedCW', roundness: 0.2 } },
-        physics: { stabilization: { iterations: 200 } }
-    });
-})();
-</script>
-
-% end

@@ -28,17 +28,32 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="algorithms\cpm.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="algorithms\dijkstra.py" />
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="algorithms\" />
+    <Folder Include="algorithms\__pycache__\" />
     <Folder Include="static\" />
     <Folder Include="static\content\" />
     <Folder Include="static\fonts\" />
+    <Folder Include="static\images\" />
     <Folder Include="static\scripts\" />
     <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="algorithms\__init__.py %28algorithms%29">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="algorithms\__pycache__\bridges.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\coloring.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\cpm.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\dijkstra.cpython-312.pyc" />
+    <Content Include="algorithms\__pycache__\__init__.cpython-312.pyc" />
     <Content Include="requirements.txt" />
     <Content Include="static\content\bootstrap.css" />
     <Content Include="static\content\bootstrap.min.css" />
@@ -47,8 +62,12 @@
     <Content Include="static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="static\images\cpm_ex_sheme_1.png" />
     <Content Include="static\scripts\bootstrap.js" />
     <Content Include="static\scripts\bootstrap.min.js" />
+    <Content Include="static\scripts\graph-input.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="static\scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="static\scripts\jquery-1.10.2.js" />
     <Content Include="static\scripts\jquery-1.10.2.min.js" />
@@ -63,9 +82,27 @@
     <Content Include="static\scripts\respond.min.js" />
     <Content Include="static\scripts\_references.js" />
     <Content Include="views\about.tpl" />
+    <Content Include="views\cpm_practice.tpl">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="views\cpm_theory.tpl">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\contact.tpl" />
+    <Content Include="views\dijkstra_theory.tpl" />
     <Content Include="views\index.tpl" />
     <Content Include="views\layout.tpl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.12</Version>
+      <Description>env (Python 3.12 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 

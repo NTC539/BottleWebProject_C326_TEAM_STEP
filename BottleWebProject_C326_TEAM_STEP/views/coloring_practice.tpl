@@ -1,174 +1,135 @@
-% rebase('layout.tpl', title=title, year=year, active_page=active_page)
+% rebase('layout.tpl', title='Практика — Раскраска графа', year=year, active_page='coloring')
+<link rel="stylesheet" type="text/css" href="/static/content/coloring_theory.css" />
 
-<h2>Раскраска графа — Практика</h2>
+<section class="practice-hero">
+    <span class="page-label">Раскраска графа — практика</span>
+    <h1>Форма ввода данных для раскраски графа</h1>
+    <p>
+        Укажите дисциплины, преподавателей и пары конфликтов. Эти данные используются
+        для распределения дисциплин по сменам.
+    </p>
+    <div class="mode-switch">
+        <span class="mode-current">Практика</span>
+        <a href="/coloring" class="secondary">Вернуться к теории</a>
+    </div>
+</section>
 
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 1: Форма ввода (динамические строки)
-     ═══════════════════════════════════════════════════════════ -->
 <form method="POST" action="/coloring/practice">
+    <div class="editor-grid">
+        <section class="theory-section editor-panel">
+            <h2>Дисциплины</h2>
+            <div class="data-table-wrap">
+                <table class="table data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:48px">№</th>
+                            <th>Дисциплина</th>
+                            <th>Преподаватель</th>
+                            <th style="width:44px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="text" name="subject[]" class="form-control" value="Математика"></td>
+                            <td><input type="text" name="teacher[]" class="form-control" value="Иванов"></td>
+                            <td><button type="button" class="table-action" aria-label="Удалить дисциплину">×</button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><input type="text" name="subject[]" class="form-control" value="Физика"></td>
+                            <td><input type="text" name="teacher[]" class="form-control" value="Петров"></td>
+                            <td><button type="button" class="table-action" aria-label="Удалить дисциплину">×</button></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><input type="text" name="subject[]" class="form-control" value="Информатика"></td>
+                            <td><input type="text" name="teacher[]" class="form-control" value="Сидорова"></td>
+                            <td><button type="button" class="table-action" aria-label="Удалить дисциплину">×</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="inline-add-row">
+                <input type="text" class="form-control" placeholder="Новая дисциплина">
+                <input type="text" class="form-control" placeholder="Преподаватель">
+                <button type="button" class="btn btn-primary">Добавить</button>
+            </div>
+        </section>
 
-<div class="theory-section">
-    <h3>Шаг 1 — Дисциплины</h3>
-    <span class="input-section-label">Добавьте дисциплины учебного расписания:</span>
-    <div id="nodes-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn"
-            onclick="addNodeRow('nodes-container','Название дисциплины')">
-        + Добавить дисциплину
-    </button>
-</div>
+        <section class="theory-section editor-panel">
+            <h2>Конфликты</h2>
+            <div class="conflict-builder">
+                <select name="conflict_from" class="form-control">
+                    <option>Математика</option>
+                    <option>Физика</option>
+                    <option>Информатика</option>
+                </select>
+                <span class="edge-arrow">—</span>
+                <select name="conflict_to" class="form-control">
+                    <option>Физика</option>
+                    <option>Информатика</option>
+                    <option>Математика</option>
+                </select>
+                <button type="button" class="btn btn-primary">Добавить</button>
+            </div>
+            <div class="conflict-list">
+                <div class="conflict-item">
+                    <span>Математика — Физика</span>
+                    <button type="button" class="table-action" aria-label="Удалить конфликт">×</button>
+                </div>
+                <div class="conflict-item">
+                    <span>Физика — Информатика</span>
+                    <button type="button" class="table-action" aria-label="Удалить конфликт">×</button>
+                </div>
+                <div class="conflict-item">
+                    <span>Математика — Информатика</span>
+                    <button type="button" class="table-action" aria-label="Удалить конфликт">×</button>
+                </div>
+            </div>
+        </section>
+    </div>
 
-<div class="theory-section">
-    <h3>Шаг 2 — Конфликты</h3>
-    <span class="input-section-label">
-        Выберите пары дисциплин, которые нельзя ставить в одну смену:
-    </span>
-    <div id="edges-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn"
-            onclick="addEdgeRow('edges-container', false, false, false)">
-        + Добавить конфликт
-    </button>
-</div>
+    <section class="theory-section">
+        <h2>Импорт и генерация данных</h2>
+        <div class="form-grid">
+            <div>
+                <h3>Импорт из JSON</h3>
+                <label class="input-section-label" for="jsonFile">JSON-файл</label>
+                <input id="jsonFile" type="file" name="json_file" class="form-control" accept=".json,application/json">
+                <h4 class="json-example-title">Пример структуры</h4>
+                <pre class="json-example"><code>{
+  "subjects": [
+    { "name": "Математика", "teacher": "Иванов" },
+    { "name": "Физика", "teacher": "Петров" },
+    { "name": "Информатика", "teacher": "Сидорова" }
+  ],
+  "conflicts": [
+    ["Математика", "Физика"],
+    ["Физика", "Информатика"]
+  ]
+}</code></pre>
+            </div>
 
-<div class="theory-section" style="padding:10px 16px">
-    <span style="font-weight:600; margin-right:8px">Данные:</span>
-    <button type="button" class="btn btn-default btn-sm" onclick="randomColoring()">
-        🎲 Случайные данные
-    </button>
-    <button type="button" class="btn btn-default btn-sm" onclick="loadFileColoring()">
-        📂 Загрузить из файла
-    </button>
-    <span class="text-muted" style="font-size:12px; margin-left:8px">
-        JSON: { "vertices":[...], "edges":[["A","B"]] }
-    </span>
-</div>
-
-<div style="margin-top:16px">
-    <button type="submit" class="btn btn-primary">Составить расписание</button>
-</div>
-</form>
-
-<script>
-$(function () {
-    addNodeRow('nodes-container', 'Название дисциплины');
-    addNodeRow('nodes-container', 'Название дисциплины');
-    addNodeRow('nodes-container', 'Название дисциплины');
-    addEdgeRow('edges-container', false, false, false);
-});
-</script>
-
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 2: Ошибка
-     ═══════════════════════════════════════════════════════════ -->
-% if error:
-<div class="alert alert-danger" style="margin-top:16px">{{error}}</div>
-% end
-
-<!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 3: Результат (не трогать)
-     ═══════════════════════════════════════════════════════════ -->
-% if result:
-
-<div style="margin-bottom:12px">
-    <button type="button" class="btn btn-default btn-sm"
-            onclick="downloadResult('coloring')">
-        💾 Скачать результат (JSON)
-    </button>
-    <button type="button" class="btn btn-default btn-sm"
-            onclick="downloadResultTxt('coloring')">
-        📄 Скачать результат (TXT)
-    </button>
-</div>
-<script>
-window._resultData = window._resultData || {};
-window._resultData['coloring'] = {
-    num_colors: {{result['num_colors']}},
-    colors:     {{!result['gc']}}
-};
-</script>
-
-<div class="theory-section">
-    <h3>Результат</h3>
-
-    <div class="panel panel-success">
-        <div class="panel-heading"><strong>Итог</strong></div>
-        <div class="panel-body">
-            <p>Минимальное количество смен: <strong>{{result['num_colors']}}</strong></p>
+            <div>
+                <h3>Случайная генерация</h3>
+                <div class="form-row-grid">
+                    <div class="form-group">
+                        <label for="subjectCount">Количество дисциплин</label>
+                        <input id="subjectCount" type="number" class="form-control" value="12" min="1" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="density">Плотность графа</label>
+                        <input id="density" type="number" class="form-control" value="0.35" min="0" max="1" step="0.05">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary">Сгенерировать данные</button>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <h4>Расписание по сменам</h4>
-    % for shift_num in sorted(result['schedule'].keys()):
-    <div class="theory-section" style="border-left: 4px solid #2e86ab; padding: 12px 16px; margin-bottom: 12px">
-        <h4 style="margin-top:0">Смена {{shift_num}}</h4>
-        <p>{{ ', '.join(result['schedule'][shift_num]) }}</p>
-    </div>
-    % end
-
-    <h4>Таблица назначений</h4>
-    <table class="table table-bordered table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Дисциплина</th>
-                <th>Смена</th>
-            </tr>
-        </thead>
-        <tbody>
-            % for discipline, shift in sorted(result['colors'].items(), key=lambda x: x[1]):
-            <tr>
-                <td>{{discipline}}</td>
-                <td>Смена {{shift}}</td>
-            </tr>
-            % end
-        </tbody>
-    </table>
-
-    <div class="theory-section">
-        <h4>Граф конфликтов (раскраска)</h4>
-        <p class="text-muted" style="font-size:13px">
-            Каждый цвет узла — отдельная смена. Рёбра соединяют конфликтующие дисциплины.
-        </p>
-        <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
-             border-radius:4px;background:#fafafa;margin-top:8px"></div>
-    </div>
-
-    <script>
-    (function() {
-        var vertices = {{!result['gv']}};
-        var edges    = {{!result['ge']}};
-        var colors   = {{!result['gc']}};
-
-        var palette = [
-            '#2e86ab','#e74c3c','#2ecc71','#f39c12',
-            '#9b59b6','#1abc9c','#e67e22','#34495e'
-        ];
-        var borderPalette = [
-            '#1a5276','#922b21','#1a7a45','#9a6004',
-            '#6c3483','#0f6b57','#935116','#1c2833'
-        ];
-
-        var nodes = new vis.DataSet(vertices.map(function(v){
-            var shift = (colors[v] || 1) - 1;
-            var bg  = palette[shift % palette.length];
-            var brd = borderPalette[shift % borderPalette.length];
-            return {
-                id: v,
-                label: v + '\n(Смена ' + (shift + 1) + ')',
-                color: { background: bg, border: brd },
-                font: { color: '#fff', size: 13 }
-            };
-        }));
-
-        var edgesDS = new vis.DataSet(edges.map(function(e, i){
-            return { id: i, from: e[0], to: e[1],
-                     color: { color:'#999' }, width: 1 };
-        }));
-
-        var container = document.getElementById('graph-canvas');
-        new vis.Network(container, { nodes: nodes, edges: edgesDS }, {
-            edges: { smooth: false },
-            physics: { stabilization: { iterations: 300 } }
-        });
-    })();
-    </script>
-</div>
-% end
+    <section class="theory-section">
+        <h2>Граф конфликтов</h2>
+        <div id="graph-canvas" class="graph-container future-graph-area"></div>
+    </section>
+</form>

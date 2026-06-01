@@ -1,43 +1,16 @@
-"""
+﻿"""
 Routes and views for the bottle application.
 """
 
-import json as _json
-import os as _os
-from bottle import route, view, request
+from cmath import inf
+import json
+import os
+from bottle import route, view, request, template
 from datetime import datetime
-from algorithms.coloring import color_graph
 from algorithms.cpm import find_critical_path
-from algorithms.bridges import analyze_network
-from algorithms.dijkstra import route_network
-
 
 def _year():
     return datetime.now().year
-
-
-def _save_log(page_name, input_data, result_data):
-    """Дозаписывает запуск алгоритма в data/<page>_log.json"""
-    try:
-        log_dir = _os.path.join(_os.path.dirname(__file__), 'data')
-        _os.makedirs(log_dir, exist_ok=True)
-        log_path = _os.path.join(log_dir, page_name + '_log.json')
-        entries = []
-        if _os.path.exists(log_path):
-            with open(log_path, 'r', encoding='utf-8') as f:
-                try:
-                    entries = _json.load(f)
-                except Exception:
-                    entries = []
-        entries.append({
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'input':  input_data,
-            'result': result_data,
-        })
-        with open(log_path, 'w', encoding='utf-8') as f:
-            _json.dump(entries, f, ensure_ascii=False, indent=2)
-    except Exception:
-        pass  # лог не должен ломать основной поток
 
 
 @route('/')
@@ -53,6 +26,12 @@ def about():
     return dict(year=_year())
 
 
+@route('/graph_theory')
+@view('graph_theory')
+def graph_theory():
+    return dict(year=_year())
+
+
 @route('/dijkstra')
 @view('dijkstra_theory')
 def dijkstra():
@@ -60,218 +39,44 @@ def dijkstra():
 
 
 @route('/bridges')
-@route('/bridges_theory')
 @view('bridges_theory')
 def bridges():
-    return dict(
-        title='Мосты Тарьяна — Теория',
-        year=_year(),
-        result=None,
-        error=None,
-    )
+    return dict(year=_year())
+
+@route('/coloring/practice', method=['GET', 'POST'])
+@view('coloring_practice')
+def coloring_practice():
+    return dict(year=_year())
 
 
-@route('/cpm')
-@route('/cpm_theory')
-@view('cpm_theory')
-def cpm():
-    return dict(
-        title='Критический путь (CPM) — Теория',
-        year=_year(),
-        result=None,
-        error=None,
-    )
-
-
-@route('/coloring')
-@route('/coloring_theory')
-@view('coloring_theory')
-def coloring():
-    return dict(
-        title='Раскраска графа Welsh–Powell — Теория',
-        year=_year(),
-        result=None,
-        error=None,
-    )
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  /dijkstra/practice
-# ─────────────────────────────────────────────────────────────────────────────
-@route('/dijkstra/practice', method=['GET', 'POST'])
-@view('dijkstra_practice')
-def dijkstra_practice():
-    result     = None
-    error      = None
-    source_val = ''          # used in result-section template
-
-    if request.method == 'POST':
-        try:
-            # ── Vertices ──────────────────────────────────────────────────────
-            vertices = [v.strip()
-                        for v in request.forms.getall('vertex[]')
-                        if v.strip()]
-            if not vertices:
-                raise ValueError('Список узлов не может быть пустым.')
-            if len(vertices) != len(set(vertices)):
-                raise ValueError('Имена узлов должны быть уникальными.')
-
-            # ── Source ────────────────────────────────────────────────────────
-            source = request.forms.get('source', '').strip()
-            if not source:
-                raise ValueError('Выберите узел-источник.')
-            if source not in vertices:
-                raise ValueError(
-                    f'Источник «{source}» отсутствует в списке узлов.'
-                )
-            source_val = source
-
-            # ── Edges (inf-aware via edge_inf_N fields) ───────────────────────
-            from_list  = request.forms.getall('edge_from[]')
-            to_list    = request.forms.getall('edge_to[]')
-            w_list     = request.forms.getall('edge_weight[]')
-            edge_count = int(request.forms.get('edge_count', '0') or '0')
-
-            edges = []
-            for i in range(edge_count):
-                u = from_list[i] if i < len(from_list) else ''
-                v = to_list[i]   if i < len(to_list)   else ''
-                if not u or not v:
-                    continue
-                is_inf = request.forms.get(f'edge_inf_{i}') == '1'
-                if is_inf:
-                    w = float('inf')
-                else:
-                    try:
-                        w = float(w_list[i]) if i < len(w_list) else 1.0
-                    except (ValueError, TypeError):
-                        raise ValueError(
-                            f'Неверный вес для канала {u}→{v}.'
-                        )
-                edges.append((u, v, w))
-
-            result = route_network(vertices, edges, source)
-
-            result['gv']  = _json.dumps(vertices)
-            result['ge']  = _json.dumps([[u, v, (None if w == float('inf') else w)]
-                                         for u, v, w in edges])
-            _pe = set()
-            for _p in result['paths'].values():
-                for _i in range(len(_p) - 1):
-                    _pe.add((_p[_i], _p[_i + 1]))
-            result['gpe'] = _json.dumps(list(_pe))
-            result['g_distances'] = _json.dumps(
-                {k: (None if v == float('inf') else v)
-                 for k, v in result['distances'].items()})
-            result['g_paths'] = _json.dumps(result['paths'])
-
-            _save_log('dijkstra', {
-                'vertices': vertices,
-                'edges': [[u, v, (None if w == float('inf') else w)]
-                          for u, v, w in edges],
-                'source': source,
-            }, {
-                'distances': {k: (None if v == float('inf') else v)
-                              for k, v in result['distances'].items()},
-                'paths': result['paths'],
-            })
-
-        except ValueError as e:
-            error = str(e)
-        except Exception as e:
-            error = f'Ошибка: {e}'
-
-    return dict(
-        title='Дейкстра — Практика',
-        active_page='dijkstra',
-        year=_year(),
-        result=result,
-        error=error,
-        source_val=source_val,
-    )
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  /bridges/practice
-# ─────────────────────────────────────────────────────────────────────────────
 @route('/bridges/practice', method=['GET', 'POST'])
 @view('bridges_practice')
 def bridges_practice():
-    result = None
-    error  = None
-
-    if request.method == 'POST':
-        try:
-            # ── Vertices ──────────────────────────────────────────────────────
-            vertices = [v.strip()
-                        for v in request.forms.getall('vertex[]')
-                        if v.strip()]
-            if not vertices:
-                raise ValueError('Список городов не может быть пустым.')
-            if len(vertices) != len(set(vertices)):
-                raise ValueError('Названия городов должны быть уникальными.')
-
-            # ── Edges ─────────────────────────────────────────────────────────
-            from_list = request.forms.getall('edge_from[]')
-            to_list   = request.forms.getall('edge_to[]')
-            w_list    = request.forms.getall('edge_weight[]')
-
-            edges = []
-            for i in range(len(from_list)):
-                u = from_list[i] if i < len(from_list) else ''
-                v = to_list[i]   if i < len(to_list)   else ''
-                if not u or not v:
-                    continue
-                try:
-                    w = float(w_list[i]) if i < len(w_list) else 1.0
-                except (ValueError, TypeError):
-                    raise ValueError(f'Неверный вес для дороги {u}—{v}.')
-                edges.append((u, v, w))
-
-            result = analyze_network(vertices, edges)
-
-            result['gv'] = _json.dumps(vertices)
-            result['ge'] = _json.dumps([[u, v, w] for u, v, w in edges])
-            result['gb'] = _json.dumps([[u, v] for u, v, w in result['bridges']])
-
-            _save_log('bridges', {
-                'vertices': vertices,
-                'edges': [[u, v, w] for u, v, w in edges],
-            }, {
-                'bridges': [[u, v, w] for u, v, w in result['bridges']],
-                'total_path_sum': result['total_path_sum'],
-            })
-
-        except ValueError as e:
-            error = str(e)
-        except Exception as e:
-            error = f'Ошибка: {e}'
-
-    return dict(
-        title='Мосты Тарьяна — Практика',
-        active_page='bridges',
-        year=_year(),
-        result=result,
-        error=error,
-    )
+    return dict(year=_year())
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  /cpm/practice
-# ─────────────────────────────────────────────────────────────────────────────
+@route('/cpm')
+@view('cpm_theory')
+def cpm():
+    return dict(year=_year())
+
 @route('/cpm/practice', method=['GET', 'POST'])
 @view('cpm_practice')
 def cpm_practice():
     result = None
-    error  = None
-
+    error = None
+    
     if request.method == 'POST':
         try:
-            # ── Tasks ─────────────────────────────────────────────────────────
+            # Создаем декодированную копию всех данных формы
+            forms = request.forms.decode()
+    
+            # Получаем списки в правильной UTF-8 кодировке
             names = request.forms.getall('task_name[]')
-            durs  = request.forms.getall('task_dur[]')
+            durations = request.forms.getall('task_dur[]')
 
             tasks = {}
+
             for i in range(len(names)):
                 name = names[i].strip() if i < len(names) else ''
                 if not name:
@@ -279,7 +84,7 @@ def cpm_practice():
                 if name in tasks:
                     raise ValueError(f'Задача «{name}» указана дважды.')
                 try:
-                    dur = int(durs[i]) if i < len(durs) else 0
+                    dur = int(durations[i]) if i < len(durations) else 0
                 except (ValueError, TypeError):
                     raise ValueError(
                         f'Длительность задачи «{name}» должна быть '
@@ -290,7 +95,6 @@ def cpm_practice():
             if not tasks:
                 raise ValueError('Список задач не может быть пустым.')
 
-            # ── Dependencies ──────────────────────────────────────────────────
             df   = request.forms.getall('dep_from[]')
             dt   = request.forms.getall('dep_to[]')
             deps = [
@@ -304,85 +108,98 @@ def cpm_practice():
 
             result['gv']     = _json.dumps(list(tasks.keys()))
             result['ge']     = _json.dumps([[a, b] for a, b in deps])
-            result['gcrit']  = _json.dumps(result['critical_path'])
+            result['gcrit']  = _json.dumps(result['critical_paths'])
             result['gtasks'] = _json.dumps(result['tasks'])
             result['ges']    = _json.dumps(result['es'])
             result['gef']    = _json.dumps(result['ef'])
 
-            _save_log('cpm', {
-                'tasks': tasks,
-                'deps':  [[a, b] for a, b in deps],
-            }, {
-                'duration':      result['duration'],
-                'critical_path': result['critical_path'],
-            })
-
         except ValueError as e:
             error = str(e)
         except Exception as e:
             error = f'Ошибка: {e}'
 
     return dict(
-        title='Критический путь — Практика',
-        active_page='cpm',
-        year=_year(),
-        result=result,
-        error=error,
+    title='Критический путь — Практика (POST)',
+    active_page='cpm',
+    year=_year(),
+    result=result,
+    error=error,
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  /coloring/practice
-# ─────────────────────────────────────────────────────────────────────────────
-@route('/coloring/practice', method=['GET', 'POST'])
-@view('coloring_practice')
-def coloring_practice():
-    result = None
-    error  = None
 
-    if request.method == 'POST':
-        try:
-            # ── Vertices ──────────────────────────────────────────────────────
-            vertices = [v.strip()
-                        for v in request.forms.getall('vertex[]')
-                        if v.strip()]
-            if not vertices:
-                raise ValueError('Список дисциплин не может быть пустым.')
-            if len(vertices) != len(set(vertices)):
-                raise ValueError('Дисциплины должны иметь уникальные имена.')
+@route('/coloring')
+@view('coloring_theory')
+def coloring():
+    return dict(year=_year())
 
-            # ── Conflict edges ────────────────────────────────────────────────
-            cf    = request.forms.getall('edge_from[]')
-            ct    = request.forms.getall('edge_to[]')
-            edges = [
-                (cf[i], ct[i])
-                for i in range(len(cf))
-                if i < len(ct) and cf[i] and ct[i]
-            ]
 
-            result = color_graph(vertices, edges)
+@route('/dijkstra/practice', method=['GET', 'POST'])
+@view('dijkstra_practice')
+def dijkstra_practice():
+    edges_text = ''
+    source = 'A'
+    errors = []
+    graph_edges = None
+    results = None
+    results_json = 'null'
+    
+    errors.append('Ошибка 1')
+    errors.append('Ошибка 2')
 
-            result['gv'] = _json.dumps(vertices)
-            result['ge'] = _json.dumps([[u, v] for u, v in edges])
-            result['gc'] = _json.dumps(result['colors'])
+    edges_text = """A,B,4
+A,C,2
+C,B,1
+B,D,5
+C,D,8
+D,E,2
+A,E,inf"""
 
-            _save_log('coloring', {
-                'vertices': vertices,
-                'edges':    [[u, v] for u, v in edges],
-            }, {
-                'num_colors': result['num_colors'],
-                'colors':     result['colors'],
-            })
+    source = "A"
 
-        except ValueError as e:
-            error = str(e)
-        except Exception as e:
-            error = f'Ошибка: {e}'
+    graph_edges = [
+        ("A", "B", 4),
+        ("A", "C", 2),
+        ("C", "B", 1),
+        ("B", "D", 5),
+        ("C", "D", 8),
+        ("D", "E", 2),
+        ("A", "E", float("inf")),
+    ]
 
-    return dict(
-        title='Раскраска графа — Практика',
-        active_page='coloring',
-        year=_year(),
-        result=result,
-        error=error,
-    )
+    results = {
+        "A": {"dist": 0, "path": ["A"]},
+        "B": {"dist": 3, "path": ["A", "C", "B"]},
+        "C": {"dist": 2, "path": ["A", "C"]},
+        "D": {"dist": 8, "path": ["A", "C", "B", "D"]},
+        "E": {"dist": 10, "path": ["A", "C", "B", "D", "E"]},
+    }
+
+    prepared_edges = []
+    for (frm, to, w) in graph_edges:
+        status = "Исключён (∞)" if w == inf else "Участвует"
+        weight_display = "∞" if w == inf else str(w)
+        prepared_edges.append((frm, to, weight_display, status))
+
+    # Подготавливаем результаты с готовым отображением пути и расстояния
+    prepared_results = {}
+    for node, data in results.items():
+        dist = data['dist']
+        dist_display = "недостижим" if dist == inf else str(dist)
+        path_display = " → ".join(data['path']) if data['path'] else "—"
+        prepared_results[node] = {
+            'dist_display': dist_display,
+            'path_display': path_display
+        }
+
+    # Теперь передаём в шаблон подготовленные данные
+    return template('dijkstra_practice.tpl',
+                    edges=edges_text,
+                    source=source,
+                    errors=errors,
+                    prepared_edges=prepared_edges,   # вместо graph_edges
+                    prepared_results=prepared_results,  # вместо results
+                    year=2025)
+
+
+

@@ -2,10 +2,10 @@
 
 <div class="jumbotron">
     <h1>Задачи на теории графов</h1>
-    <p class="lead">Учебная практика УП02 | ПМ02 | Специальность 09.02.07</p>
+    <p class="lead">Алгоритмы на теории графов</p>
     <p>
         Сайт решает задачи маршрутизации сетей, анализа устойчивости и управления проектами
-        с помощью алгоритмов теории графов, реализованных на Python / Bottle.
+        с помощью алгоритмов теории графов.
         Каждый раздел содержит теоретическую базу и интерактивную практическую часть,
         позволяющую запустить алгоритм на собственных данных.
     </p>
@@ -21,7 +21,7 @@
                 <p>Нахождение кратчайших путей в графе. Применяется в протоколе маршрутизации OSPF.</p>
                 <a href="/dijkstra" class="btn btn-primary btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 1 — Садеков</div>
+            <div class="panel-footer text-muted">Садеков</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -33,7 +33,7 @@
                 <p>Поиск мостов и точек сочленения графа для анализа устойчивости сети.</p>
                 <a href="/bridges" class="btn btn-success btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 2 — Тигранян</div>
+            <div class="panel-footer text-muted">Тигранян</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -45,7 +45,7 @@
                 <p>Метод критического пути (CPM) для управления проектами и составления расписаний.</p>
                 <a href="/cpm" class="btn btn-warning btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 3 — Езерский</div>
+            <div class="panel-footer text-muted">Езерский</div>
         </div>
     </div>
     <div class="col-md-3">
@@ -57,7 +57,24 @@
                 <p>Раскраска вершин графа минимальным числом цветов. Применяется при составлении расписаний.</p>
                 <a href="/coloring" class="btn btn-danger btn-block">Подробнее &raquo;</a>
             </div>
-            <div class="panel-footer text-muted">Вариант 4 — Петренко</div>
+            <div class="panel-footer text-muted">Петренко</div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 24px;">
+    <div class="col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Теория графов: основные понятия и термины</h3>
+            </div>
+            <div class="panel-body" style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
+                <p style="margin:0;">
+                    Граф, вершина, ребро, путь, мост, хроматическое число, критический путь —
+                    все ключевые термины, которые используются в задачах этого сайта, собраны на одной странице.
+                </p>
+                <a href="/graph_theory" class="btn btn-info" style="white-space:nowrap;">Читать &raquo;</a>
+            </div>
         </div>
     </div>
 </div>

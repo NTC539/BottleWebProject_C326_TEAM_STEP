@@ -1,18 +1,11 @@
-% rebase('layout.tpl', title='Теория — Критический путь (CPM)', year=year, active_page='cpm')
+% rebase('layout.tpl', title='Критический путь (CPM)', year=year)
 <link rel="stylesheet" type="text/css" href="/static/content/cpm_theory.css" />
 
-<!-- СЕКЦИЯ 1: Навигация -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
-    <h2 style="margin:0;border:none;padding:0;">Метод критического пути (CPM)</h2>
+    <h2 style="margin:0;border:none;padding:0;">Метод критического пути (CPM) - Теория</h2>
     <a href="/cpm/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
 </div>
 
-<!-- СЕКЦИЯ 2: Ошибка -->
-% if defined('error') and error:
-<div class="alert alert-danger">{{error}}</div>
-% end
-
-<!-- СЕКЦИЯ 3: Содержание -->
 <div class="cpm-intro-box">
     <h3>Что такое метод критического пути?</h3>
     <p>
@@ -108,6 +101,10 @@
     <pre class="algo-block">Задачи:      A(3), B(2), C(4), D(1), E(2), F(3)
 Зависимости: C&larr;A,  D&larr;{A,B},  E&larr;C,  F&larr;D
              (A и B &mdash; стартовые, без предшественников)</pre>
+</div>
+
+<div class="theory-section">
+    <img src="static\images\cpm_ex_sheme_1.png"/>
 </div>
 
 <div class="theory-section">

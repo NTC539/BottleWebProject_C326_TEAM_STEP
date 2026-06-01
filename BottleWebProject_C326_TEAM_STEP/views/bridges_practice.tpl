@@ -1,61 +1,66 @@
-% rebase('layout.tpl', title=title, year=year, active_page=active_page)
+% rebase('layout.tpl', title='Практика — Мосты Тарьяна', year=year, active_page='bridges')
 
-<h2>Мосты Тарьяна — Практика</h2>
+<h2>Мосты Тарьяна &mdash; Практика</h2>
 
 <!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 1: Форма ввода (динамические строки)
+     СЕКЦИЯ 1: Форма ввода
      ═══════════════════════════════════════════════════════════ -->
 <form method="POST" action="/bridges/practice">
 
 <div class="theory-section">
-    <h3>Шаг 1 — Города</h3>
+    <h3>Шаг 1 &mdash; Города</h3>
     <span class="input-section-label">Добавьте города / узлы сети:</span>
-    <div id="nodes-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn"
-            onclick="addNodeRow('nodes-container','Название города')">
+    <div id="nodes-container">
+        <div class="input-row">
+            <input type="text" name="node[]" class="form-control input-node"
+                   placeholder="Название города" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+        <div class="input-row">
+            <input type="text" name="node[]" class="form-control input-node"
+                   placeholder="Название города" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+    </div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn">
         + Добавить город
     </button>
 </div>
 
 <div class="theory-section">
-    <h3>Шаг 2 — Дороги</h3>
+    <h3>Шаг 2 &mdash; Дороги</h3>
     <span class="input-section-label">
-        Добавьте дороги (неориентированные) с весом — длиной или временем:
+        Добавьте дороги (неориентированные) с весом &mdash; длиной или временем:
     </span>
-    <div id="edges-container"></div>
-    <button type="button" class="btn btn-success btn-sm add-row-btn"
-            onclick="addEdgeRow('edges-container', false, true, false)">
+    <div id="edges-container">
+        <div class="input-row">
+            <input type="text" name="edge_from[]" class="form-control input-edge"
+                   placeholder="Откуда" value="">
+            <input type="text" name="edge_to[]" class="form-control input-edge"
+                   placeholder="Куда" value="">
+            <input type="number" name="edge_weight[]" class="form-control edge-weight"
+                   placeholder="Вес" min="0" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+        <div class="input-row">
+            <input type="text" name="edge_from[]" class="form-control input-edge"
+                   placeholder="Откуда" value="">
+            <input type="text" name="edge_to[]" class="form-control input-edge"
+                   placeholder="Куда" value="">
+            <input type="number" name="edge_weight[]" class="form-control edge-weight"
+                   placeholder="Вес" min="0" value="">
+            <button type="button" class="btn btn-danger btn-sm remove-row-btn">&times;</button>
+        </div>
+    </div>
+    <button type="button" class="btn btn-success btn-sm add-row-btn">
         + Добавить дорогу
     </button>
-</div>
-
-<div class="theory-section" style="padding:10px 16px">
-    <span style="font-weight:600; margin-right:8px">Данные:</span>
-    <button type="button" class="btn btn-default btn-sm" onclick="randomBridges()">
-        🎲 Случайные данные
-    </button>
-    <button type="button" class="btn btn-default btn-sm" onclick="loadFileBridges()">
-        📂 Загрузить из файла
-    </button>
-    <span class="text-muted" style="font-size:12px; margin-left:8px">
-        JSON: { "vertices":[...], "edges":[{"from","to","weight"}] }
-    </span>
 </div>
 
 <div style="margin-top:16px">
     <button type="submit" class="btn btn-primary">Анализировать сеть</button>
 </div>
 </form>
-
-<script>
-$(function () {
-    addNodeRow('nodes-container', 'Название города');
-    addNodeRow('nodes-container', 'Название города');
-    addNodeRow('nodes-container', 'Название города');
-    addEdgeRow('edges-container', false, true, false);
-    addEdgeRow('edges-container', false, true, false);
-});
-</script>
 
 <!-- ═══════════════════════════════════════════════════════════
      СЕКЦИЯ 2: Ошибка
@@ -65,38 +70,27 @@ $(function () {
 % end
 
 <!-- ═══════════════════════════════════════════════════════════
-     СЕКЦИЯ 3: Результат (не трогать)
+     СЕКЦИЯ 3: Результат
      ═══════════════════════════════════════════════════════════ -->
-% if defined('result') and result is not None:
 
-<div style="margin-bottom:12px">
-    <button type="button" class="btn btn-default btn-sm"
-            onclick="downloadResult('bridges')">
+<div style="margin-bottom:12px; margin-top:20px">
+    <button type="button" class="btn btn-default btn-sm">
         💾 Скачать результат (JSON)
     </button>
-    <button type="button" class="btn btn-default btn-sm"
-            onclick="downloadResultTxt('bridges')">
+    <button type="button" class="btn btn-default btn-sm">
         📄 Скачать результат (TXT)
     </button>
 </div>
-<script>
-window._resultData = window._resultData || {};
-window._resultData['bridges'] = {
-    total_path_sum: {{result['total_path_sum']}},
-    bridges:        {{!result['gb']}}
-};
-</script>
 
 <div class="panel panel-info">
     <div class="panel-heading"><strong>Общая статистика</strong></div>
     <div class="panel-body">
         <p>Суммарная длина кратчайших путей (исходная сеть):
-           <strong>{{result["total_path_sum"]}}</strong></p>
-        <p>Найдено мостов: <strong>{{len(result["bridges"])}}</strong></p>
+           <strong>60</strong></p>
+        <p>Найдено мостов: <strong>2</strong></p>
     </div>
 </div>
 
-% if result["bridges"]:
 <h4>Критические дороги (мосты)</h4>
 <table class="table table-bordered table-striped table-hover">
     <thead>
@@ -107,28 +101,22 @@ window._resultData['bridges'] = {
         </tr>
     </thead>
     <tbody>
-        % for item in result["bridge_impact"]:
-        %   u, v, w = item["edge"]
-        %   delta = item["delta"]
-        %   delta_str = 'Сеть разрывается (∞)' if delta is None else '+{:.1f}'.format(delta)
-        %   row_cls = 'danger' if delta is None else 'warning'
-        <tr class="{{row_cls}}">
-            <td>{{u}} — {{v}}</td>
-            <td>{{w}}</td>
-            <td>{{delta_str}}</td>
+        <tr class="danger">
+            <td>C &mdash; D</td>
+            <td>5</td>
+            <td>Сеть разрывается (&infin;)</td>
         </tr>
-        % end
+        <tr class="danger">
+            <td>D &mdash; E</td>
+            <td>4</td>
+            <td>Сеть разрывается (&infin;)</td>
+        </tr>
     </tbody>
 </table>
 <div class="alert alert-warning">
-    <strong>Красные строки</strong> — удаление полностью разрывает сеть.
-    <strong>Жёлтые</strong> — связность сохраняется, но пути удлиняются.
+    <strong>Красные строки</strong> &mdash; удаление полностью разрывает сеть.
+    <strong>Жёлтые</strong> &mdash; связность сохраняется, но пути удлиняются.
 </div>
-% else:
-<div class="alert alert-success">
-    Мостов не найдено. Сеть устойчива — удаление любой одной дороги не нарушит связность.
-</div>
-% end
 
 <h4>Матрица кратчайших путей (исходная сеть)</h4>
 <div class="table-responsive">
@@ -136,28 +124,30 @@ window._resultData['bridges'] = {
     <thead>
         <tr>
             <th></th>
-            % for col in result["all_pairs"]:
-            <th>{{col}}</th>
-            % end
+            <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th>
         </tr>
     </thead>
     <tbody>
-        % for row in result["all_pairs"]:
         <tr>
-            <td><strong>{{row}}</strong></td>
-            % for col in result["all_pairs"]:
-            %   if row == col:
-            <td>0</td>
-            %   elif result["all_pairs"][row][col] == float('inf'):
-            <td>∞</td>
-            %   else:
-            %     val = result["all_pairs"][row][col]
-            %     cell = int(val) if val == int(val) else val
-            <td>{{cell}}</td>
-            %   end
-            % end
+            <td><strong>A</strong></td>
+            <td>0</td><td>2</td><td>1</td><td>6</td><td>10</td>
         </tr>
-        % end
+        <tr>
+            <td><strong>B</strong></td>
+            <td>2</td><td>0</td><td>3</td><td>8</td><td>12</td>
+        </tr>
+        <tr>
+            <td><strong>C</strong></td>
+            <td>1</td><td>3</td><td>0</td><td>5</td><td>9</td>
+        </tr>
+        <tr>
+            <td><strong>D</strong></td>
+            <td>6</td><td>8</td><td>5</td><td>0</td><td>4</td>
+        </tr>
+        <tr>
+            <td><strong>E</strong></td>
+            <td>10</td><td>12</td><td>9</td><td>4</td><td>0</td>
+        </tr>
     </tbody>
 </table>
 </div>
@@ -165,47 +155,9 @@ window._resultData['bridges'] = {
 <div class="theory-section">
     <h4>Граф транспортной сети</h4>
     <p class="text-muted" style="font-size:13px">
-        Красные жирные рёбра — мосты (критические дороги).
-        Серые — обычные дороги.
+        Красные жирные рёбра &mdash; мосты (критические дороги).
+        Серые &mdash; обычные дороги.
     </p>
     <div id="graph-canvas" style="height:450px;border:1px solid #ddd;
          border-radius:4px;background:#fafafa;margin-top:8px"></div>
 </div>
-
-<script>
-(function() {
-    var vertices = {{!result['gv']}};
-    var edges    = {{!result['ge']}};
-    var bridges  = {{!result['gb']}};
-    var bSet = {};
-    bridges.forEach(function(b){ bSet[b[0]+'—'+b[1]] = true; bSet[b[1]+'—'+b[0]] = true; });
-
-    var nodes = new vis.DataSet(vertices.map(function(v){
-        return {
-            id: v, label: v,
-            color: { background:'#d6eaf8', border:'#2e86ab' },
-            font: { size: 14 }
-        };
-    }));
-
-    var edgesDS = new vis.DataSet(edges.map(function(e, i){
-        var u=e[0], v=e[1], w=e[2];
-        var isBridge = bSet[u+'—'+v] || false;
-        return {
-            id: i, from: u, to: v,
-            label: String(w),
-            color: isBridge ? { color:'#e74c3c' } : { color:'#aaaaaa' },
-            width: isBridge ? 4 : 1,
-            font: { align: 'middle', size: 11 }
-        };
-    }));
-
-    var container = document.getElementById('graph-canvas');
-    new vis.Network(container, { nodes: nodes, edges: edgesDS }, {
-        edges: { smooth: false },
-        physics: { stabilization: { iterations: 200 } }
-    });
-})();
-</script>
-
-% end

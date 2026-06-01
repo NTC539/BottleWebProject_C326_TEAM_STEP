@@ -1,7 +1,3 @@
-/* ============================================================
-   GraphAlgo | Команда 1 — custom styles (Bootstrap 3 override)
-   ============================================================ */
-
 /* ----- Reset / base ---------------------------------------- */
 body {
     padding-top: 50px;
@@ -23,70 +19,70 @@ body {
     border-color: #122840;
 }
 
-.navbar-inverse .navbar-brand {
-    color: #ffffff;
-    font-weight: 700;
-    letter-spacing: 1px;
-}
+    .navbar-inverse .navbar-brand {
+        color: #ffffff;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
 
-.navbar-inverse .navbar-brand:hover,
-.navbar-inverse .navbar-brand:focus {
-    color: #d0e8f5;
-}
+        .navbar-inverse .navbar-brand:hover,
+        .navbar-inverse .navbar-brand:focus {
+            color: #d0e8f5;
+        }
 
-.navbar-inverse .navbar-nav > li > a {
-    color: #c8d8e8;
-}
+    .navbar-inverse .navbar-nav > li > a {
+        color: #c8d8e8;
+    }
 
-.navbar-inverse .navbar-nav > li > a:hover,
-.navbar-inverse .navbar-nav > li > a:focus {
-    color: #ffffff;
-    background-color: #2e86ab;
-}
+        .navbar-inverse .navbar-nav > li > a:hover,
+        .navbar-inverse .navbar-nav > li > a:focus {
+            color: #ffffff;
+            background-color: #2e86ab;
+        }
 
-.navbar-inverse .navbar-nav > li.active > a,
-.navbar-inverse .navbar-nav > li.active > a:hover,
-.navbar-inverse .navbar-nav > li.active > a:focus {
-    color: #ffffff;
-    background-color: #2e86ab;
-}
+    .navbar-inverse .navbar-nav > li.active > a,
+    .navbar-inverse .navbar-nav > li.active > a:hover,
+    .navbar-inverse .navbar-nav > li.active > a:focus {
+        color: #ffffff;
+        background-color: #2e86ab;
+    }
 
-.navbar-inverse .navbar-nav > .open > a,
-.navbar-inverse .navbar-nav > .open > a:hover,
-.navbar-inverse .navbar-nav > .open > a:focus {
-    background-color: #2e86ab;
-    color: #ffffff;
-}
+    .navbar-inverse .navbar-nav > .open > a,
+    .navbar-inverse .navbar-nav > .open > a:hover,
+    .navbar-inverse .navbar-nav > .open > a:focus {
+        background-color: #2e86ab;
+        color: #ffffff;
+    }
 
-.navbar-inverse .dropdown-menu {
-    background-color: #1a3a5c;
-    border: 1px solid #2e86ab;
-    border-top: none;
-    border-radius: 0 0 4px 4px;
-}
+    .navbar-inverse .dropdown-menu {
+        background-color: #1a3a5c;
+        border: 1px solid #2e86ab;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+    }
 
-.navbar-inverse .dropdown-menu > li > a {
-    color: #c8d8e8;
-}
+        .navbar-inverse .dropdown-menu > li > a {
+            color: #c8d8e8;
+        }
 
-.navbar-inverse .dropdown-menu > li > a:hover,
-.navbar-inverse .dropdown-menu > li > a:focus {
-    background-color: #2e86ab;
-    color: #ffffff;
-}
+            .navbar-inverse .dropdown-menu > li > a:hover,
+            .navbar-inverse .dropdown-menu > li > a:focus {
+                background-color: #2e86ab;
+                color: #ffffff;
+            }
 
-.navbar-inverse .navbar-toggle {
-    border-color: #2e86ab;
-}
+    .navbar-inverse .navbar-toggle {
+        border-color: #2e86ab;
+    }
 
-.navbar-inverse .navbar-toggle .icon-bar {
-    background-color: #c8d8e8;
-}
+        .navbar-inverse .navbar-toggle .icon-bar {
+            background-color: #c8d8e8;
+        }
 
-.navbar-inverse .navbar-toggle:hover,
-.navbar-inverse .navbar-toggle:focus {
-    background-color: #2e86ab;
-}
+        .navbar-inverse .navbar-toggle:hover,
+        .navbar-inverse .navbar-toggle:focus {
+            background-color: #2e86ab;
+        }
 
 /* ----- Typography ------------------------------------------ */
 h2 {
@@ -110,42 +106,70 @@ h3 {
     margin-bottom: 30px;
 }
 
-.jumbotron h1 {
-    font-size: 2.4em;
-    font-weight: 700;
-    margin-top: 0;
-    color: #ffffff;
-}
+    .jumbotron h1 {
+        font-size: 2.4em;
+        font-weight: 700;
+        margin-top: 0;
+        color: #ffffff;
+    }
 
-.jumbotron .lead {
-    font-size: 1.1em;
-    color: #d0e8f5;
-}
+    .jumbotron .lead {
+        font-size: 1.1em;
+        color: #d0e8f5;
+    }
 
-.jumbotron p {
-    color: #c0d8ed;
-}
+    .jumbotron p {
+        color: #c0d8ed;
+    }
 
 /* ----- Cards (panels) on index ----------------------------- */
 .row-cards {
     display: flex;
     flex-wrap: wrap;
 }
-.row-cards > [class*="col-"] {
-    display: flex;
-    flex-direction: column;
-}
-.row-cards .panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-.row-cards .panel-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+
+    .row-cards > [class*="col-"] {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .row-cards .panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .row-cards .panel-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 24px 22px;
+        min-height: 180px;
+    }
+
+    .row-cards .panel-body p {
+        font-size: 1.05em;
+        line-height: 1.6;
+    }
+
+    .row-cards .panel-heading {
+        padding: 18px 22px;
+    }
+
+    .row-cards .panel-heading .panel-title {
+        font-size: 1.2em;
+    }
+
+    .row-cards .panel-footer {
+        padding: 12px 22px;
+        font-size: 0.9em;
+    }
+
+    .row-cards .btn-block {
+        padding: 12px 0;
+        font-size: 1.05em;
+    }
 
 .panel {
     border: none;
@@ -154,10 +178,10 @@ h3 {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.panel:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
+    .panel:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
 
 .panel-heading {
     border-radius: 6px 6px 0 0;
@@ -183,25 +207,47 @@ h3 {
     border-color: #1a6e91;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-    background-color: #1a6e91;
-    border-color: #125578;
-}
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active {
+        background-color: #1a6e91;
+        border-color: #125578;
+    }
 
 /* ----- Tables ---------------------------------------------- */
+.table {
+    width: auto;
+}
+
+.table th,
+.table td {
+    white-space: nowrap;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
 .table thead {
     background-color: #1a3a5c;
     color: #ffffff;
 }
 
-.table thead th {
-    border-color: #2e86ab;
-}
+    .table thead th {
+        border-color: #2e86ab;
+    }
 
 .table-striped > tbody > tr:nth-of-type(odd) {
     background-color: #edf3f8;
+}
+
+/* ----- Wrapping table (graph theory page) ------------------ */
+.table-wrap {
+    width: 100%;
+}
+
+.table-wrap th,
+.table-wrap td {
+    white-space: normal;
+    word-break: break-word;
 }
 
 /* ----- Footer ---------------------------------------------- */
@@ -217,15 +263,15 @@ footer {
     border-left: 5px solid #2e86ab;
 }
 
-.author-panel .panel-heading {
-    background-color: #1a3a5c;
-    color: #ffffff;
-    border: none;
-}
+    .author-panel .panel-heading {
+        background-color: #1a3a5c;
+        color: #ffffff;
+        border: none;
+    }
 
-.author-panel .panel-title {
-    color: #ffffff;
-}
+    .author-panel .panel-title {
+        color: #ffffff;
+    }
 
 /* ----- Theory sections ------------------------------------- */
 .theory-section {
@@ -236,9 +282,9 @@ footer {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-.theory-section h3 {
-    margin-top: 0;
-}
+    .theory-section h3 {
+        margin-top: 0;
+    }
 
 /* ----- Practice button ------------------------------------- */
 .btn-practice {
@@ -253,55 +299,18 @@ footer {
     cursor: pointer;
 }
 
-.btn-practice:hover,
-.btn-practice:focus {
-    background-color: #e84855;
-    color: #ffffff;
-    text-decoration: none;
-}
+    .btn-practice:hover,
+    .btn-practice:focus {
+        background-color: #e84855;
+        color: #ffffff;
+        text-decoration: none;
+    }
 
 .btn-practice-wrap {
     text-align: center;
     margin: 30px 0 10px;
 }
 
-/* ----- Forms ----------------------------------------------- */
-.form-control {
-    max-width: 100%;
-}
-
-/* ----- Form validation (keep original) --------------------- */
-input,
-select,
-textarea {
-    max-width: 280px;
-}
-
-.field-validation-error {
-    color: #b94a48;
-}
-
-.field-validation-valid {
-    display: none;
-}
-
-input.input-validation-error {
-    border: 1px solid #b94a48;
-}
-
-input[type="checkbox"].input-validation-error {
-    border: 0 none;
-}
-
-.validation-summary-errors {
-    color: #b94a48;
-}
-
-.validation-summary-valid {
-    display: none;
-}
-
-/* ─── Dynamic form rows (graph-input.js) ──────────────────── */
 .input-row {
     display: flex;
     align-items: center;
