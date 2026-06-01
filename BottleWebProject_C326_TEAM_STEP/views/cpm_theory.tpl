@@ -104,7 +104,23 @@
 </div>
 
 <div class="theory-section">
-    <img src="static\images\cpm_ex_sheme_1.png"/>
+    <div class="cpm-graph-row">
+        <figure class="cpm-graph-fig">
+            <img src="/static/images/cpm_theory_struct.svg"
+                 alt="Структура графа: задачи A–F и зависимости между ними">
+            <figcaption>1. Структура: задачи (длительность d) и зависимости</figcaption>
+        </figure>
+        <figure class="cpm-graph-fig">
+            <img src="/static/images/cpm_theory_forward.svg"
+                 alt="Прямой проход: ранние сроки ES и EF для каждой задачи">
+            <figcaption>2. Прямой проход: ранние сроки ES / EF</figcaption>
+        </figure>
+        <figure class="cpm-graph-fig">
+            <img src="/static/images/cpm_theory_critical.svg"
+                 alt="Выделенный критический путь A → C → E">
+            <figcaption>3. Критический путь A &rarr; C &rarr; E (T = 9)</figcaption>
+        </figure>
+    </div>
 </div>
 
 <div class="theory-section">
@@ -192,7 +208,7 @@ A:  LF=min(LS[C],LS[D])=min(3,6)=3,  LS=3&minus;3=0</pre>
         </tr>
         <tr>
             <td>D</td><td>1</td><td>A, B</td>
-            <td>3</td><td>4</td><td>6</td><td>7</td><td>3</td>
+            <td>3</td><td>4</td><td>6</td><td>6</td><td>2</td>
             <td>Нет</td>
         </tr>
         <tr class="danger">

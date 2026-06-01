@@ -64,6 +64,9 @@
     <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="static\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="static\images\cpm_ex_sheme_1.png" />
+    <Content Include="static\images\cpm_theory_critical.svg" />
+    <Content Include="static\images\cpm_theory_forward.svg" />
+    <Content Include="static\images\cpm_theory_struct.svg" />
     <Content Include="static\scripts\bootstrap.js" />
     <Content Include="static\scripts\bootstrap.min.js" />
     <Content Include="static\scripts\graph-input.js">
