@@ -6,16 +6,16 @@
     margin-bottom: 28px;
 }
 
-    .cpm-intro-box h3 {
-        color: #ffffff;
-        margin-top: 0;
-        border: none;
-    }
+.cpm-intro-box h3 {
+    color: #ffffff;
+    margin-top: 0;
+    border: none;
+}
 
-    .cpm-intro-box p {
-        margin-bottom: 0;
-        color: #d0e8f5;
-    }
+.cpm-intro-box p {
+    margin-bottom: 0;
+    color: #d0e8f5;
+}
 
 .cpm-section-title {
     color: #1a3a5c;
@@ -41,9 +41,9 @@
     font-size: 14px;
 }
 
-    .cpm-concept-chip strong {
-        color: #1a3a5c;
-    }
+.cpm-concept-chip strong {
+    color: #1a3a5c;
+}
 
 .theory-section h4 {
     margin-top: 0;
@@ -59,35 +59,39 @@
     font-size: 13px;
 }
 
-.cpm-graph-row {
+/* Внешний флекс-контейнер: текст + картинка */
+.cpm-step-outer {
     display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-items: flex-start;
-    margin: 4px 0;
+    align-items: center; /* вертикальное центрирование */
+    gap: 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* на узких экранах — столбец */
 }
 
-.cpm-graph-fig {
-    flex: 1 1 220px;
-    max-width: 300px;
+/* Текстовый блок (серая рамка остаётся) */
+.cpm-step-text {
+    flex: 1 1 300px;
+    min-width: 260px;
+    margin-bottom: 0;
+}
+
+/* Картинка справа — увеличена */
+.cpm-step-fig {
+    flex: 0 0 400px; /* базовая ширина */
+    max-width: 500px;
     margin: 0;
     text-align: center;
 }
 
-.cpm-graph-fig img {
+.cpm-step-fig img {
     width: 100%;
     height: auto;
-    max-height: 180px;
+    max-height: 500px; /* теперь можно сильно увеличить */
     border: 1px solid #d4e6f1;
-    border-radius: 6px;
+    border-radius: 8px;
     background: #ffffff;
-    padding: 6px;
-}
-
-.cpm-graph-fig figcaption {
-    font-size: 12px;
-    color: #555;
-    margin-top: 6px;
+    padding: 8px;
+    object-fit: contain;
 }
 
 .cpm-apply-list {
