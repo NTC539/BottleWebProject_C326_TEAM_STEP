@@ -7,6 +7,13 @@ import json
 import os
 from bottle import route, view, request, template
 from datetime import datetime
+from algorithms.coloring import (
+    ColoringInputError,
+    generate_random_data,
+    load_coloring_json,
+    sample_coloring_data,
+    solve_coloring,
+)
 
 def _year():
     return datetime.now().year
@@ -45,7 +52,105 @@ def bridges():
 @route('/coloring/practice', method=['GET', 'POST'])
 @view('coloring_practice')
 def coloring_practice():
-    return dict(year=_year())
+    subjects, conflicts = sample_coloring_data()
+    errors = []
+    result = None
+    subject_count = '12'
+    density = '0.35'
+
+    if request.method == 'POST':
+        action = request.forms.get('form_action') or 'calculate'
+        subject_count = request.forms.get('subject_count') or subject_count
+        density = request.forms.get('density') or density
+
+        if action == 'generate':
+            try:
+                subjects, conflicts = generate_random_data(int(subject_count), float(str(density).replace(',', '.')))
+            except ValueError:
+                errors.append('Проверьте количество дисциплин и плотность графа.')
+        elif action == 'load_json':
+            try:
+                upload = request.files.get('json_file')
+                if not upload or not upload.filename:
+                    raise ColoringInputError(['Выберите JSON-файл для загрузки.'])
+                payload = upload.file.read().decode('utf-8-sig')
+                subjects, conflicts = load_coloring_json(json.loads(payload))
+            except json.JSONDecodeError:
+                errors.append('JSON-файл не удалось прочитать. Проверьте структуру данных.')
+            except UnicodeDecodeError:
+                errors.append('Файл должен быть сохранён в кодировке UTF-8.')
+            except ColoringInputError as exc:
+                errors.extend(exc.errors)
+        else:
+            subjects, conflicts = _read_coloring_form()
+            try:
+                result = solve_coloring(subjects, conflicts)
+                subjects = result['subjects']
+                conflicts = result['conflicts']
+                _save_coloring_history(subjects, conflicts, result)
+            except ColoringInputError as exc:
+                errors.extend(exc.errors)
+
+    return dict(
+        year=_year(),
+        subjects=subjects,
+        conflicts=conflicts,
+        errors=errors,
+        result=result,
+        subject_count=subject_count,
+        density=density,
+    )
+
+
+def _read_coloring_form():
+    names = request.forms.getall('subject[]')
+    teachers = request.forms.getall('teacher[]')
+    subjects = []
+    for index, name in enumerate(names):
+        teacher = teachers[index] if index < len(teachers) else ''
+        subjects.append({'name': name, 'teacher': teacher})
+
+    conflict_from = request.forms.getall('conflict_from[]')
+    conflict_to = request.forms.getall('conflict_to[]')
+    conflicts = []
+    for index, left in enumerate(conflict_from):
+        right = conflict_to[index] if index < len(conflict_to) else ''
+        conflicts.append((left, right))
+
+    return subjects, conflicts
+
+
+def _save_coloring_history(subjects, conflicts, result):
+    project_root = os.path.abspath(os.path.dirname(__file__))
+    history_dir = os.path.join(project_root, 'data')
+    history_path = os.path.join(history_dir, 'coloring_history.json')
+    os.makedirs(history_dir, exist_ok=True)
+
+    entry = {
+        'datetime': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'input': {
+            'subjects': subjects,
+            'conflicts': conflicts,
+        },
+        'result': {
+            'num_colors': result['num_colors'],
+            'colors': result['colors'],
+            'schedule': result['schedule'],
+            'teacher_shifts': result['teacher_shifts'],
+        },
+    }
+
+    try:
+        with open(history_path, 'r', encoding='utf-8') as file:
+            history = json.load(file)
+        if not isinstance(history, list):
+            history = []
+    except (FileNotFoundError, json.JSONDecodeError):
+        history = []
+
+    history.append(entry)
+    with open(history_path, 'w', encoding='utf-8') as file:
+        json.dump(history, file, ensure_ascii=False, indent=2)
 
 
 @route('/bridges/practice', method=['GET', 'POST'])
