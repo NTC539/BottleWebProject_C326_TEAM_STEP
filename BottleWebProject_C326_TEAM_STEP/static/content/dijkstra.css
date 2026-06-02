@@ -380,8 +380,10 @@ h4 {
 
     .legend-color.dashed {
         background: none;
-        border-bottom: 2px dashed #e84855;
+        border-bottom: 2px dashed #aaaaaa;
         width: 20px;
+        height: 0;
+        display: inline-block;
     }
 
 .practice-container {
@@ -438,3 +440,23 @@ h4 {
         opacity: 0;
         cursor: pointer;
     }
+
+.graph-image {
+    text-align: center;
+    margin: 20px 0;
+}
+
+    .graph-image img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+        background: #f8f9fa;
+    }
+
+.image-caption {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-top: 5px;
+}

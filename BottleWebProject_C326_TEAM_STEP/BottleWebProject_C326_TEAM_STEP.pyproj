@@ -60,6 +60,7 @@
     <Content Include="static\content\bootstrap.css" />
     <Content Include="static\content\bootstrap.min.css" />
     <Content Include="static\content\site.css" />
+    <Content Include="static\content\dijkstra.css" />
     <Content Include="static\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
@@ -68,6 +69,7 @@
     <Content Include="static\images\cpm_theory_critical.svg" />
     <Content Include="static\images\cpm_theory_forward.svg" />
     <Content Include="static\images\cpm_theory_struct.svg" />
+    <Content Include="static\images\dijkstra_example_graph.png" />
     <Content Include="static\scripts\bootstrap.js" />
     <Content Include="static\scripts\bootstrap.min.js" />
     <Content Include="static\scripts\graph-input.js">
@@ -98,6 +100,7 @@
     </Content>
     <Content Include="views\contact.tpl" />
     <Content Include="views\dijkstra_theory.tpl" />
+    <Content Include="views\dijkstra_practice.tpl" />
     <Content Include="views\index.tpl" />
     <Content Include="views\layout.tpl" />
   </ItemGroup>
