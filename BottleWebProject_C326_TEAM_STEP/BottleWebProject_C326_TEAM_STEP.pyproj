@@ -18,8 +18,6 @@
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
     <Name>BottleWebProject_C326_TEAM_STEP</Name>
     <RootNamespace>BottleWebProject_C326_TEAM_STEP</RootNamespace>
-    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
-    <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,6 +34,7 @@
     <Compile Include="algorithms\cpm_generator.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="algorithms\dijkstra.py" />
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
   </ItemGroup>
@@ -61,7 +60,6 @@
     <Content Include="requirements.txt" />
     <Content Include="static\content\bootstrap.css" />
     <Content Include="static\content\bootstrap.min.css" />
-    <Content Include="static\content\cpm_theory.css" />
     <Content Include="static\content\site.css" />
     <Content Include="static\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="static\fonts\glyphicons-halflings-regular.svg" />
@@ -100,6 +98,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="views\contact.tpl" />
+    <Content Include="views\dijkstra_theory.tpl" />
     <Content Include="views\index.tpl" />
     <Content Include="views\layout.tpl" />
   </ItemGroup>
