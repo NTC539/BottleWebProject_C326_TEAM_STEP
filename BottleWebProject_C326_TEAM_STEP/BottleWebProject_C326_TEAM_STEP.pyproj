@@ -31,7 +31,9 @@
     <Compile Include="algorithms\cpm.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="algorithms\dijkstra.py" />
+    <Compile Include="algorithms\cpm_generator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
   </ItemGroup>
@@ -63,6 +65,9 @@
     <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="static\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="static\images\cpm_ex_sheme_1.png" />
+    <Content Include="static\images\cpm_theory_critical.svg" />
+    <Content Include="static\images\cpm_theory_forward.svg" />
+    <Content Include="static\images\cpm_theory_struct.svg" />
     <Content Include="static\scripts\bootstrap.js" />
     <Content Include="static\scripts\bootstrap.min.js" />
     <Content Include="static\scripts\graph-input.js">
@@ -80,6 +85,9 @@
     <Content Include="static\scripts\modernizr-2.6.2.js" />
     <Content Include="static\scripts\respond.js" />
     <Content Include="static\scripts\respond.min.js" />
+    <Content Include="static\scripts\vis-network.min.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="static\scripts\_references.js" />
     <Content Include="views\about.tpl" />
     <Content Include="views\cpm_practice.tpl">

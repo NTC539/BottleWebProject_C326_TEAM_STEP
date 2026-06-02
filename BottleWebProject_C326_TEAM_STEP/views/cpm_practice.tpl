@@ -1,6 +1,6 @@
 % rebase('layout.tpl', title=title, year=year, active_page=active_page)
 
-<h2>Метод критического пути (CPM) - Теория</h2>
+<h2>Метод критического пути (CPM) - Практика</h2>
 
 <form method="POST" action="/cpm/practice">
     <div class="theory-section">
@@ -8,12 +8,18 @@
         <span class="input-section-label">
             Введите задачи и их длительность (в любых единицах — днях, часах):
         </span>
-        <div id="tasks-container">
+        <div id="tasks-container"> 
         </div>
-        <button type="button" class="btn-success btn-sm add-row-btn"
-                onclick="addTaskRow('tasks-container')">
-            + Добавить задачу
-        </button>
+        <div style="display:inline-flex;gap:8px;align-items:center">
+            <button type="button" class="btn-success btn-sm add-row-btn"
+                    onclick="addTaskRow('tasks-container')">
+                + Добавить задачу
+            </button>
+            <button type="button" class="btn-default btn-sm"
+                    onclick="$('#tasks-container').empty();addTaskRow('tasks-container');updateSelects();">
+                Очистить всё
+            </button>
+        </div>
     </div>
 
     <div class="theory-section">
@@ -23,10 +29,16 @@
         </span>
         <div id="deps-container">
         </div>
-        <button type="button" class="btn-success btn-sm add-row-btn"
-                onclick="addDepRow('deps-container')">
-            + Добавить зависимость
-        </button>
+        <div style="display:inline-flex;gap:8px;align-items:center">
+            <button type="button" class="btn-success btn-sm add-row-btn"
+                    onclick="addDepRow('deps-container')">
+                + Добавить зависимость
+            </button>
+            <button type="button" class="btn-default btn-sm"
+                    onclick="$('#deps-container').empty();updateSelects();">
+                Очистить всё
+            </button>
+        </div>
     </div>
 
     <div style="padding:10px 0px; display: flex; gap: 16px;">
@@ -201,8 +213,22 @@ $(function () {
         }
     });
 
+    // Сохраняем исходные стили узлов для восстановления при снятии выделения
+    var nodeStyles = {};
+
     var nodes = V.map(function (n) {
         var crit = critNodes[n];
+        var bg = crit ? '#e84855' : '#e8f4fb';
+        var border = crit ? '#b3122a' : '#2e86ab';
+        var fontColor = crit ? '#ffffff' : '#1a3a5c';
+        
+        // Сохраняем стиль для восстановления
+        nodeStyles[n] = {
+            background: bg,
+            border: border,
+            fontColor: fontColor
+        };
+
         return {
             id: n,
             label: n + '\nd=' + T[n] + '\nES=' + ES[n] + '  EF=' + EF[n],
@@ -213,10 +239,19 @@ $(function () {
                    '\nРезерв (Float) = ' + FL[n],
             shape: 'box',
             margin: 10,
-            color: crit
-                ? { background: '#e84855', border: '#b3122a' }
-                : { background: '#e8f4fb', border: '#2e86ab' },
-            font: { color: crit ? '#ffffff' : '#1a3a5c', size: 14, face: 'monospace' }
+            color: {
+                background: bg,
+                border: border,
+                highlight: {
+                    background: bg,
+                    border: border
+                }
+            },
+            font: {
+                color: fontColor,
+                size: 14,
+                face: 'monospace'
+            }
         };
     });
 
@@ -244,28 +279,35 @@ $(function () {
     };
     var network = new vis.Network(container, data, options);
 
-    // --- Ограничение «камеры»: граф нельзя потерять ---
-    var MIN_SCALE = 0.4, MAX_SCALE = 2.5, PAN_LIMIT = 1500;
-
-    network.once('afterDrawing', function () {
-        network.fit({ animation: false });
+    // ── Исправление: при выделении узла меняем цвет текста ──
+    network.on('selectNode', function (params) {
+        var selectedNodes = params.nodes;
+        // Сначала сбрасываем все узлы к их исходным стилям
+        data.nodes.forEach(function (node) {
+            var style = nodeStyles[node.id];
+            data.nodes.update({
+                id: node.id,
+                font: { color: style.fontColor }
+            });
+        });
+        // Для выбранных узлов ставим тёмный цвет текста (под синий фон выделения)
+        selectedNodes.forEach(function (nodeId) {
+            data.nodes.update({
+                id: nodeId,
+                font: { color: '#1a1a2e' }   // тёмный текст на светлом фоне выделения
+            });
+        });
     });
 
-    // Ограничение масштаба (у vis нет нативного min/max зума)
-    network.on('zoom', function () {
-        var s = network.getScale();
-        if (s < MIN_SCALE) { network.moveTo({ scale: MIN_SCALE }); }
-        else if (s > MAX_SCALE) { network.moveTo({ scale: MAX_SCALE }); }
-    });
-
-    // Ограничение панорамирования — удерживаем граф в поле зрения
-    network.on('dragEnd', function () {
-        var p = network.getViewPosition();
-        var x = Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, p.x));
-        var y = Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, p.y));
-        if (x !== p.x || y !== p.y) {
-            network.moveTo({ position: { x: x, y: y } });
-        }
+    // При снятии выделения возвращаем всем исходные цвета
+    network.on('deselectNode', function () {
+        data.nodes.forEach(function (node) {
+            var style = nodeStyles[node.id];
+            data.nodes.update({
+                id: node.id,
+                font: { color: style.fontColor }
+            });
+        });
     });
 })();
 </script>

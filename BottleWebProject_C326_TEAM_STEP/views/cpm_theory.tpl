@@ -96,33 +96,21 @@
 
 <div class="cpm-section-title">Пример: 6 задач с зависимостями</div>
 
-<div class="theory-section">
-    <h4>Дано</h4>
-    <pre class="algo-block">Задачи:      A(3), B(2), C(4), D(1), E(2), F(3)
+<!-- Дано + структурный граф -->
+<div class="cpm-step-outer">
+    <div class="theory-section cpm-step-text">
+        <h4>Дано</h4>
+        <pre class="algo-block">Задачи:      A(3), B(2), C(4), D(1), E(2), F(3)
 Зависимости: C&larr;A,  D&larr;{A,B},  E&larr;C,  F&larr;D
              (A и B &mdash; стартовые, без предшественников)</pre>
-</div>
-
-<div class="theory-section">
-    <div class="cpm-graph-row">
-        <figure class="cpm-graph-fig">
-            <img src="/static/content/cpm_theory_struct.svg"
-                 alt="Структура графа: задачи A–F и зависимости между ними">
-            <figcaption>1. Структура: задачи (длительность d) и зависимости</figcaption>
-        </figure>
-        <figure class="cpm-graph-fig">
-            <img src="/static/content/cpm_theory_forward.svg"
-                 alt="Прямой проход: ранние сроки ES и EF для каждой задачи">
-            <figcaption>2. Прямой проход: ранние сроки ES / EF</figcaption>
-        </figure>
-        <figure class="cpm-graph-fig">
-            <img src="/static/content/cpm_theory_critical.svg"
-                 alt="Выделенный критический путь A → C → E">
-            <figcaption>3. Критический путь A &rarr; C &rarr; E (T = 9)</figcaption>
-        </figure>
     </div>
+    <figure class="cpm-step-fig">
+        <img src="/static/images/cpm_theory_struct.svg"
+             alt="Структура графа: задачи A–F и зависимости между ними">
+    </figure>
 </div>
 
+<!-- Шаг 1 — Топологический порядок (без картинки) -->
 <div class="theory-section">
     <h4>Шаг 1 &mdash; Топологический порядок (алгоритм Кана)</h4>
     <pre class="algo-block">in_degree: A=0, B=0, C=1, D=2, E=1, F=1
@@ -136,16 +124,24 @@
 Результат: [A, B, C, D, E, F]</pre>
 </div>
 
-<div class="theory-section">
-    <h4>Шаг 2 &mdash; Прямой проход (ES, EF)</h4>
-    <pre class="algo-block">A: ES=0,                              EF=0+3=3
+<!-- Шаг 2 — Прямой проход + картинка forward -->
+<div class="cpm-step-outer">
+    <div class="theory-section cpm-step-text">
+        <h4>Шаг 2 &mdash; Прямой проход (ES, EF)</h4>
+        <pre class="algo-block">A: ES=0,                              EF=0+3=3
 B: ES=0,                              EF=0+2=2
 C: ES=max(EF[A])=3,                   EF=3+4=7
 D: ES=max(EF[A],EF[B])=max(3,2)=3,   EF=3+1=4
 ...
 T<sub>кр</sub> = max(EF) = max(3, 2, 7, 4, 9, 7) = 9</pre>
+    </div>
+    <figure class="cpm-step-fig">
+        <img src="/static/images/cpm_theory_forward.svg"
+             alt="Прямой проход: ранние сроки ES и EF">
+    </figure>
 </div>
 
+<!-- Шаг 3 — Обратный проход (без картинки) -->
 <div class="theory-section">
     <h4>Шаг 3 &mdash; Обратный проход (LS, LF)</h4>
     <pre class="algo-block">Вершины с EF=T<sub>кр</sub>=9: E &rarr; LF[E]=9
@@ -157,9 +153,11 @@ F:  LF=9,                             LS=9&minus;3=6
 A:  LF=min(LS[C],LS[D])=min(3,6)=3,  LS=3&minus;3=0</pre>
 </div>
 
-<div class="theory-section">
-    <h4>Шаг 4 &mdash; Резервы и критический путь</h4>
-    <pre class="algo-block">R = LS &minus; ES:
+<!-- Шаг 4 — Резервы и критический путь + картинка critical -->
+<div class="cpm-step-outer">
+    <div class="theory-section cpm-step-text">
+        <h4>Шаг 4 &mdash; Резервы и критический путь</h4>
+        <pre class="algo-block">R = LS &minus; ES:
   A: 0&minus;0=0  &rarr; критическая
   B: 1&minus;0=1
   C: 3&minus;3=0  &rarr; критическая
@@ -174,6 +172,11 @@ A:  LF=min(LS[C],LS[D])=min(3,6)=3,  LS=3&minus;3=0</pre>
   E(R=0) &rarr; нет последователей &rarr; путь завершён
 
 Критический путь: A &rarr; C &rarr; E,  T<sub>кр</sub> = 9 ед.</pre>
+    </div>
+    <figure class="cpm-step-fig">
+        <img src="/static/images/cpm_theory_critical.svg"
+             alt="Критический путь A → C → E">
+    </figure>
 </div>
 
 <table class="table table-bordered table-striped">
@@ -208,7 +211,7 @@ A:  LF=min(LS[C],LS[D])=min(3,6)=3,  LS=3&minus;3=0</pre>
         </tr>
         <tr>
             <td>D</td><td>1</td><td>A, B</td>
-            <td>3</td><td>4</td><td>6</td><td>7</td><td>3</td>
+            <td>3</td><td>4</td><td>6</td><td>6</td><td>2</td>
             <td>Нет</td>
         </tr>
         <tr class="danger">
