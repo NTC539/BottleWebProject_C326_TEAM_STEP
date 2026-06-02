@@ -49,6 +49,7 @@
     </div>
 </form>
 
+<! -- Инициализация при загрузке страницы -->
 <script>
 // Сохранённый ввод формы (после отправки поля не очищаются)
 var CPM_TASKS_INPUT = {{!tasks_input}};
@@ -63,26 +64,37 @@ $(function () {
     } else {
         addTaskRow('tasks-container');
     }
-    // Восстанавливаем зависимости (после задач — чтобы списки были заполнены)
+    // Восстанавливаем зависимости
     if (CPM_DEPS_INPUT && CPM_DEPS_INPUT.length) {
         CPM_DEPS_INPUT.forEach(function (d) {
             addDepRow('deps-container', d[0], d[1]);
         });
     }
+
+    // Синхронизируем выпадающие списки с актуальными названиями задач
     updateSelects();
 
-    // Кнопка генерации случайных данных (данные приходят с сервера, Python)
+    // Кнопка генерации случайных данных
     $('#cpm-generate-btn').on('click', function () {
         $.getJSON('/cpm/generate', function (data) {
+            // Очищаем контейнеры задач и зависимостей
             $('#tasks-container').empty();
             $('#deps-container').empty();
+
+            // Добавляем задачи из полученного JSON
             data.tasks.forEach(function (t) {
                 addTaskRow('tasks-container', t.name, t.dur);
             });
+
+            // Обновляем выпадающие списки, чтобы они знали о новых задачах
             updateSelects();
+
+            // Добавляем зависимости из JSON
             data.deps.forEach(function (d) {
                 addDepRow('deps-container', d[0], d[1]);
             });
+
+            // Финальное обновление (восстановление выбранных значений)
             updateSelects();
         });
     });
@@ -175,39 +187,54 @@ $(function () {
     var btn = document.getElementById('cpm-download-btn');
     if (btn) {
         btn.addEventListener('click', function () {
+            // Форматируем JSON
             var text = JSON.stringify(payload, null, 2);
+
+            // Создаём Blob (бинарный объект) с типом application/json
             var blob = new Blob([text], { type: 'application/json' });
+
+            // Создаём временный URL для Blob
             var url = URL.createObjectURL(blob);
+
+            // Создаём временную ссылку для скачивания
             var a = document.createElement('a');
             a.href = url;
             a.download = 'cpm_result.json';
+
+            // Добавляем ссылку в DOM, кликаем по ней и удаляем
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+
+            // Освобождаем память, удаляя временный URL
             URL.revokeObjectURL(url);
         });
     }
 })();
 
-// Отрисовка графа проекта (vis-network, локальный файл из layout.tpl)
+// Отрисовка графа проекта (vis-network)
 (function () {
-    var V  = {{!result['gv']}};
-    var E  = {{!result['ge']}};
-    var T  = {{!result['gtasks']}};
-    var ES = {{!result['ges']}};
-    var EF = {{!result['gef']}};
-    var LS = {{!result['gls']}};
-    var LF = {{!result['glf']}};
-    var FL = {{!result['gfloat']}};
-    var CP = {{!result['gcrit']}};   // список критических путей
+    var V  = {{!result['gv']}};       // список вершин (названия задач)
+    var E  = {{!result['ge']}};       // список рёбер (пары [от, к])
+    var T  = {{!result['gtasks']}};   // словарь {задача: длительность}
+    var ES = {{!result['ges']}};      // словарь {задача: Early Start}
+    var EF = {{!result['gef']}};      // словарь {задача: Early Finish}
+    var LS = {{!result['gls']}};      // словарь {задача: Late Start}
+    var LF = {{!result['glf']}};      // словарь {задача: Late Finish}
+    var FL = {{!result['gfloat']}};   // словарь {задача: Float (резерв)}
+    var CP = {{!result['gcrit']}};    // список критических путей (массив массивов)
 
     var container = document.getElementById('graph-canvas');
+    // Если контейнер не найден или библиотека vis не загружена — выходим
     if (!container || typeof vis === 'undefined') { return; }
 
-    // Множества критических узлов и рёбер
-    var critNodes = {}, critEdges = {};
+    var critNodes = {};   // {имя_задачи: true} для критических задач
+    var critEdges = {};   // {"A->B": true} для критических зависимостей
+
     CP.forEach(function (path) {
+        // Все задачи в критическом пути — критические
         path.forEach(function (n) { critNodes[n] = true; });
+        // Все рёбра между соседними задачами в критическом пути
         for (var i = 0; i < path.length - 1; i++) {
             critEdges[path[i] + '->' + path[i + 1]] = true;
         }
@@ -218,11 +245,13 @@ $(function () {
 
     var nodes = V.map(function (n) {
         var crit = critNodes[n];
+
+        // Цвета зависят от того, критическая задача или нет
         var bg = crit ? '#e84855' : '#e8f4fb';
         var border = crit ? '#b3122a' : '#2e86ab';
         var fontColor = crit ? '#ffffff' : '#1a3a5c';
         
-        // Сохраняем стиль для восстановления
+        // Сохраняем стиль для восстановления после выделения
         nodeStyles[n] = {
             background: bg,
             border: border,
@@ -230,15 +259,21 @@ $(function () {
         };
 
         return {
-            id: n,
+            id: n,      // Уникальный идентификатор узла (имя задачи)
+
+            // Текст НА узле: название, длительность, ES, EF
             label: n + '\nd=' + T[n] + '\nES=' + ES[n] + '  EF=' + EF[n],
+            
+            // Всплывающая подсказка (появляется при наведении)
             title: 'Задача ' + n +
                    '\nДлительность: ' + T[n] +
                    '\nES = ' + ES[n] + '   EF = ' + EF[n] +
                    '\nLS = ' + LS[n] + '   LF = ' + LF[n] +
                    '\nРезерв (Float) = ' + FL[n],
-            shape: 'box',
-            margin: 10,
+            shape: 'box',       // Прямоугольник со скруглёнными углами
+            margin: 10,         // Отступ текста от краёв узла
+            
+            // Настройки цвета
             color: {
                 background: bg,
                 border: border,
@@ -247,6 +282,8 @@ $(function () {
                     border: border
                 }
             },
+
+            // Настройки шрифта
             font: {
                 color: fontColor,
                 size: 14,
@@ -255,33 +292,52 @@ $(function () {
         };
     });
 
+    // Создание рёбер графа
     var edges = E.map(function (e) {
         var crit = critEdges[e[0] + '->' + e[1]];
         return {
-            from: e[0], to: e[1],
-            arrows: { to: { enabled: true, scaleFactor: 0.8 } },
+            from: e[0],     // Начало стрелки
+            to: e[1],       // Конец стрелки
+
+            // Настройка стрелки на конце
+            arrows: { 
+                to: { 
+                enabled: true, 
+                scaleFactor: 0.8    // Размер наконечника
+                } 
+            },
+
             width: crit ? 3 : 1,
             color: { color: crit ? '#e84855' : '#9bb8cc' },
             smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 }
         };
     });
 
+    // Отрисовка графа
     var data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
     var options = {
         layout: {
             hierarchical: {
-                direction: 'LR', sortMethod: 'directed',
-                levelSeparation: 170, nodeSpacing: 110
+                direction: 'LR',            // Слои идут слева направо (Left to Right)
+                sortMethod: 'directed',     // Сортировка по направлению рёбер
+                levelSeparation: 170,       // Расстояние между слоями (по горизонтали)
+                nodeSpacing: 110            // Расстояние между узлами в одном слое (по вертикали)
             }
         },
-        physics: false,
-        interaction: { dragNodes: true, dragView: true, zoomView: true }
+        physics: false,     // Отключаем физическую симуляцию
+        interaction: { 
+            dragNodes: true, // Можно перетаскивать узлы
+            dragView: true, // Можно перемещать область просмотра
+            zoomView: true  // Можно масштабировать
+        }
     };
     var network = new vis.Network(container, data, options);
 
-    // ── Исправление: при выделении узла меняем цвет текста ──
+    // Обработка выделения узла
+    // при выделении меняем цвет текста на тёмный
     network.on('selectNode', function (params) {
         var selectedNodes = params.nodes;
+
         // Сначала сбрасываем все узлы к их исходным стилям
         data.nodes.forEach(function (node) {
             var style = nodeStyles[node.id];
@@ -290,11 +346,12 @@ $(function () {
                 font: { color: style.fontColor }
             });
         });
-        // Для выбранных узлов ставим тёмный цвет текста (под синий фон выделения)
+
+        // Для выбранных узлов ставим тёмный цвет текста
         selectedNodes.forEach(function (nodeId) {
             data.nodes.update({
                 id: nodeId,
-                font: { color: '#1a1a2e' }   // тёмный текст на светлом фоне выделения
+                font: { color: '#1a1a2e' }   // Цвет выделения текста
             });
         });
     });

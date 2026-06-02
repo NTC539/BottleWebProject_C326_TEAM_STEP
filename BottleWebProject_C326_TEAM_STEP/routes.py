@@ -47,11 +47,12 @@ def cpm():
 @route('/cpm/practice', method=['GET', 'POST'])
 @view('cpm_practice')
 def cpm_practice():
-    result = None
-    error = None
+    result = None   # Словарь с результатами расчёта (или None при ошибке)
+    error = None    # Строка с сообщением об ошибке (или None)
     
-    tasks_input = []
-    deps_input = []
+    # Сохраняем ввод пользователя для восстановления формы после отправки
+    tasks_input = [] # Список пар [название, длительность]
+    deps_input = []  # Список пар [предшественник, последователь]
 
     if request.method == 'POST':
         # Создаем декодированную копию всех данных формы
@@ -63,6 +64,7 @@ def cpm_practice():
         df   = forms.getall('dep_from[]')
         dt   = forms.getall('dep_to[]')
 
+        # Сохранение сырых данных для восстановления формы
         for i in range(len(names)):
             dur_raw = durations[i] if i < len(durations) else ''
             tasks_input.append([names[i], dur_raw])
@@ -70,7 +72,9 @@ def cpm_practice():
             if i < len(dt):
                 deps_input.append([df[i], dt[i]])
             
+        # Валидация и парсинг данных
         try:
+            # Формирование словаря задач
             tasks = {}
             for i in range(len(names)):
                 name = names[i].strip() if i < len(names) else ''
@@ -78,6 +82,8 @@ def cpm_practice():
                     continue
                 if name in tasks:
                     raise ValueError(f'Задача «{name}» указана дважды.')
+                
+                # Парсинг длительности: должно быть целое число
                 try:
                     dur = int(durations[i]) if i < len(durations) else 0
                 except (ValueError, TypeError):
@@ -90,13 +96,14 @@ def cpm_practice():
             if not tasks:
                 raise ValueError('Список задач не может быть пустым.')
 
+            # Формирование списка зависимостей ---
             deps = [
                 (df[i], dt[i])
                 for i in range(len(df))
                 if i < len(dt) and df[i] and dt[i]
             ]
 
-            # Проверки зависимостей
+            # Проверки зависимостей на корректность
             seen_deps = set()
             for a, b in deps:
                 if a == b:
@@ -109,21 +116,28 @@ def cpm_practice():
                         f'Обнаружена встречная зависимость: «{b} → {a}» и «{a} → {b}».'
                     )
 
+            # Запуск алгоритма CPM ---
             result = find_critical_path(tasks, deps)
-            result['tasks'] = tasks   # для таблицы в шаблоне
+            # Добавляем исходные задачи в результат для отображения в таблице
+            result['tasks'] = tasks
 
-            # JSON для отрисовки графа через vis.js (вставляется в шаблон через {{!...}})
-            result['gv']     = json.dumps(list(tasks.keys()))
-            result['ge']     = json.dumps([[a, b] for a, b in deps])
-            result['gcrit']  = json.dumps(result['critical_paths'])
-            result['gtasks'] = json.dumps(result['tasks'])
+            # Подготовка данных для фронтенда (JavaScript)
+            # Все значения преобразуются в JSON-строки, которые будут
+            # вставлены в шаблон через {{!...}} (без экранирования HTML)
+            
+            result['gv']     = json.dumps(list(tasks.keys()))           # Список вершин графа
+            result['ge']     = json.dumps([[a, b] for a, b in deps])    # Список рёбер графа (пары [от, к])
+            result['gcrit']  = json.dumps(result['critical_paths'])     # Список всех критических путей
+            
+            # Словари с параметрами задач (нужны для всплывающих подсказок на графе)
+            result['gtasks'] = json.dumps(result['tasks'])              
             result['ges']    = json.dumps(result['es'])
             result['gef']    = json.dumps(result['ef'])
             result['gls']    = json.dumps(result['ls'])
             result['glf']    = json.dumps(result['lf']) 
             result['gfloat'] = json.dumps(result['total_float'])
 
-            # Полный результат для скачивания в .json (set → отсортированный список)
+            # Полный результат для скачивания в .json
             download = {
                 'duration':       result['duration'],
                 'critical_paths': result['critical_paths'],
@@ -156,8 +170,10 @@ def cpm_practice():
 
 @route('/cpm/generate')
 def cpm_generate():
-    """Возвращает случайный набор задач и зависимостей (без циклов) в JSON."""
+    # Устанавливаем Content-Type для JSON-ответа
     response.content_type = 'application/json'
+    # Генерируем данные и возвращаем как JSON-строку
+    # ensure_ascii=False — чтобы русские символы (если будут) не экранировались
     return json.dumps(generate_random_cpm(), ensure_ascii=False)
 
 
