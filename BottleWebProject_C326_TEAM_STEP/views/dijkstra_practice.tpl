@@ -58,7 +58,7 @@
                       <td>{{ i+1 }}</td>
                       <td><input type="text" name="from_{{ i }}" class="form-control" value="{{ from_val }}"></td>
                       <td><input type="text" name="to_{{ i }}" class="form-control" value="{{ to_val }}"></td>
-                      <td><input type="text" name="weight_{{ i }}" class="form-control" value="{{ weight_val }}" placeholder="число или inf"></td>
+                      <td><input type="text" name="weight_{{ i }}" class="form-control" value="{{ weight_val }}"></td>
                     </tr>
                   % end
                 </tbody>

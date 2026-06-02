@@ -149,7 +149,7 @@ def dijkstra_practice():
                 weight = str(random.randint(1, 20)) if random.random() < 0.85 else 'inf'
                 edges.append((from_v, to_v, weight))
 
-            source = random.choice(random.choice(edges))
+            source = random.choice(edges)[0]
             stage = 'input_edges'
 
         # 4. upload
@@ -175,8 +175,8 @@ def dijkstra_practice():
                     else:
                         errors.append(f'Строка {line_num}: игнорируется (не хватает данных)')
                 if edges:
-                    if len(edges) > 100:
-                        errors.append('Файл содержит более 100 рёбер, это слишком много.')
+                    if len(edges) > 25:
+                        errors.append('Файл содержит более 25 рёбер, это слишком много.')
                         stage = 'input_count'
                     else:
                         edge_count = len(edges)
@@ -226,7 +226,7 @@ def dijkstra_practice():
             edges = [(request.forms.getunicode(f'from_{i}', ''),
                       request.forms.getunicode(f'to_{i}', ''),
                       request.forms.getunicode(f'weight_{i}', '')) for i in range(edge_count)]
-
+            
             if parse_errors:
                 errors.extend(parse_errors)
                 stage = 'input_edges'
@@ -236,6 +236,7 @@ def dijkstra_practice():
                     vertices_set.add(u)
                     vertices_set.add(v)
                 vertices = list(vertices_set)
+
 
                 if source not in vertices:
                     errors.append(f'Вершина-источник "{source}" не найдена среди вершин графа.')
@@ -255,9 +256,13 @@ def dijkstra_practice():
                             }
                         graph_edges = edges_raw
                         stage = 'results'
+
+                        sorted_results = dict(sorted(results.items(), key=lambda item: item[1]['dist']))
+                        results = sorted_results
                     except ValueError as e:
                         errors.append(str(e))
                         stage = 'input_edges'
+
 
         # 6. back_to_edges
         elif action == 'back_to_edges':
