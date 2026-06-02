@@ -11,6 +11,7 @@ from algorithms.coloring import (
     ColoringInputError,
     generate_random_data,
     load_coloring_json,
+    make_export_data,
     sample_coloring_data,
     solve_coloring,
 )
@@ -130,20 +131,7 @@ def _read_coloring_form():
 
 
 def _export_coloring_json(subjects, conflicts, result):
-    data = {
-        'subjects': subjects,
-        'conflicts': [[left, right] for left, right in conflicts],
-        'result': {
-            'algorithm': 'Welsh-Powell',
-            'num_colors': result['num_colors'],
-            'colors': result['colors'],
-            'schedule': result['schedule'],
-            'teacher_shifts': result['teacher_shifts'],
-            'teacher_cost': result['teacher_cost'],
-            'order': result['order'],
-            'degrees': result['degrees'],
-        },
-    }
+    data = make_export_data(subjects, conflicts, result)
     filename = 'coloring_result_{}.json'.format(datetime.now().strftime('%Y%m%d_%H%M%S'))
 
     response.content_type = 'application/json; charset=utf-8'

@@ -30,9 +30,7 @@ class ColoringInputError(Exception):
 
 
 def sample_coloring_data():
-    subjects = []
-    for subject in SAMPLE_SUBJECTS:
-        subjects.append({"name": subject["name"], "teacher": subject["teacher"]})
+    subjects = [subject.copy() for subject in SAMPLE_SUBJECTS]
     return subjects, list(SAMPLE_CONFLICTS)
 
 
@@ -64,17 +62,35 @@ def load_coloring_json(data):
     return subjects, conflicts
 
 
+def make_export_data(subjects, conflicts, result):
+    return {
+        "subjects": subjects,
+        "conflicts": [[left, right] for left, right in conflicts],
+        "result": {
+            "algorithm": "Welsh-Powell",
+            "num_colors": result["num_colors"],
+            "colors": result["colors"],
+            "schedule": result["schedule"],
+            "teacher_shifts": result["teacher_shifts"],
+            "teacher_cost": result["teacher_cost"],
+            "order": result["order"],
+            "degrees": result["degrees"],
+        },
+    }
+
+
 def generate_random_data(count, density):
     count = max(1, min(MAX_SUBJECTS, int(count)))
     density = max(0, min(1, float(density)))
     teachers = ["Иванов", "Петров", "Сидорова", "Смирнова", "Кузнецов"]
 
-    subjects = []
-    for i in range(1, count + 1):
-        subjects.append({
+    subjects = [
+        {
             "name": "Дисциплина {}".format(i),
             "teacher": teachers[(i - 1) % len(teachers)],
-        })
+        }
+        for i in range(1, count + 1)
+    ]
 
     conflicts = []
     for i in range(count):
@@ -87,24 +103,15 @@ def generate_random_data(count, density):
 
 def solve_coloring(subjects, conflicts):
     subjects, conflicts, teachers = check_input(subjects, conflicts)
-    vertices = []
-    for subject in subjects:
-        vertices.append(subject["name"])
-
+    vertices = [subject["name"] for subject in subjects]
     graph = make_graph(vertices, conflicts)
 
-    if len(conflicts) == 0:
-        colors = {}
-        for vertex in vertices:
-            colors[vertex] = 1
-        order = sorted(vertices)
-    else:
-        order = sort_vertices(vertices, graph)
-        colors = greedy_coloring(order, graph)
-        colors = compact_schedule(vertices, graph, colors)
-        colors = reduce_color_count(vertices, graph, colors)
-        colors = optimize_teachers(vertices, graph, colors, teachers)
-        colors = renumber_colors(colors)
+    order = sort_vertices(vertices, graph)
+    colors = greedy_coloring(order, graph)
+    colors = compact_schedule(vertices, graph, colors)
+    colors = reduce_color_count(vertices, graph, colors)
+    colors = optimize_teachers(vertices, graph, colors, teachers)
+    colors = renumber_colors(colors)
 
     schedule = make_schedule(subjects, colors)
 
@@ -155,9 +162,7 @@ def check_input(subjects, conflicts):
     if len(good_subjects) > MAX_SUBJECTS:
         errors.append("Количество дисциплин не должно превышать {}.".format(MAX_SUBJECTS))
 
-    subject_names = set()
-    for subject in good_subjects:
-        subject_names.add(subject["name"])
+    subject_names = {subject["name"] for subject in good_subjects}
 
     good_conflicts = []
     added_conflicts = set()
@@ -192,17 +197,13 @@ def check_input(subjects, conflicts):
     if errors:
         raise ColoringInputError(errors)
 
-    teachers = {}
-    for subject in good_subjects:
-        teachers[subject["name"]] = subject["teacher"]
+    teachers = {subject["name"]: subject["teacher"] for subject in good_subjects}
 
     return good_subjects, good_conflicts, teachers
 
 
 def make_graph(vertices, conflicts):
-    graph = {}
-    for vertex in vertices:
-        graph[vertex] = set()
+    graph = {vertex: set() for vertex in vertices}
 
     for first, second in conflicts:
         graph[first].add(second)
@@ -219,11 +220,7 @@ def greedy_coloring(order, graph):
     colors = {}
 
     for vertex in order:
-        forbidden = set()
-        for neighbor in graph[vertex]:
-            if neighbor in colors:
-                forbidden.add(colors[neighbor])
-
+        forbidden = {colors[neighbor] for neighbor in graph[vertex] if neighbor in colors}
         color = 1
         while color in forbidden:
             color += 1
@@ -283,13 +280,7 @@ def paint_with_limit(vertices, graph, colors, limit):
     vertex = choose_next_vertex(vertices, graph, colors)
 
     for color in range(1, limit + 1):
-        can_use = True
-        for neighbor in graph[vertex]:
-            if colors.get(neighbor) == color:
-                can_use = False
-                break
-
-        if can_use:
+        if all(colors.get(neighbor) != color for neighbor in graph[vertex]):
             colors[vertex] = color
             if paint_with_limit(vertices, graph, colors, limit):
                 return True
@@ -299,28 +290,11 @@ def paint_with_limit(vertices, graph, colors, limit):
 
 
 def choose_next_vertex(vertices, graph, colors):
-    best_vertex = None
-    best_used_colors = -1
-    best_degree = -1
-
-    for vertex in vertices:
-        if vertex in colors:
-            continue
-
-        used_colors = set()
-        for neighbor in graph[vertex]:
-            if neighbor in colors:
-                used_colors.add(colors[neighbor])
-
-        if len(used_colors) > best_used_colors:
-            best_vertex = vertex
-            best_used_colors = len(used_colors)
-            best_degree = len(graph[vertex])
-        elif len(used_colors) == best_used_colors and len(graph[vertex]) > best_degree:
-            best_vertex = vertex
-            best_degree = len(graph[vertex])
-
-    return best_vertex
+    uncolored = [vertex for vertex in vertices if vertex not in colors]
+    return max(uncolored, key=lambda vertex: (
+        len({colors[neighbor] for neighbor in graph[vertex] if neighbor in colors}),
+        len(graph[vertex]),
+    ))
 
 
 def optimize_teachers(vertices, graph, colors, teachers):
@@ -354,10 +328,7 @@ def optimize_teachers(vertices, graph, colors, teachers):
 
 
 def neighbor_colors(vertex, graph, colors):
-    result = set()
-    for neighbor in graph[vertex]:
-        result.add(colors[neighbor])
-    return result
+    return {colors[neighbor] for neighbor in graph[vertex]}
 
 
 def teacher_cost(colors, teachers):
@@ -365,44 +336,27 @@ def teacher_cost(colors, teachers):
 
     for subject, color in colors.items():
         teacher = teachers[subject]
-        if teacher not in shifts:
-            shifts[teacher] = set()
-        shifts[teacher].add(color)
+        shifts.setdefault(teacher, set()).add(color)
 
-    cost = 0
-    for teacher in shifts:
-        if len(shifts[teacher]) > 1:
-            cost += len(shifts[teacher]) - 1
-
-    return cost
+    return sum(max(0, len(teacher_shifts) - 1) for teacher_shifts in shifts.values())
 
 
 def renumber_colors(colors):
     old_numbers = sorted(set(colors.values()))
-    numbers = {}
-
-    for i, old_number in enumerate(old_numbers, start=1):
-        numbers[old_number] = i
-
-    new_colors = {}
-    for vertex in colors:
-        new_colors[vertex] = numbers[colors[vertex]]
-
-    return new_colors
+    numbers = {old_number: i for i, old_number in enumerate(old_numbers, start=1)}
+    return {vertex: numbers[colors[vertex]] for vertex in colors}
 
 
 def make_schedule(subjects, colors):
-    schedule = []
     max_color = max(colors.values()) if colors else 0
 
-    for color in range(1, max_color + 1):
-        row = {"shift": color, "subjects": []}
-        for subject in subjects:
-            if colors[subject["name"]] == color:
-                row["subjects"].append(subject)
-        schedule.append(row)
-
-    return schedule
+    return [
+        {
+            "shift": color,
+            "subjects": [subject for subject in subjects if colors[subject["name"]] == color],
+        }
+        for color in range(1, max_color + 1)
+    ]
 
 
 def make_teacher_table(colors, teachers):
@@ -410,22 +364,16 @@ def make_teacher_table(colors, teachers):
 
     for subject, color in colors.items():
         teacher = teachers[subject]
-        if teacher not in table:
-            table[teacher] = set()
-        table[teacher].add(color)
+        table.setdefault(teacher, set()).add(color)
 
-    result = []
-    for teacher in sorted(table):
-        result.append({"teacher": teacher, "shifts": sorted(table[teacher])})
-
-    return result
+    return [
+        {"teacher": teacher, "shifts": sorted(table[teacher])}
+        for teacher in sorted(table)
+    ]
 
 
 def get_degrees(vertices, graph):
-    degrees = {}
-    for vertex in vertices:
-        degrees[vertex] = len(graph[vertex])
-    return degrees
+    return {vertex: len(graph[vertex]) for vertex in vertices}
 
 
 def clean_text(value):
