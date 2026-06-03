@@ -24,17 +24,20 @@ SAMPLE_CONFLICTS = [
 ]
 
 class ColoringInputError(Exception):
+    """Ошибка валидации входных данных со списком текстовых сообщений."""
     def __init__(self, errors):
         super().__init__("\n".join(errors))
         self.errors = errors
 
 
 def sample_coloring_data():
+    """Возвращает копию демонстрационного набора дисциплин и конфликтов."""
     subjects = [subject.copy() for subject in SAMPLE_SUBJECTS]
     return subjects, list(SAMPLE_CONFLICTS)
 
 
 def load_coloring_json(data):
+    """Разбирает и валидирует данные импортированного JSON-файла."""
     if not isinstance(data, dict):
         raise ColoringInputError(["JSON должен содержать объект."])
 
@@ -63,6 +66,7 @@ def load_coloring_json(data):
 
 
 def make_export_data(subjects, conflicts, result):
+    """Собирает словарь экспорта в формате, совместимом с импортом."""
     return {
         "subjects": subjects,
         "conflicts": [[left, right] for left, right in conflicts],
@@ -80,6 +84,7 @@ def make_export_data(subjects, conflicts, result):
 
 
 def generate_random_data(count, density):
+    """Создаёт случайный набор дисциплин и конфликтов по заданной плотности."""
     count = max(1, min(MAX_SUBJECTS, int(count)))
     density = max(0, min(1, float(density)))
     teachers = ["Иванов", "Петров", "Сидорова", "Смирнова", "Кузнецов"]
@@ -102,6 +107,7 @@ def generate_random_data(count, density):
 
 
 def solve_coloring(subjects, conflicts):
+    """Запускает полный конвейер раскраски и возвращает результат расчёта."""
     subjects, conflicts, teachers = check_input(subjects, conflicts)
     vertices = [subject["name"] for subject in subjects]
     graph = make_graph(vertices, conflicts)
@@ -129,6 +135,7 @@ def solve_coloring(subjects, conflicts):
 
 
 def check_input(subjects, conflicts):
+    """Проверяет дисциплины и конфликты, возвращая очищенные данные и словарь преподавателей."""
     errors = []
     good_subjects = []
     names = set()
@@ -203,6 +210,7 @@ def check_input(subjects, conflicts):
 
 
 def make_graph(vertices, conflicts):
+    """Строит неориентированный граф смежности из списка конфликтов."""
     graph = {vertex: set() for vertex in vertices}
 
     for first, second in conflicts:
@@ -213,10 +221,12 @@ def make_graph(vertices, conflicts):
 
 
 def sort_vertices(vertices, graph):
+    """Сортирует вершины по убыванию степени — порядок Welsh-Powell."""
     return sorted(vertices, key=lambda vertex: (-len(graph[vertex]), vertex.lower()))
 
 
 def greedy_coloring(order, graph):
+    """Жадно красит вершины в наименьший доступный цвет."""
     colors = {}
 
     for vertex in order:
@@ -231,6 +241,7 @@ def greedy_coloring(order, graph):
 
 
 def compact_schedule(vertices, graph, colors):
+    """Уплотняет расписание, перекрашивая вершины старшего цвета в младшие."""
     changed = True
 
     while changed:
@@ -257,6 +268,7 @@ def compact_schedule(vertices, graph, colors):
 
 
 def reduce_color_count(vertices, graph, colors):
+    """Для небольших графов ищет раскраску с меньшим числом цветов."""
     if len(vertices) > 12:
         return colors
 
@@ -274,6 +286,7 @@ def reduce_color_count(vertices, graph, colors):
 
 
 def paint_with_limit(vertices, graph, colors, limit):
+    """Рекурсивным перебором пытается раскрасить граф не более чем в limit цветов."""
     if len(colors) == len(vertices):
         return True
 
@@ -290,6 +303,7 @@ def paint_with_limit(vertices, graph, colors, limit):
 
 
 def choose_next_vertex(vertices, graph, colors):
+    """Выбирает следующую вершину перебора с наибольшими ограничениями."""
     uncolored = [vertex for vertex in vertices if vertex not in colors]
     return max(uncolored, key=lambda vertex: (
         len({colors[neighbor] for neighbor in graph[vertex] if neighbor in colors}),
@@ -298,6 +312,7 @@ def choose_next_vertex(vertices, graph, colors):
 
 
 def optimize_teachers(vertices, graph, colors, teachers):
+    """Снижает число разных смен у преподавателей, перекрашивая вершины."""
     changed = True
 
     while changed:
@@ -328,10 +343,12 @@ def optimize_teachers(vertices, graph, colors, teachers):
 
 
 def neighbor_colors(vertex, graph, colors):
+    """Возвращает множество цветов соседей вершины."""
     return {colors[neighbor] for neighbor in graph[vertex]}
 
 
 def teacher_cost(colors, teachers):
+    """Считает штраф за лишние смены преподавателей (смены сверх одной)."""
     shifts = {}
 
     for subject, color in colors.items():
@@ -342,12 +359,14 @@ def teacher_cost(colors, teachers):
 
 
 def renumber_colors(colors):
+    """Перенумеровывает цвета подряд, начиная с единицы."""
     old_numbers = sorted(set(colors.values()))
     numbers = {old_number: i for i, old_number in enumerate(old_numbers, start=1)}
     return {vertex: numbers[colors[vertex]] for vertex in colors}
 
 
 def make_schedule(subjects, colors):
+    """Группирует дисциплины по сменам для итогового расписания."""
     max_color = max(colors.values()) if colors else 0
 
     return [
@@ -360,6 +379,7 @@ def make_schedule(subjects, colors):
 
 
 def make_teacher_table(colors, teachers):
+    """Формирует таблицу смен по каждому преподавателю."""
     table = {}
 
     for subject, color in colors.items():
@@ -373,8 +393,10 @@ def make_teacher_table(colors, teachers):
 
 
 def get_degrees(vertices, graph):
+    """Возвращает степень каждой вершины графа."""
     return {vertex: len(graph[vertex]) for vertex in vertices}
 
 
 def clean_text(value):
+    """Приводит значение к строке и убирает крайние пробелы."""
     return str(value or "").strip()

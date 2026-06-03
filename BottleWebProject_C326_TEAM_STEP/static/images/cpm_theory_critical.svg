@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="470" height="250" viewBox="0 0 470 250">
+<defs>
+  <marker id="an" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#9bb8cc"/></marker>
+  <marker id="ac" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#e84855"/></marker>
+</defs>
+<rect width="470" height="250" fill="white"/>
+<line x1="113.0" y1="70.0" x2="193.0" y2="70.0" stroke="#e84855" stroke-width="3" marker-end="url(#ac)"/>
+<line x1="106.3" y1="91.5" x2="200.4" y2="156.2" stroke="#9bb8cc" stroke-width="1.4" marker-end="url(#an)"/>
+<line x1="113.0" y1="180.0" x2="193.0" y2="180.0" stroke="#9bb8cc" stroke-width="1.4" marker-end="url(#an)"/>
+<line x1="273.0" y1="70.0" x2="353.0" y2="70.0" stroke="#e84855" stroke-width="3" marker-end="url(#ac)"/>
+<line x1="273.0" y1="180.0" x2="353.0" y2="180.0" stroke="#9bb8cc" stroke-width="1.4" marker-end="url(#an)"/>
+<ellipse cx="75" cy="70" rx="36" ry="26" fill="#e84855" stroke="#b3122a" stroke-width="3"/>
+<text x="75" y="64" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="bold" font-family="Arial,sans-serif" fill="#ffffff">A</text>
+<text x="75" y="81" text-anchor="middle" dominant-baseline="central" font-size="10" font-family="Arial,sans-serif" fill="#ffffff">d=3</text>
+<ellipse cx="75" cy="180" rx="36" ry="26" fill="#e8f4fb" stroke="#2e86ab" stroke-width="1.6"/>
+<text x="75" y="174" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="bold" font-family="Arial,sans-serif" fill="#1a3a5c">B</text>
+<text x="75" y="191" text-anchor="middle" dominant-baseline="central" font-size="10" font-family="Arial,sans-serif" fill="#1a3a5c">d=2</text>
+<ellipse cx="235" cy="70" rx="36" ry="26" fill="#e84855" stroke="#b3122a" stroke-width="3"/>
+<text x="235" y="64" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="bold" font-family="Arial,sans-serif" fill="#ffffff">C</text>
+<text x="235" y="81" text-anchor="middle" dominant-baseline="central" font-size="10" font-family="Arial,sans-serif" fill="#ffffff">d=4</text>
+<ellipse cx="235" cy="180" rx="36" ry="26" fill="#e8f4fb" stroke="#2e86ab" stroke-width="1.6"/>
+<text x="235" y="174" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="bold" font-family="Arial,sans-serif" fill="#1a3a5c">D</text>
+<text x="235" y="191" text-anchor="middle" dominant-baseline="central" font-size="10" font-family="Arial,sans-serif" fill="#1a3a5c">d=1</text>
+<ellipse cx="395" cy="70" rx="36" ry="26" fill="#e84855" stroke="#b3122a" stroke-width="3"/>
+<text x="395" y="64" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="bold" font-family="Arial,sans-serif" fill="#ffffff">E</text>
+<text x="395" y="81" text-anchor="middle" dominant-baseline="central" font-size="10" font-family="Arial,sans-serif" fill="#ffffff">d=2</text>
+<ellipse cx="395" cy="180" rx="36" ry="26" fill="#e8f4fb" stroke="#2e86ab" stroke-width="1.6"/>
+<text x="395" y="174" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="bold" font-family="Arial,sans-serif" fill="#1a3a5c">F</text>
+<text x="395" y="191" text-anchor="middle" dominant-baseline="central" font-size="10" font-family="Arial,sans-serif" fill="#1a3a5c">d=3</text>
+</svg>
