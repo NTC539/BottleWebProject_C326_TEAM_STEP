@@ -18,6 +18,7 @@
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
     <Name>BottleWebProject_C326_TEAM_STEP</Name>
     <RootNamespace>BottleWebProject_C326_TEAM_STEP</RootNamespace>
+    <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,6 +39,9 @@
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
     <Compile Include="tests\test_cpm.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\test_cpm_generator.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="tests\__init__.py">

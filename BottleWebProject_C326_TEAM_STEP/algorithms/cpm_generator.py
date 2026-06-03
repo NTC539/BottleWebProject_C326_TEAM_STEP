@@ -95,6 +95,9 @@ def generate_random_cpm(
         for i, j in possible:
             if current_edges >= target_edges:
                 break
+            # Проверяем лимит непосредственно перед добавлением
+            if max_in_degree is not None and in_degree[j] >= max_in_degree:
+                continue
             deps.append([names[i], names[j]])
             in_degree[j] += 1
             current_edges += 1
