@@ -10,6 +10,14 @@ import json
 from bottle import route, view, request, template, response
 from datetime import datetime
 from algorithms.dijkstra import route_network
+from algorithms.dijkstra_utils import (
+    parse_edges_from_lists,
+    parse_edges_from_text,
+    generate_random_graph,
+    run_dijkstra_and_prepare_results,
+    export_edges_to_string
+)
+
 
 def _year():
     return datetime.now().year
@@ -105,6 +113,7 @@ def dijkstra_practice():
                         if not source:
                             errors.append('Вершина-источник не может быть пустой.')
                         else:
+                            # Восстанавливаем рёбра из скрытых полей (если были)
                             edges = []
                             for i in range(edge_count):
                                 from_val = request.forms.getunicode(f'from_{i}', '')
@@ -119,7 +128,7 @@ def dijkstra_practice():
 
             if errors:
                 stage = 'input_count'
-                edge_count = int(request.forms.getunicode('edge_count', 0)) if request.forms.getunicode('edge_count', '').isdigit() else 0
+                edge_count = int(request.forms.getunicode('edge_count', '0')) if request.forms.getunicode('edge_count', '').isdigit() else 0
                 source = request.forms.getunicode('source', 'A').strip()
 
         # 2. back_to_count
@@ -134,25 +143,11 @@ def dijkstra_practice():
                 edges.append((from_val, to_val, weight_val))
             stage = 'input_count'
 
-        # 3. random
         elif action == 'random':
-            vertices = ['A', 'B', 'C', 'D', 'E', 'F']
-            edge_count = random.randint(4, 9)
-            edges = []
-            used_pairs = set()
-            for _ in range(edge_count):
-                from_v = random.choice(vertices)
-                to_v = random.choice(vertices)
-                while from_v == to_v or (from_v, to_v) in used_pairs:
-                    to_v = random.choice(vertices)
-                used_pairs.add((from_v, to_v))
-                weight = str(random.randint(1, 20)) if random.random() < 0.85 else 'inf'
-                edges.append((from_v, to_v, weight))
-
-            source = random.choice(edges)[0]
+            edges, source = generate_random_graph()
+            edge_count = len(edges)
             stage = 'input_edges'
 
-        # 4. upload
         elif action == 'upload':
             upload = request.files.get('file')
             if not upload:
@@ -160,109 +155,37 @@ def dijkstra_practice():
                 stage = 'input_count'
             else:
                 content = upload.file.read().decode('utf-8')
-                lines = content.splitlines()
-                edges = []
-                for line_num, line in enumerate(lines, 1):
-                    line = line.strip()
-                    if not line:
-                        continue
-                    parts = line.replace(',', ' ').split()
-                    if len(parts) >= 3:
-                        from_v = parts[0].strip()
-                        to_v = parts[1].strip()
-                        weight = parts[2].strip().lower()
-                        edges.append((from_v, to_v, weight))
-                    else:
-                        errors.append(f'Строка {line_num}: игнорируется (не хватает данных)')
-                if edges:
-                    if len(edges) > 25:
-                        errors.append('Файл содержит более 25 рёбер, это слишком много.')
-                        stage = 'input_count'
-                    else:
-                        edge_count = len(edges)
-                        all_vertices = set()
-                        for f, t, _ in edges:
-                            all_vertices.add(f)
-                            all_vertices.add(t)
-                        source = sorted(all_vertices)[0] if all_vertices else 'A'
-                        stage = 'input_edges'
+                parsed_edges, parsed_count, all_vertices, parse_errors = parse_edges_from_text(content, max_edges=25)
+                errors.extend(parse_errors)
+                if parsed_edges:
+                    edges = parsed_edges
+                    edge_count = parsed_count
+                    source = sorted(all_vertices)[0] if all_vertices else 'A'
+                    stage = 'input_edges'
                 else:
-                    errors.append('Файл не содержит корректных рёбер.')
                     stage = 'input_count'
 
-        # 5. calculate
         elif action == 'calculate':
             edge_count = int(request.forms.getunicode('edge_count', '0'))
             source = request.forms.getunicode('source', 'A').strip()
-            edges_raw = []
-            parse_errors = []
 
-            for i in range(edge_count):
-                from_v = request.forms.getunicode(f'from_{i}', '').strip()
-                to_v = request.forms.getunicode(f'to_{i}', '').strip()
-                w_str = request.forms.getunicode(f'weight_{i}', '').strip().lower()
-                if not from_v or not to_v or not w_str:
-                    parse_errors.append(f'Ребро {i+1}: все поля должны быть заполнены.')
-                    continue
-                if len(from_v) > 10:
-                    parse_errors.append(f'Ребро {i+1}: название вершины ({from_v}) не должно превышать 10 символов')
-                    continue
-                if len(to_v) > 10:
-                    parse_errors.append(f'Ребро {i+1}: название вершины ({to_v}) не должно превышать 10 символов')
-                    continue
-                try:
-                    if w_str == 'inf':
-                        w = float('inf')
-                    else:
-                        w = float(w_str)
-                        if w <= 0:
-                            parse_errors.append(f'Ребро {i+1}: вес должен быть > 0, получено {w}')
-                            continue
-                except ValueError:
-                    parse_errors.append(f'Ребро {i+1}: вес "{w_str}" не является числом или "inf"')
-                    continue
-                edges_raw.append((from_v, to_v, w))
+            from_list = [request.forms.getunicode(f'from_{i}', '') for i in range(edge_count)]
+            to_list = [request.forms.getunicode(f'to_{i}', '') for i in range(edge_count)]
+            weight_list = [request.forms.getunicode(f'weight_{i}', '') for i in range(edge_count)]
 
-            edges = [(request.forms.getunicode(f'from_{i}', ''),
-                      request.forms.getunicode(f'to_{i}', ''),
-                      request.forms.getunicode(f'weight_{i}', '')) for i in range(edge_count)]
-            
+            edges_raw, edges_display, parse_errors = parse_edges_from_lists(edge_count, from_list, to_list, weight_list)
+            errors.extend(parse_errors)
+            edges = edges_display
+
             if parse_errors:
-                errors.extend(parse_errors)
                 stage = 'input_edges'
             else:
-                vertices_set = set()
-                for u, v, _ in edges_raw:
-                    vertices_set.add(u)
-                    vertices_set.add(v)
-                vertices = list(vertices_set)
-
-
-                if source not in vertices:
-                    errors.append(f'Вершина-источник "{source}" не найдена среди вершин графа.')
-                    stage = 'input_edges'
+                results, graph_edges, dijkstra_errors = run_dijkstra_and_prepare_results(edges_raw, source)
+                errors.extend(dijkstra_errors)
+                if results:
+                    stage = 'results'
                 else:
-                    try:
-                        res = route_network(vertices, edges_raw, source)
-                        results = {}
-                        for v in vertices:
-                            dist = res['distances'][v]
-                            path = res['paths'][v]
-                            results[v] = {
-                                'dist': dist,
-                                'dist_display': '∞' if dist == float('inf') else str(dist),
-                                'path': path,
-                                'path_display': ' → '.join(path) if path else '—'
-                            }
-                        graph_edges = edges_raw
-                        stage = 'results'
-
-                        sorted_results = dict(sorted(results.items(), key=lambda item: item[1]['dist']))
-                        results = sorted_results
-                    except ValueError as e:
-                        errors.append(str(e))
-                        stage = 'input_edges'
-
+                    stage = 'input_edges'
 
         # 6. back_to_edges
         elif action == 'back_to_edges':
@@ -276,7 +199,6 @@ def dijkstra_practice():
                 edges.append((from_v, to_v, weight))
             stage = 'input_edges'
 
-        # 7. reset
         elif action == 'reset':
             stage = 'input_count'
             edge_count = 0
@@ -284,24 +206,24 @@ def dijkstra_practice():
             edges = []
             errors = []
 
-        # 8. export
         elif action == 'export':
             edge_count = int(request.forms.getunicode('edge_count', '0'))
-            source = request.forms.getunicode('source', 'A').strip()
-            edges_list = []
+            edges_for_export = []
             for i in range(edge_count):
                 from_v = request.forms.getunicode(f'from_{i}', '').strip()
                 to_v = request.forms.getunicode(f'to_{i}', '').strip()
                 weight = request.forms.getunicode(f'weight_{i}', '').strip()
                 if from_v and to_v and weight:
-                    edges_list.append(f"{from_v},{to_v},{weight}")
-            if not edges_list:
+                    edges_for_export.append((from_v, to_v, weight))
+            content, ok = export_edges_to_string(edges_for_export)
+            if not ok:
                 response.status = 400
                 return "Нет данных для экспорта."
             response.headers['Content-Type'] = 'text/plain; charset=utf-8'
             response.headers['Content-Disposition'] = 'attachment; filename="graph_export.txt"'
-            return "\n".join(edges_list)
+            return content
 
+    # Подготовка данных для шаблона
     graph_edges_for_json = None
     if graph_edges:
         graph_edges_for_json = [(u, v, w if w != float('inf') else 'inf') for (u, v, w) in graph_edges]
@@ -318,3 +240,6 @@ def dijkstra_practice():
         year=2026,
         json=json
     )
+
+
+

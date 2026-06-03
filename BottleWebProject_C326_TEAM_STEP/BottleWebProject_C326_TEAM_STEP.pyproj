@@ -29,11 +29,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="algorithms\dijkstra.py" />
+    <Compile Include="algorithms\dijkstra_utils.py" />
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="algorithms\" />
+    <Folder Include="session_data\" />
     <Folder Include="static\" />
     <Folder Include="static\content\" />
     <Folder Include="static\fonts\" />

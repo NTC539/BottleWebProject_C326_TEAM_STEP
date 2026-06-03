@@ -29,7 +29,7 @@ def route_network(
         else:
             working_edges.append((u, v, w))
 
-    # Build adjacency list from working edges 
+    # build adjacency list from working edges 
     adj = {v: [] for v in vertices}
     for u, v, w in working_edges:
         adj[u].append((v, w))
