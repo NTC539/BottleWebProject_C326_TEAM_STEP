@@ -23,6 +23,10 @@ def free_port():
 
 
 class ColoringPracticeUiTest(unittest.TestCase):
+    TEST_HISTORY_NAME_SETS = [
+        {"Algebra", "Physics", "History", "Literature"},
+    ]
+
     @classmethod
     def setUpClass(cls):
         try:
@@ -114,6 +118,37 @@ class ColoringPracticeUiTest(unittest.TestCase):
 
         raise RuntimeError("; ".join(errors))
 
+    def tearDown(self):
+        self.clean_test_history()
+
+    def clean_test_history(self):
+        history_path = PROJECT_ROOT / "data" / "coloring_history.json"
+        if not history_path.exists():
+            return
+
+        try:
+            with history_path.open("r", encoding="utf-8") as file:
+                history = json.load(file)
+        except (OSError, json.JSONDecodeError):
+            return
+
+        if not isinstance(history, list):
+            return
+
+        clean_history = []
+        for entry in history:
+            subjects = entry.get("input", {}).get("subjects", [])
+            names = {item.get("name") for item in subjects if isinstance(item, dict)}
+            if names in self.TEST_HISTORY_NAME_SETS:
+                continue
+            clean_history.append(entry)
+
+        if len(clean_history) == len(history):
+            return
+
+        with history_path.open("w", encoding="utf-8") as file:
+            json.dump(clean_history, file, ensure_ascii=False, indent=2)
+
     def wait_css(self, selector):
         return self.WebDriverWait(self.driver, 10).until(
             self.EC.presence_of_element_located((self.By.CSS_SELECTOR, selector))
@@ -200,6 +235,37 @@ class ColoringPracticeUiTest(unittest.TestCase):
         first_name = self.subject_values()[0]
         self.assertEqual(first_name, "Дисциплина 1")
         self.assertEqual(self.conflict_count(), 0)
+
+    def test_too_many_subjects_show_validation_error(self):
+        self.driver.get(self.base_url + "/coloring/practice")
+
+        rows = []
+        for index in range(1, 22):
+            rows.append(
+                """
+                <tr>
+                    <td data-row-number>{index}</td>
+                    <td><input type="text" name="subject[]" class="form-control subject-name" value="Extra {index}"></td>
+                    <td><input type="text" name="teacher[]" class="form-control" value="Teacher {index}"></td>
+                    <td></td>
+                </tr>
+                """.format(index=index)
+            )
+
+        self.driver.execute_script(
+            """
+            document.querySelector('[data-subject-body]').innerHTML = arguments[0];
+            document.querySelector('[data-conflict-list]').innerHTML = '';
+            document.getElementById('formAction').value = 'calculate';
+            """,
+            "".join(rows),
+        )
+
+        self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
+        self.wait_css(".coloring-alert")
+
+        self.assertIn("Количество дисциплин не должно превышать 20", self.driver.page_source)
+        self.assertFalse(self.driver.find_elements(self.By.CSS_SELECTOR, "#coloring-result"))
 
 
 if __name__ == "__main__":
