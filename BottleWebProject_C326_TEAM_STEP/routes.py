@@ -203,6 +203,45 @@ def _save_coloring_history(subjects, conflicts, result):
         json.dump(history, file, ensure_ascii=False, indent=2)
 
 
+def _save_bridges_history(vertices, edges, result):
+    """Дописывает выполненный расчёт мостов в файл истории data/bridges_history.json.
+
+    Переиспользует уже сформированный inf-безопасный JSON (result['gdownload']),
+    где ∞ заменена меткой, поэтому файл всегда остаётся валидным JSON.
+    Ошибки записи проглатываются (ТЗ 1.4.2): расчёт уже выполнен и отображён,
+    при сбое файловой системы он просто не сохраняется, ответ не падает.
+    """
+    try:
+        project_root = os.path.abspath(os.path.dirname(__file__))
+        history_dir = os.path.join(project_root, 'data')
+        history_path = os.path.join(history_dir, 'bridges_history.json')
+        os.makedirs(history_dir, exist_ok=True)
+
+        entry = {
+            'datetime': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'input': {
+                'vertices': vertices,
+                'edges': [[u, v, w] for (u, v, w) in edges],
+            },
+            'result': json.loads(result['gdownload']),
+        }
+
+        try:
+            with open(history_path, 'r', encoding='utf-8') as file:
+                history = json.load(file)
+            if not isinstance(history, list):
+                history = []
+        except (FileNotFoundError, json.JSONDecodeError):
+            history = []
+
+        history.append(entry)
+        with open(history_path, 'w', encoding='utf-8') as file:
+            json.dump(history, file, ensure_ascii=False, indent=2)
+    except OSError:
+        # Сбой чтения/записи файла истории не должен прерывать вывод результата.
+        pass
+
+
 def _fmt_num(x):
     """Форматирует число для матрицы: метка недостижимости вместо ∞, без .0 для целых."""
     if x == float('inf'):
@@ -388,6 +427,7 @@ def bridges_practice():
 
             data = analyze_network(vertices, edges)
             result = _prepare_bridges_result(vertices, data)
+            _save_bridges_history(vertices, edges, result)
 
         except ValueError as e:
             error = str(e)
