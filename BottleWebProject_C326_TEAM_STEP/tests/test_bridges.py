@@ -242,5 +242,34 @@ class TestInvalidWeightRaises(unittest.TestCase):
             analyze_network(['A', 'B'], [('A', 'B', -1)])
 
 
+class TestStructuralGuards(unittest.TestCase):
+    """Структурные предусловия алгоритма: петли, дубли рёбер, неконечный вес."""
+
+    def test_self_loop_raises(self):
+        # Петля (дорога города в самого себя) недопустима.
+        with self.assertRaises(ValueError):
+            analyze_network(['A', 'B'], [('A', 'A', 1.0)])
+
+    def test_duplicate_edge_raises(self):
+        # Параллельное ребро дало бы Тарьяну ложный мост — запрещаем заранее.
+        with self.assertRaises(ValueError):
+            analyze_network(['A', 'B'], [('A', 'B', 1.0), ('A', 'B', 2.0)])
+
+    def test_reverse_duplicate_edge_raises(self):
+        # A—B и B—A — одно и то же неориентированное ребро.
+        with self.assertRaises(ValueError):
+            analyze_network(['A', 'B'], [('A', 'B', 1.0), ('B', 'A', 1.0)])
+
+    def test_infinite_weight_raises(self):
+        # inf отравил бы матрицы Флойда — должен отвалиться на валидации.
+        with self.assertRaises(ValueError):
+            analyze_network(['A', 'B'], [('A', 'B', float('inf'))])
+
+    def test_nan_weight_raises(self):
+        # nan проходит проверку w <= 0 (любое сравнение с nan = False) — ловим isfinite.
+        with self.assertRaises(ValueError):
+            analyze_network(['A', 'B'], [('A', 'B', float('nan'))])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -14,7 +14,6 @@
 
 <!-- СЕКЦИЯ 3: Содержание -->
 
-<!-- Hero: split box -->
 <div class="bt-hero">
     <div class="bt-hero-left">
         <div class="bt-hero-label">Ключевое понятие</div>
@@ -39,7 +38,6 @@
     </div>
 </div>
 
-<!-- Definitions row -->
 <div class="bt-section-title">Ключевые переменные</div>
 <div class="bt-defs">
     <div class="bt-def-chip"><code>disc[v]</code> &mdash; момент первого посещения вершины v (таймер DFS)</div>
@@ -50,7 +48,6 @@
     <div class="bt-def-chip"><code>total_path_sum</code> &mdash; суммарная длина кратчайших путей исходной сети (пары i&nbsp;&lt;&nbsp;j, с учётом &infin;)</div>
 </div>
 
-<!-- Two-column algorithm grid -->
 <div class="bt-section-title">Алгоритмы</div>
 <div class="bt-algo-grid">
 
@@ -85,7 +82,6 @@
 
 </div>
 
-<!-- Algorithm description -->
 <div class="bt-section-title">Описание алгоритма</div>
 <div class="bt-description">
     <p>
@@ -191,7 +187,7 @@
         матрицы и граф, что и на практике.</p>
 
     % verts = ['A', 'B', 'C', 'D', 'E']
-    % INF = '∞'
+    % INF = 'н/д'   # метка недостижимости в матрицах — как на практике
     %
     % states = [
     %   {
@@ -207,7 +203,7 @@
     %     'title': 'Без моста C–D',
     %     'gid': 'no_cd',
     %     'note': 'Сеть распалась на компоненты {A,&nbsp;B,&nbsp;C} и {D,&nbsp;E}; '
-    %             'в <code>dist</code> между ними &mdash; &infin;.',
+    %             'в <code>dist</code> между ними &mdash; <code>н/д</code>.',
     %     'weight': [['0','2','1',INF,INF],['2','0','3',INF,INF],['1','3','0',INF,INF],[INF,INF,INF,'0','4'],[INF,INF,INF,'4','0']],
     %     'adj':    [['0','1','1','0','0'],['1','0','1','0','0'],['1','1','0','0','0'],['0','0','0','0','1'],['0','0','0','1','0']],
     %     'dist':   [['0','2','1',INF,INF],['2','0','3',INF,INF],['1','3','0',INF,INF],[INF,INF,INF,'0','4'],[INF,INF,INF,'4','0']],
@@ -216,7 +212,7 @@
     %     'title': 'Без моста D–E',
     %     'gid': 'no_de',
     %     'note': 'Вершина E недостижима из остальных &mdash; в <code>dist</code> '
-    %             'её строка и столбец равны &infin;.',
+    %             'её строка и столбец равны <code>н/д</code>.',
     %     'weight': [['0','2','1',INF,INF],['2','0','3',INF,INF],['1','3','0','5',INF],[INF,INF,'5','0',INF],[INF,INF,INF,INF,'0']],
     %     'adj':    [['0','1','1','0','0'],['1','0','1','0','0'],['1','1','0','1','0'],['0','0','1','0','0'],['0','0','0','0','0']],
     %     'dist':   [['0','2','1','6',INF],['2','0','3','8',INF],['1','3','0','5',INF],['6','8','5','0',INF],[INF,INF,INF,INF,'0']],

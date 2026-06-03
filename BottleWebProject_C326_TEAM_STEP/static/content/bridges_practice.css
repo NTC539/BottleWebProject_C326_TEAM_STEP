@@ -157,9 +157,47 @@
     font-weight: 700;
 }
 
+/* ── Панель действий под таблицами (добавить / очистить) ─────── */
+.row-actions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.row-actions-bar .add-row-btn {
+    margin-top: 0;   /* отступ задаёт сама панель */
+}
+
 /* ── Кнопка отправки ─────────────────────────────────────────── */
 .submit-bar {
     margin: 16px 0 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Управление генерацией: кнопка + поле «сколько городов» */
+.gen-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gen-count-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: 600;
+    color: #1a3a5c;
+    white-space: nowrap;
+}
+
+.gen-count-input {
+    width: 70px;
+    display: inline-block;
 }
 
 /* ── Сводка результата ───────────────────────────────────────── */
@@ -203,10 +241,10 @@
     background: #ffffff;
 }
 
-/* ── Матрицы в ряд ───────────────────────────────────────────── */
+/* ── Матрицы в ряд (вес + смежность; кратчайшие пути вынесены к графу) ─ */
 .matrix-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 16px;
 }
@@ -252,6 +290,18 @@
     font-weight: 700;
 }
 
+/* ── Кратчайшие пути + граф на одном уровне ───────────────────── */
+.graph-row {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 1.2fr);
+    gap: 12px;
+    align-items: start;
+}
+
+.dist-card {
+    align-self: stretch;
+}
+
 /* ── Граф состояния ──────────────────────────────────────────── */
 .state-graph {
     height: 360px;
@@ -272,6 +322,9 @@
         grid-template-columns: 1fr;
     }
     .matrix-grid {
+        grid-template-columns: 1fr;
+    }
+    .graph-row {
         grid-template-columns: 1fr;
     }
 }

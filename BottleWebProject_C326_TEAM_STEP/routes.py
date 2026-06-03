@@ -19,6 +19,15 @@ def _year():
     return datetime.now().year
 
 
+# ── Ограничения ввода практики «Мосты» ──────────────────────────────────────
+# Вынесены в константы, чтобы преподаватель/правка лимитов не лезли в код.
+BRIDGES_MAX_CITIES   = 15     # читаемость матриц и графа vis.js
+BRIDGES_MAX_EDGES    = 100    # защита от чрезмерно большой формы
+BRIDGES_MAX_NAME_LEN = 20     # длина названия города
+BRIDGES_MAX_WEIGHT   = 1000   # верхняя граница веса дороги
+BRIDGES_INF_LABEL    = 'н/д'  # метка вместо ∞ (недостижимо / путь не действителен)
+
+
 @route('/')
 @route('/home')
 @view('index')
@@ -56,9 +65,9 @@ def coloring_practice():
 
 
 def _fmt_num(x):
-    """Форматирует число для матрицы: ∞ для бесконечности, без .0 для целых."""
+    """Форматирует число для матрицы: метка недостижимости вместо ∞, без .0 для целых."""
     if x == float('inf'):
-        return '∞'
+        return BRIDGES_INF_LABEL
     f = float(x)
     return str(int(f)) if f.is_integer() else str(f)
 
@@ -88,7 +97,7 @@ def _prepare_bridges_result(vertices, data):
             'ge':          json.dumps([[u, v, w] for (u, v, w) in st['edges']],
                                       ensure_ascii=False),
         })
-        # Структура для экспорта в JSON (∞ записывается строкой для валидного JSON)
+        # Структура для экспорта в JSON (недостижимость — строкой-меткой, JSON валиден)
         download_states.append({
             'removed': list(removed) if removed is not None else None,
             'edges':   [[u, v, w] for (u, v, w) in st['edges']],
@@ -107,6 +116,7 @@ def _prepare_bridges_result(vertices, data):
     return {
         'vertices':       vertices,
         'total_path_sum': _fmt_num(data['total_path_sum']),
+        'inf_label':      BRIDGES_INF_LABEL,
         'bridges':        bridges,
         'bridge_count':   len(bridges),
         'states':         state_views,
@@ -117,8 +127,22 @@ def _prepare_bridges_result(vertices, data):
 
 @route('/bridges/generate')
 def bridges_generate():
-    """Возвращает случайный взвешенный связный граф (узлы и рёбра) в JSON."""
+    """Возвращает случайный взвешенный связный граф (узлы и рёбра) в JSON.
+
+    Необязательный параметр ?cities=N фиксирует число городов (2..MAX).
+    Без параметра — случайное число городов, как раньше.
+    """
     response.content_type = 'application/json'
+    raw = request.query.get('cities', '').strip()
+    if raw:
+        try:
+            n = int(raw)
+        except (ValueError, TypeError):
+            n = None
+        if n is not None:
+            n = max(2, min(BRIDGES_MAX_CITIES, n))   # зажать в допустимый диапазон
+            return json.dumps(generate_random_bridges(min_nodes=n, max_nodes=n),
+                              ensure_ascii=False)
     return json.dumps(generate_random_bridges(), ensure_ascii=False)
 
 
@@ -131,33 +155,56 @@ def bridges_practice():
     edges_input = []   # [['A', 'B', '4'], ...]
 
     if request.method == 'POST':
-        nodes = request.forms.getall('node[]')
-        ef = request.forms.getall('edge_from[]')
-        et = request.forms.getall('edge_to[]')
-        ew = request.forms.getall('edge_weight[]')
+        # Декодированная копия формы → корректный UTF-8 (как в cpm_practice),
+        # иначе кириллические названия городов приходят в latin-1 (кракозябры).
+        forms = request.forms.decode()
+        nodes = forms.getall('node[]')
+        ef = forms.getall('edge_from[]')
+        et = forms.getall('edge_to[]')
+        ew = forms.getall('edge_weight[]')
 
-        # Запоминаем сырой ввод, чтобы форма не очищалась после отправки
-        nodes_input = list(nodes)
+        # Запоминаем ввод, чтобы форма не очищалась после отправки.
+        # Пустые строки при расчёте отбрасываются (не возвращаются в форму).
+        nodes_input = [n.strip() for n in nodes if n.strip()]
         for i in range(len(ef)):
-            edges_input.append([
-                ef[i] if i < len(ef) else '',
-                et[i] if i < len(et) else '',
-                ew[i] if i < len(ew) else '',
-            ])
+            frm = ef[i] if i < len(ef) else ''
+            to = et[i] if i < len(et) else ''
+            wraw = ew[i] if i < len(ew) else ''
+            if not frm.strip() and not to.strip() and not wraw.strip():
+                continue   # полностью пустая строка дороги — убрать
+            edges_input.append([frm, to, wraw])
 
         try:
+            # ── Города ───────────────────────────────────────────────────────
             vertices = []
+            seen_cities = {}          # casefold-ключ → оригинальное имя
             for n in nodes:
                 name = n.strip()
                 if not name:
                     continue
-                if name in vertices:
-                    raise ValueError(f'Город «{name}» указан дважды.')
+                if len(name) > BRIDGES_MAX_NAME_LEN:
+                    raise ValueError(
+                        f'Название города слишком длинное '
+                        f'(до {BRIDGES_MAX_NAME_LEN} символов): «{name}».')
+                key = name.casefold()    # дубль без учёта регистра: «Москва»=«москва»
+                if key in seen_cities:
+                    raise ValueError(
+                        f'Город «{name}» уже добавлен (как «{seen_cities[key]}»).')
+                seen_cities[key] = name
                 vertices.append(name)
-            if not vertices:
-                raise ValueError('Добавьте хотя бы один город.')
 
+            if len(vertices) < 2:
+                raise ValueError('Добавьте хотя бы два города.')
+            if len(vertices) > BRIDGES_MAX_CITIES:
+                raise ValueError(
+                    f'Слишком много городов (максимум {BRIDGES_MAX_CITIES}).')
+
+            # Канон: имя дороги приводим к уже введённому написанию города.
+            vertex_by_key = {v.casefold(): v for v in vertices}
+
+            # ── Дороги ───────────────────────────────────────────────────────
             edges = []
+            seen_edges = set()        # frozenset канонических имён — дубль/реверс
             for i in range(len(ef)):
                 frm = (ef[i] if i < len(ef) else '').strip()
                 to = (et[i] if i < len(et) else '').strip()
@@ -166,11 +213,39 @@ def bridges_practice():
                     continue
                 if not frm or not to:
                     raise ValueError('У каждой дороги должны быть указаны оба города.')
+
+                frm_c = vertex_by_key.get(frm.casefold())
+                to_c = vertex_by_key.get(to.casefold())
+                if frm_c is None:
+                    raise ValueError(f'Неизвестный город в дороге: «{frm}».')
+                if to_c is None:
+                    raise ValueError(f'Неизвестный город в дороге: «{to}».')
+                if frm_c == to_c:
+                    raise ValueError(
+                        f'Дорога не может вести из города «{frm_c}» в него же.')
+
+                key = frozenset((frm_c, to_c))
+                if key in seen_edges:
+                    raise ValueError(f'Дорога {frm_c}—{to_c} указана дважды.')
+                seen_edges.add(key)
+
                 try:
-                    w = float(wraw)
+                    w = int(wraw)
                 except (ValueError, TypeError):
-                    raise ValueError(f'Вес дороги {frm}—{to} должен быть числом.')
-                edges.append((frm, to, w))
+                    raise ValueError(
+                        f'Вес дороги {frm_c}—{to_c} должен быть целым числом.')
+                if w <= 0:
+                    raise ValueError(
+                        f'Вес дороги {frm_c}—{to_c} должен быть больше 0.')
+                if w > BRIDGES_MAX_WEIGHT:
+                    raise ValueError(
+                        f'Вес дороги {frm_c}—{to_c} слишком большой '
+                        f'(максимум {BRIDGES_MAX_WEIGHT}).')
+
+                if len(edges) >= BRIDGES_MAX_EDGES:
+                    raise ValueError(
+                        f'Слишком много дорог (максимум {BRIDGES_MAX_EDGES}).')
+                edges.append((frm_c, to_c, w))
 
             data = analyze_network(vertices, edges)
             result = _prepare_bridges_result(vertices, data)

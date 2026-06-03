@@ -1,5 +1,5 @@
 % rebase('layout.tpl', title='Практика — Мосты Тарьяна', year=year, active_page='bridges')
-<link rel="stylesheet" type="text/css" href="/static/content/bridges_practice.css?v=2" />
+<link rel="stylesheet" type="text/css" href="/static/content/bridges_practice.css?v=5" />
 
 <section class="practice-hero">
     <span class="page-label">Мосты Тарьяна — практика</span>
@@ -35,8 +35,12 @@
                     <tbody id="bridge-nodes-body"></tbody>
                 </table>
             </div>
-            <button type="button" class="btn btn-success btn-sm add-row-btn"
-                    onclick="addBridgeNodeRow()">+ Добавить город</button>
+            <div class="row-actions-bar">
+                <button type="button" class="btn btn-success btn-sm add-row-btn"
+                        onclick="addBridgeNodeRow()">+ Добавить город</button>
+                <button type="button" class="btn btn-default btn-sm"
+                        onclick="clearBridgeNodes()">Очистить поля</button>
+            </div>
         </section>
 
         <section class="editor-panel">
@@ -56,16 +60,28 @@
                     <tbody id="bridge-edges-body"></tbody>
                 </table>
             </div>
-            <button type="button" class="btn btn-success btn-sm add-row-btn"
-                    onclick="addBridgeEdgeRow()">+ Добавить дорогу</button>
+            <div class="row-actions-bar">
+                <button type="button" class="btn btn-success btn-sm add-row-btn"
+                        onclick="addBridgeEdgeRow()">+ Добавить дорогу</button>
+                <button type="button" class="btn btn-default btn-sm"
+                        onclick="clearBridgeEdges()">Очистить поля</button>
+            </div>
         </section>
     </div>
 
     <div class="submit-bar">
         <button type="submit" class="btn btn-primary btn-lg">Анализировать сеть</button>
-        <button type="button" id="bridge-generate-btn" class="btn btn-default">
-            🎲 Сгенерировать случайные данные
-        </button>
+        <div class="gen-controls">
+            <button type="button" id="bridge-generate-btn" class="btn btn-default">
+                🎲 Сгенерировать случайные данные
+            </button>
+            <label for="bridge-gen-count" class="gen-count-label">
+                Городов:
+                <input type="number" id="bridge-gen-count" class="form-control gen-count-input"
+                       min="2" max="15" value="6"
+                       title="Сколько городов сгенерировать (2–15)">
+            </label>
+        </div>
     </div>
 </form>
 
@@ -90,7 +106,10 @@ $(function () {
 
     // Генерация случайных данных (граф приходит с сервера, Python)
     $('#bridge-generate-btn').on('click', function () {
-        $.getJSON('/bridges/generate', function (data) {
+        var cnt = parseInt($('#bridge-gen-count').val(), 10);
+        var url = '/bridges/generate';
+        if (!isNaN(cnt)) { url += '?cities=' + cnt; }   // сколько городов сгенерировать
+        $.getJSON(url, function (data) {
             $('#bridge-nodes-body').empty();
             $('#bridge-edges-body').empty();
             data.nodes.forEach(function (n) { addBridgeNodeRow(n); });
@@ -150,7 +169,7 @@ $(function () {
     <div class="tab-pane {{ 'active' if idx == 0 else '' }}" id="state{{idx}}" role="tabpanel">
 
         <div class="matrix-grid">
-            % mats = [('Матрица весов', st['weight_rows'], True), ('Матрица смежности', st['adj_rows'], False), ('Кратчайшие пути', st['dist_rows'], True)]
+            % mats = [('Матрица весов', st['weight_rows'], True), ('Матрица смежности', st['adj_rows'], False)]
             % for mtitle, rows, mark_inf in mats:
             <div class="matrix-card">
                 <h5>{{ mtitle }}</h5>
@@ -168,7 +187,7 @@ $(function () {
                         <tr>
                             <th>{{ rv }}</th>
                             % for cell in rows[ri]:
-                            <td class="{{ 'inf' if mark_inf and cell == '∞' else '' }}">{{ cell }}</td>
+                            <td class="{{ 'inf' if mark_inf and cell == result['inf_label'] else '' }}">{{ cell }}</td>
                             % end
                         </tr>
                         % end
@@ -182,7 +201,34 @@ $(function () {
             Красные рёбра — мосты (критические дороги). Серые — обычные дороги.
             Колесо мыши — масштаб, перетаскивание — перемещение.
         </p>
-        <div class="state-graph" id="graph-{{idx}}"></div>
+
+        <!-- Кратчайшие пути — на одном уровне с графом -->
+        <div class="graph-row">
+            <div class="matrix-card dist-card">
+                <h5>Кратчайшие пути</h5>
+                <table class="table matrix-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            % for v in result['vertices']:
+                            <th>{{ v }}</th>
+                            % end
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for ri, rv in enumerate(result['vertices']):
+                        <tr>
+                            <th>{{ rv }}</th>
+                            % for cell in st['dist_rows'][ri]:
+                            <td class="{{ 'inf' if cell == result['inf_label'] else '' }}">{{ cell }}</td>
+                            % end
+                        </tr>
+                        % end
+                    </tbody>
+                </table>
+            </div>
+            <div class="state-graph" id="graph-{{idx}}"></div>
+        </div>
     </div>
     % end
 </div>

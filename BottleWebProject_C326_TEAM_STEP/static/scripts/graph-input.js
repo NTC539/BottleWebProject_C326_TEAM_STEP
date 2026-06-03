@@ -98,7 +98,6 @@ function updateSelects(containerSelector) {
    Мосты Тарьяна (bridges_practice): города и дороги
    ============================================================ */
 
-// Добавляет строку города в таблицу #bridge-nodes-body
 function addBridgeNodeRow(name) {
     var $input = $('<input>', {
         type: 'text',
@@ -107,7 +106,18 @@ function addBridgeNodeRow(name) {
         placeholder: 'Город',
         value: (name != null ? name : '')
     });
-    $input.on('input', updateBridgeSelects);
+    // Запоминаем текущее имя города, чтобы при переименовании перенести
+    // ссылки в дорогах со старого имени на новое (а не сбрасывать на первый город).
+    $input.data('prev', name != null ? name : '');
+    $input.on('input', function () {
+        var $i = $(this);
+        var newVal = $i.val().trim();
+        // Поле временно пустое (город ещё дописывают) — списки не трогаем,
+        // иначе дороги «соскочат» на первый город.
+        if (newVal === '') { return; }
+        updateBridgeSelects($i.data('prev'), newVal);
+        $i.data('prev', newVal);
+    });
 
     var $row = $('<tr>', { class: 'bridge-node-row' })
         .append($('<td>').append($input))
@@ -123,7 +133,6 @@ function addBridgeNodeRow(name) {
     updateBridgeSelects();
 }
 
-// Добавляет строку дороги (откуда → куда + вес) в таблицу #bridge-edges-body
 function addBridgeEdgeRow(fromVal, toVal, weightVal) {
     var $from = $('<select>', { name: 'edge_from[]', class: 'form-control bridge-node-select' });
     var $to = $('<select>', { name: 'edge_to[]', class: 'form-control bridge-node-select' });
@@ -158,6 +167,15 @@ function addBridgeEdgeRow(fromVal, toVal, weightVal) {
     if (toVal != null) { $to.val(toVal); }
 }
 
+function clearBridgeNodes() {
+    $('#bridge-nodes-body').empty();
+    updateBridgeSelects();
+}
+
+function clearBridgeEdges() {
+    $('#bridge-edges-body').empty();
+}
+
 $(document).on('click', '.remove-bridge-node', function () {
     $(this).closest('tr').remove();
     updateBridgeSelects();
@@ -167,8 +185,9 @@ $(document).on('click', '.remove-bridge-edge', function () {
     $(this).closest('tr').remove();
 });
 
-// Наполняет списки «откуда/куда» именами городов из полей ввода
-function updateBridgeSelects() {
+// renameFrom/renameTo (необязательны): если город переименовали — переносит
+// выбор дорог со старого имени на новое, чтобы рёбра не теряли ссылку.
+function updateBridgeSelects(renameFrom, renameTo) {
     var values = [];
     $('.bridge-node-input').each(function () {
         var v = $(this).val().trim();
@@ -177,6 +196,10 @@ function updateBridgeSelects() {
     $('.bridge-node-select').each(function () {
         var $sel = $(this);
         var prev = $sel.val();
+        // Если эта дорога указывала на переименованный город — следуем за новым именем.
+        if (renameFrom != null && prev === renameFrom) {
+            prev = renameTo;
+        }
         $sel.empty();
         $.each(values, function (_, v) {
             $sel.append($('<option>').val(v).text(v));

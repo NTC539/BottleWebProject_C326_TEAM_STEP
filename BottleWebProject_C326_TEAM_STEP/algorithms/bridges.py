@@ -11,6 +11,8 @@ Standard library only.
 три матрицы (весов, смежности 0/1, кратчайших путей) и список рёбер графа.
 """
 
+import math
+
 
 def analyze_network(vertices: list, edges: list) -> dict:
     """
@@ -44,19 +46,35 @@ def analyze_network(vertices: list, edges: list) -> dict:
     Raises
     ------
     ValueError("Неизвестная вершина: X") — vertex in edge not in vertices.
+    ValueError("Петля недопустима: ребро X—X") — u == v (self-loop).
+    ValueError("Вес ребра должен быть конечным числом") — weight is inf/nan.
     ValueError("Вес ребра должен быть > 0") — weight <= 0.
+    ValueError("Ребро X—Y задано дважды") — параллельное/обратное ребро
+        (ломает корректность Тарьяна — даёт ложный мост).
     """
     INF = float('inf')
     vertex_set = set(vertices)
 
     # ── Validation ────────────────────────────────────────────────────────────
+    # Дубль/реверс ребра запрещён осознанно: алгоритм Тарьяна ниже пропускает
+    # ребро к родителю (`u == parent`), поэтому параллельное ребро было бы
+    # ошибочно засчитано как мост. Простой граф — обязательное предусловие.
+    seen_edges = set()
     for u, v, w in edges:
         if u not in vertex_set:
             raise ValueError(f"Неизвестная вершина: {u}")
         if v not in vertex_set:
             raise ValueError(f"Неизвестная вершина: {v}")
+        if u == v:
+            raise ValueError(f"Петля недопустима: ребро {u}—{u}")
+        if not math.isfinite(w):
+            raise ValueError("Вес ребра должен быть конечным числом")
         if w <= 0:
             raise ValueError("Вес ребра должен быть > 0")
+        key = frozenset((u, v))
+        if key in seen_edges:
+            raise ValueError(f"Ребро {u}—{v} задано дважды")
+        seen_edges.add(key)
 
     # ── Adjacency list ────────────────────────────────────────────────────────
     adj = {v: [] for v in vertices}
@@ -130,7 +148,6 @@ def analyze_network(vertices: list, edges: list) -> dict:
         return a_m
 
     def make_state(removed, edge_list):
-        """Описание одного графа: рёбра + три матрицы."""
         return {
             "removed": removed,
             "edges":   list(edge_list),
