@@ -289,3 +289,79 @@
     text-align: center;
     min-width: 36px;
 }
+
+.bt-note {
+    font-size: 11px;
+    color: #6a7f90;
+    font-style: italic;
+}
+
+/* ── States: matrices + graph per network state ──────────── */
+
+.bt-state {
+    background: #fff;
+    border: 1px solid #c8dfe8;
+    border-radius: 6px;
+    padding: 14px 16px 18px;
+    margin: 16px 0;
+}
+
+.bt-state-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a3a5c;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #2e86ab;
+}
+
+.bt-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 760px) {
+    .bt-matrix-grid { grid-template-columns: 1fr; }
+}
+
+.bt-matrix-card {
+    background: #f7fafd;
+    border: 1px solid #dde9f0;
+    border-radius: 5px;
+    padding: 10px 12px;
+}
+
+.bt-matrix-card h5 {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #2e86ab;
+}
+
+.bt-matrix-card .bt-matrix {
+    margin-bottom: 0;
+    background: #fff;
+}
+
+.bt-state-note {
+    font-size: 13px;
+    color: #2c3e50;
+    margin: 6px 0 2px;
+}
+
+.bt-graph-hint {
+    font-size: 12px;
+    color: #6a7f90;
+    margin: 8px 0 6px;
+}
+
+.bt-graph {
+    height: 320px;
+    border: 1px solid #c8dfe8;
+    border-radius: 5px;
+    background: #fbfdfe;
+}
