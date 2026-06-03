@@ -21,6 +21,7 @@
     <TestFramework>unittest</TestFramework>
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>tests</UnitTestRootDirectory>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +32,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="algorithms\bridges.py" />
     <Compile Include="algorithms\cpm.py">
       <SubType>Code</SubType>
     </Compile>
@@ -41,20 +43,18 @@
     <Compile Include="algorithms\dijkstra_utils.py" />
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
-    <Compile Include="tests\test_cpm.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="tests\test_cpm_generator.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="tests\__init__.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="algorithms\" />
+    <Folder Include="algorithms\data\" />
     <Folder Include="algorithms\__pycache__\" />
-    <Folder Include="tests\" />
+    <Compile Include="tests\test_bridges.py" />
+    <Compile Include="tests\test_bridges_ui.py" />
+    <Compile Include="tests\test_coloring.py" />
+    <Compile Include="tests\test_coloring_ui.py" />
+    <Compile Include="tests\test_cpm.py" />
+    <Compile Include="tests\test_cpm_generator.py" />
     <Compile Include="tests\test_dijkstra.py" />
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
@@ -67,9 +67,13 @@
     <Folder Include="static\fonts\" />
     <Folder Include="static\images\" />
     <Folder Include="static\scripts\" />
+    <Folder Include="tests\" />
+    <Folder Include="tests\data\" />
     <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="algorithms\data\bridges_history.json" />
+    <Content Include="algorithms\data\coloring_history.json" />
     <Content Include="algorithms\__init__.py %28algorithms%29">
       <SubType>Code</SubType>
     </Content>
@@ -113,6 +117,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="static\scripts\_references.js" />
+    <Content Include="tests\data\bridges_ui_network.json" />
     <Content Include="views\about.tpl" />
     <Content Include="views\cpm_practice.tpl">
       <SubType>Code</SubType>
