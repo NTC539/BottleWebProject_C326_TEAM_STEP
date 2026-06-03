@@ -21,6 +21,8 @@
     <TestFramework>unittest</TestFramework>
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>tests</UnitTestRootDirectory>
+    <InterpreterId>MSBuild|env1|$(MSBuildProjectFullPath)</InterpreterId>
+    <WebBrowserPort>5555</WebBrowserPort>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +49,7 @@
     <Compile Include="tests\test_cpm_generator.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="tests\test_dijkstra_selenium.py" />
     <Compile Include="tests\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -67,6 +70,7 @@
     <Folder Include="static\fonts\" />
     <Folder Include="static\images\" />
     <Folder Include="static\scripts\" />
+    <Folder Include="tests\data\" />
     <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +117,8 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="static\scripts\_references.js" />
+    <Content Include="tests\data\data_invalid.txt" />
+    <Content Include="tests\data\data_valid_large.txt" />
     <Content Include="views\about.tpl" />
     <Content Include="views\cpm_practice.tpl">
       <SubType>Code</SubType>
@@ -127,6 +133,15 @@
     <Content Include="views\layout.tpl" />
   </ItemGroup>
   <ItemGroup>
+    <Interpreter Include="env1\">
+      <Id>env1</Id>
+      <Version>3.9</Version>
+      <Description>env1 (Python 3.9 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
     <Interpreter Include="env\">
       <Id>env</Id>
       <Version>3.12</Version>
