@@ -59,6 +59,41 @@
     font-size: 13px;
 }
 
+/* Внешний флекс-контейнер: текст + картинка */
+.cpm-step-outer {
+    display: flex;
+    align-items: center; /* вертикальное центрирование */
+    gap: 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* на узких экранах — столбец */
+}
+
+/* Текстовый блок (серая рамка остаётся) */
+.cpm-step-text {
+    flex: 1 1 300px;
+    min-width: 260px;
+    margin-bottom: 0;
+}
+
+/* Картинка справа — увеличена */
+.cpm-step-fig {
+    flex: 0 0 400px; /* базовая ширина */
+    max-width: 500px;
+    margin: 0;
+    text-align: center;
+}
+
+.cpm-step-fig img {
+    width: 100%;
+    height: auto;
+    max-height: 500px; /* теперь можно сильно увеличить */
+    border: 1px solid #d4e6f1;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 8px;
+    object-fit: contain;
+}
+
 .cpm-apply-list {
     display: flex;
     flex-wrap: wrap;
