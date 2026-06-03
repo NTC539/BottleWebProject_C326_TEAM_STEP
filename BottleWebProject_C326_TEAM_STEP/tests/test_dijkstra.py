@@ -129,7 +129,7 @@ class TestGenerateRandomGraph(unittest.TestCase):
             self.assertIn(source, all_vertices)
 
     def test_custom_vertex_set(self):
-        vertices = ['X', 'Y', 'Z']
+        vertices = ['X', 'Y', 'Z']  
         for _ in range(5):
             edges, source = generate_random_graph(vertex_set=vertices, min_edges=2, max_edges=2)
             self.assertEqual(len(edges), 2)
