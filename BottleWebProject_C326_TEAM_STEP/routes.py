@@ -53,6 +53,7 @@ def bridges():
 @route('/coloring/practice', method=['GET', 'POST'])
 @view('coloring_practice')
 def coloring_practice():
+    """Страница практики 4-го варианта: ручной ввод, генерация, импорт, экспорт и расчёт."""
     subjects, conflicts = sample_coloring_data()
     errors = []
     result = None
@@ -113,6 +114,7 @@ def coloring_practice():
 
 
 def _read_coloring_form():
+    """Читает дисциплины и конфликты из полей отправленной формы."""
     names = request.forms.getall('subject[]')
     teachers = request.forms.getall('teacher[]')
     subjects = []
@@ -131,6 +133,7 @@ def _read_coloring_form():
 
 
 def _export_coloring_json(subjects, conflicts, result):
+    """Отдаёт результат расчёта как загружаемый JSON-файл, совместимый с импортом."""
     data = make_export_data(subjects, conflicts, result)
     filename = 'coloring_result_{}.json'.format(datetime.now().strftime('%Y%m%d_%H%M%S'))
 
@@ -140,6 +143,7 @@ def _export_coloring_json(subjects, conflicts, result):
 
 
 def _save_coloring_history(subjects, conflicts, result):
+    """Дописывает выполненный расчёт в файл истории data/coloring_history.json."""
     project_root = os.path.abspath(os.path.dirname(__file__))
     history_dir = os.path.join(project_root, 'data')
     history_path = os.path.join(history_dir, 'coloring_history.json')
