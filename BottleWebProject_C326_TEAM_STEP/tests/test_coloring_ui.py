@@ -268,5 +268,240 @@ class ColoringPracticeUiTest(unittest.TestCase):
         self.assertFalse(self.driver.find_elements(self.By.CSS_SELECTOR, "#coloring-result"))
 
 
+    # ── Full-pipeline tests ───────────────────────────────────────────────────
+
+    def test_full_manual_pipeline(self):
+        """Полный пайп: ручной ввод → конфликты → расчёт → таблица смен → Welsh-Powell."""
+        self.driver.get(self.base_url + "/coloring/practice")
+
+        # Очищаем форму: убираем все строки дисциплин
+        self.driver.execute_script(
+            """
+            document.querySelector('[data-subject-body]').innerHTML = '';
+            document.querySelector('[data-conflict-list]').innerHTML = '';
+            """
+        )
+
+        # Добавляем три дисциплины через поля «Новая дисциплина»
+        subjects = [
+            ("Математика", "Иванов"),
+            ("Физика", "Петров"),
+            ("Информатика", "Сидоров"),
+        ]
+        for name, teacher in subjects:
+            self.driver.find_element(self.By.ID, "newSubjectName").clear()
+            self.driver.find_element(self.By.ID, "newSubjectName").send_keys(name)
+            self.driver.find_element(self.By.ID, "newSubjectTeacher").clear()
+            self.driver.find_element(self.By.ID, "newSubjectTeacher").send_keys(teacher)
+            self.driver.find_element(self.By.ID, "addSubjectBtn").click()
+
+        self.wait_until(lambda d: len(self.subject_values()) == 3)
+
+        # Добавляем конфликт Математика–Физика
+        self.Select(self.driver.find_element(self.By.ID, "conflictFrom")).select_by_visible_text("Математика")
+        self.Select(self.driver.find_element(self.By.ID, "conflictTo")).select_by_visible_text("Физика")
+        self.driver.find_element(self.By.ID, "addConflictBtn").click()
+        self.wait_until(lambda d: self.conflict_count() == 1)
+
+        # Добавляем конфликт Физика–Информатика
+        self.Select(self.driver.find_element(self.By.ID, "conflictFrom")).select_by_visible_text("Физика")
+        self.Select(self.driver.find_element(self.By.ID, "conflictTo")).select_by_visible_text("Информатика")
+        self.driver.find_element(self.By.ID, "addConflictBtn").click()
+        self.wait_until(lambda d: self.conflict_count() == 2)
+
+        # Рассчитать расписание
+        self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
+        self.wait_css("#coloring-result")
+
+        # Таблица расписания по сменам
+        schedule_rows = self.driver.find_elements(
+            self.By.CSS_SELECTOR, "#coloring-result .result-table tbody tr"
+        )
+        self.assertGreater(len(schedule_rows), 0, "Таблица расписания должна содержать строки")
+
+        # Таблица смен преподавателей
+        for teacher_name in ("Иванов", "Петров", "Сидоров"):
+            self.assertIn(teacher_name, self.driver.page_source)
+
+        # Таблица Welsh-Powell
+        self.assertIn("Welsh-Powell", self.driver.page_source)
+        wp_rows = self.driver.find_elements(
+            self.By.CSS_SELECTOR, "table.result-table tbody tr"
+        )
+        self.assertGreater(len(wp_rows), 0)
+
+    def test_random_generation_then_calculate_pipeline(self):
+        """Пайп: генерация → расчёт → результат содержит корректные данные."""
+        self.driver.get(self.base_url + "/coloring/practice")
+
+        subject_count = self.driver.find_element(self.By.ID, "subjectCount")
+        subject_count.clear()
+        subject_count.send_keys("5")
+
+        density = self.driver.find_element(self.By.ID, "density")
+        density.clear()
+        density.send_keys("0.5")
+
+        self.driver.find_element(self.By.CSS_SELECTOR, "[data-submit-action='generate']").click()
+        self.wait_until(lambda d: len(self.subject_values()) == 5)
+
+        # После генерации дисциплины появились в таблице
+        names = self.subject_values()
+        self.assertEqual(len(names), 5)
+        self.assertTrue(all(n.startswith("Дисциплина") for n in names))
+
+        # Рассчитать
+        self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
+        self.wait_css("#coloring-result")
+
+        # Блок результата присутствует
+        result_section = self.driver.find_element(self.By.ID, "coloring-result")
+        self.assertTrue(result_section.is_displayed())
+
+        # Счётчик смен — число ≥ 1
+        num_colors_text = self.driver.find_element(
+            self.By.CSS_SELECTOR, "#coloring-result .result-number"
+        ).text
+        self.assertTrue(num_colors_text.isdigit() and int(num_colors_text) >= 1)
+
+    def test_json_import_calculate_and_history_saved(self):
+        """Пайп: импорт JSON → расчёт → история сохранилась в файле."""
+        data = {
+            "subjects": [
+                {"name": "Algebra", "teacher": "Ivanov"},
+                {"name": "Physics", "teacher": "Petrov"},
+                {"name": "History", "teacher": "Sidorov"},
+                {"name": "Literature", "teacher": "Smirnova"},
+            ],
+            "conflicts": [
+                ["Algebra", "Physics"],
+                ["Physics", "History"],
+                ["History", "Literature"],
+            ],
+        }
+
+        import tempfile
+        with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8", delete=False) as f:
+            json.dump(data, f, ensure_ascii=False)
+            json_path = f.name
+        self.addCleanup(lambda: os.path.exists(json_path) and os.remove(json_path))
+
+        self.driver.get(self.base_url + "/coloring/practice")
+        self.driver.find_element(self.By.ID, "jsonFile").send_keys(json_path)
+        self.driver.find_element(self.By.CSS_SELECTOR, "[data-submit-action='load_json']").click()
+
+        self.wait_until(lambda d: self.subject_values() and self.subject_values()[0] == "Algebra")
+        self.assertEqual(len(self.subject_values()), 4)
+        self.assertEqual(self.conflict_count(), 3)
+
+        # Рассчитать
+        self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
+        self.wait_css("#coloring-result")
+
+        # Все четыре дисциплины видны в результате
+        for subj in ("Algebra", "Physics", "History", "Literature"):
+            self.assertIn(subj, self.driver.page_source)
+
+        # Запись появилась в истории
+        history_path = PROJECT_ROOT / "data" / "coloring_history.json"
+        self.assertTrue(history_path.exists(), "Файл истории должен существовать после расчёта")
+        with history_path.open("r", encoding="utf-8") as file:
+            history = json.load(file)
+        names_in_history = [
+            {s.get("name") for s in entry.get("input", {}).get("subjects", [])}
+            for entry in history
+        ]
+        self.assertIn({"Algebra", "Physics", "History", "Literature"}, names_in_history)
+
+    def test_export_json_button_appears_after_calculation(self):
+        """Кнопка «Скачать JSON» появляется только после успешного расчёта."""
+        self.driver.get(self.base_url + "/coloring/practice")
+
+        # До расчёта кнопки нет
+        self.assertFalse(
+            self.driver.find_elements(self.By.CSS_SELECTOR, ".export-json-btn"),
+            "Кнопка экспорта не должна быть видна до расчёта",
+        )
+
+        # Рассчитать с данными по умолчанию
+        self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
+        self.wait_css("#coloring-result")
+
+        # После расчёта кнопка появилась
+        self.assertTrue(
+            self.driver.find_elements(self.By.CSS_SELECTOR, ".export-json-btn"),
+            "Кнопка экспорта должна появиться после расчёта",
+        )
+
+    def test_add_and_remove_conflict_updates_count(self):
+        """Добавление и удаление конфликта корректно обновляет счётчик."""
+        self.driver.get(self.base_url + "/coloring/practice")
+
+        initial_count = self.conflict_count()
+
+        # Добавляем конфликт между первыми двумя дисциплинами по умолчанию
+        from_select = self.Select(self.driver.find_element(self.By.ID, "conflictFrom"))
+        options = [o.text for o in from_select.options]
+        if len(options) < 2:
+            self.skipTest("Недостаточно дисциплин для теста конфликтов")
+
+        from_select.select_by_index(0)
+        self.Select(self.driver.find_element(self.By.ID, "conflictTo")).select_by_index(1)
+        self.driver.find_element(self.By.ID, "addConflictBtn").click()
+        self.wait_until(lambda d: self.conflict_count() > initial_count)
+
+        after_add = self.conflict_count()
+
+        # Удаляем только что добавленный конфликт
+        remove_buttons = self.driver.find_elements(
+            self.By.CSS_SELECTOR, "[data-conflict-list] [data-remove-conflict]"
+        )
+        self.assertTrue(remove_buttons, "Должны быть кнопки удаления конфликтов")
+        remove_buttons[-1].click()
+        self.wait_until(lambda d: self.conflict_count() < after_add)
+
+        self.assertEqual(self.conflict_count(), initial_count)
+
+    def test_empty_subjects_shows_validation_error(self):
+        """Отправка пустой таблицы дисциплин возвращает ошибку валидации."""
+        self.driver.get(self.base_url + "/coloring/practice")
+
+        self.driver.execute_script(
+            """
+            document.querySelector('[data-subject-body]').innerHTML = '';
+            document.querySelector('[data-conflict-list]').innerHTML = '';
+            document.getElementById('formAction').value = 'calculate';
+            """
+        )
+
+        self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
+        self.wait_css(".coloring-alert")
+
+        self.assertIn("дисциплин", self.driver.page_source.lower())
+        self.assertFalse(self.driver.find_elements(self.By.CSS_SELECTOR, "#coloring-result"))
+
+    def test_result_section_structure(self):
+        """Раздел результата содержит все три блока: смены, преподаватели, Welsh-Powell."""
+        self.driver.get(self.base_url + "/coloring/practice")
+
+        # Используем данные по умолчанию — просто рассчитываем
+        self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
+        self.wait_css("#coloring-result")
+
+        page = self.driver.page_source
+
+        # Блок «Расписание по сменам»
+        self.assertIn("Смена", page)
+        # Блок «Смены преподавателей»
+        self.assertIn("Преподаватель", page)
+        # Таблица порядка Welsh-Powell
+        self.assertIn("Welsh-Powell", page)
+        # Сводка результата: num_colors, teacher_cost, conflicts count
+        numbers = self.driver.find_elements(self.By.CSS_SELECTOR, "#coloring-result .result-number")
+        self.assertEqual(len(numbers), 3, "Должны быть три числовых показателя в сводке")
+        for el in numbers:
+            self.assertTrue(el.text.isdigit(), "Каждый показатель должен быть числом")
+
+
 if __name__ == "__main__":
     unittest.main()
