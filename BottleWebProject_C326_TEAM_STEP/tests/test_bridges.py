@@ -2,7 +2,7 @@
 tests/test_bridges.py — Unit tests for algorithms/bridges.py
 Run: python -m pytest tests/test_bridges.py -v
 
-Контракт (соответствует блок-схеме и ТЗ 2.2.1–2.2.4):
+Контракт:
   • bridges — список мостов (Тарьян);
   • total_path_sum — сумма кратчайших путей ИСХОДНОГО графа (i < j, включая ∞);
   • states[0] — исходный граф (removed=None), далее по одному на каждый мост;
@@ -269,6 +269,151 @@ class TestStructuralGuards(unittest.TestCase):
         # nan проходит проверку w <= 0 (любое сравнение с nan = False) — ловим isfinite.
         with self.assertRaises(ValueError):
             analyze_network(['A', 'B'], [('A', 'B', float('nan'))])
+
+
+class TestFloydDetourBeatsDirectEdge(unittest.TestCase):
+    """Кратчайший путь идёт в обход и строго короче прямого ребра.
+
+    A–C весит 10, но A–B(1)+B–C(1)=2 — Флойд обязан выбрать обход (2 < 10).
+    Граф — треугольник (цикл), поэтому мостов нет.
+    """
+
+    def setUp(self):
+        self.vertices = ['A', 'B', 'C']
+        self.edges = [('A', 'B', 1.0), ('B', 'C', 1.0), ('A', 'C', 10.0)]
+        self.result = analyze_network(self.vertices, self.edges)
+
+    def test_no_bridges(self):
+        self.assertEqual(self.result['bridges'], [])
+
+    def test_shortest_path_uses_detour(self):
+        dist = self.result['states'][0]['dist']
+        self.assertEqual(dist['A']['C'], 2.0)   # 1+1, а не прямое ребро 10
+        self.assertEqual(dist['C']['A'], 2.0)   # симметрично
+
+    def test_weight_matrix_keeps_direct_edge(self):
+        # Матрица весов хранит ПРЯМОЕ ребро (10), её обход не трогает.
+        self.assertEqual(self.result['states'][0]['weight']['A']['C'], 10.0)
+
+    def test_total_path_sum(self):
+        # Пары i<j: AB=1, AC=2 (обход), BC=1 → 4.
+        self.assertEqual(self.result['total_path_sum'], 4.0)
+
+
+class TestEmptyGraph(unittest.TestCase):
+    """Пустой граф: ни вершин, ни рёбер."""
+
+    def setUp(self):
+        self.result = analyze_network([], [])
+
+    def test_no_bridges(self):
+        self.assertEqual(self.result['bridges'], [])
+
+    def test_only_original_state(self):
+        self.assertEqual(len(self.result['states']), 1)
+        self.assertIsNone(self.result['states'][0]['removed'])
+
+    def test_empty_matrices(self):
+        state = self.result['states'][0]
+        self.assertEqual(state['weight'], {})
+        self.assertEqual(state['adj'], {})
+        self.assertEqual(state['dist'], {})
+
+    def test_total_path_sum_zero(self):
+        # Нет ни одной пары i<j → сумма равна 0.
+        self.assertEqual(self.result['total_path_sum'], 0.0)
+
+
+class TestIsolatedVerticesNoEdges(unittest.TestCase):
+    """Несколько вершин без рёбер: каждая пара недостижима."""
+
+    def setUp(self):
+        self.vertices = ['A', 'B', 'C']
+        self.result = analyze_network(self.vertices, [])
+
+    def test_no_bridges(self):
+        self.assertEqual(self.result['bridges'], [])
+
+    def test_only_original_state(self):
+        self.assertEqual(len(self.result['states']), 1)
+
+    def test_total_path_sum_infinite(self):
+        # Любая пара (A,B) недостижима → сумма = ∞.
+        self.assertEqual(self.result['total_path_sum'], INF)
+
+    def test_matrices(self):
+        state = self.result['states'][0]
+        self.assertEqual(state['dist']['A']['A'], 0.0)   # диагональ
+        self.assertEqual(state['dist']['A']['B'], INF)   # нет пути
+        self.assertEqual(state['adj']['A']['B'], 0)
+        self.assertEqual(state['weight']['A']['B'], INF)
+
+
+class TestIntegerWeights(unittest.TestCase):
+    """Целочисленные веса принимаются и приводятся к float."""
+
+    def setUp(self):
+        self.vertices = ['A', 'B', 'C']
+        self.edges = [('A', 'B', 2), ('B', 'C', 3)]   # int, не float
+        self.result = analyze_network(self.vertices, self.edges)
+
+    def test_bridges_found(self):
+        # Цепочка A–B–C: оба ребра — мосты.
+        self.assertEqual(len(self.result['bridges']), 2)
+
+    def test_distances_are_float(self):
+        dist = self.result['states'][0]['dist']
+        self.assertEqual(dist['A']['C'], 5.0)
+        self.assertIsInstance(dist['A']['C'], float)
+
+    def test_total_path_sum(self):
+        # AB=2, AC=5, BC=3 → 10.
+        self.assertEqual(self.result['total_path_sum'], 10.0)
+
+
+class TestCycleWithBridgeTail(unittest.TestCase):
+    """Смешанный граф: цикл-треугольник + два последовательных моста-хвоста.
+
+    Треугольник A–B–C (мостов нет) + хвост C–D–E (оба ребра — мосты).
+    Проверяет несколько мостов в ОДНОЙ компоненте и их порядок/состояния.
+    """
+
+    def setUp(self):
+        self.vertices = ['A', 'B', 'C', 'D', 'E']
+        self.edges = [
+            ('A', 'B', 1.0), ('B', 'C', 1.0), ('A', 'C', 1.0),   # треугольник
+            ('C', 'D', 2.0), ('D', 'E', 4.0),                    # хвост (мосты)
+        ]
+        self.result = analyze_network(self.vertices, self.edges)
+
+    def test_two_bridges(self):
+        self.assertEqual(len(self.result['bridges']), 2)
+
+    def test_bridges_are_tail_edges(self):
+        expected = {frozenset({'C', 'D'}), frozenset({'D', 'E'})}
+        self.assertEqual(_bridge_set(self.result['bridges']), expected)
+
+    def test_triangle_edges_not_bridges(self):
+        bset = _bridge_set(self.result['bridges'])
+        self.assertNotIn(frozenset({'A', 'B'}), bset)
+        self.assertNotIn(frozenset({'A', 'C'}), bset)
+        self.assertNotIn(frozenset({'B', 'C'}), bset)
+
+    def test_states_count(self):
+        # Исходный + по одному на каждый из 2 мостов.
+        self.assertEqual(len(self.result['states']), 3)
+
+    def test_removing_cd_isolates_tail(self):
+        state = _find_state(self.result, {'C', 'D'})
+        # Без C–D: {A,B,C} отрезаны от {D,E}.
+        self.assertEqual(state['dist']['A']['E'], INF)
+        self.assertEqual(state['dist']['D']['E'], 4.0)   # хвост D–E цел
+        self.assertEqual(state['dist']['A']['B'], 1.0)   # треугольник цел
+
+    def test_removing_de_isolates_e(self):
+        state = _find_state(self.result, {'D', 'E'})
+        self.assertEqual(state['dist']['A']['E'], INF)   # E недостижима
+        self.assertEqual(state['dist']['A']['D'], 3.0)   # A–C–D = 1+2
 
 
 if __name__ == '__main__':

@@ -1,8 +1,7 @@
 """
 tests/test_bridges_ui.py — UI-тест страницы /bridges/practice (Selenium).
 
-Дополнительное задание (на «отлично»): автоматизация тестирования интерфейса
-страницы метода с помощью Selenium. Большой набор исходных данных (12 городов,
+Большой набор исходных данных (12 городов,
 16 дорог) считывается из файла tests/data/bridges_ui_network.json и вводится в
 форму, после чего проверяется генерация страницы с результатом анализа.
 
@@ -53,6 +52,13 @@ class BridgesPracticeUiTest(unittest.TestCase):
         cls.WebDriverWait = WebDriverWait
         cls.server = None
         cls.driver = None
+        cls.visible = False
+        # Базовая длительность пауз между этапами (сек). Регулируется без правки
+        # кода: STEP_PAUSE=2  -> паузы в ~2 раза длиннее, STEP_PAUSE=0 -> без пауз.
+        try:
+            cls.pause_seconds = float(os.environ.get("STEP_PAUSE", "1.2"))
+        except ValueError:
+            cls.pause_seconds = 1.2
 
         cls.port = free_port()
         cls.base_url = "http://127.0.0.1:{}".format(cls.port)
@@ -106,8 +112,15 @@ class BridgesPracticeUiTest(unittest.TestCase):
     def make_driver(cls):
         errors = []
 
+        # Видимый режим: HEADLESS=0 (или SHOW_BROWSER=1) — окно браузера показывается.
+        headless = os.environ.get("HEADLESS", "1") not in ("0", "false", "False") \
+            and os.environ.get("SHOW_BROWSER", "0") in ("0", "false", "False")
+        # В видимом режиме делаем паузы между этапами, чтобы было видно глазами.
+        cls.visible = not headless
+
         chrome_options = cls.webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless=new")
+        if headless:
+            chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--window-size=1280,900")
         chrome_options.add_argument("--disable-gpu")
         try:
@@ -116,7 +129,8 @@ class BridgesPracticeUiTest(unittest.TestCase):
             errors.append("Chrome: {}".format(exc))
 
         edge_options = cls.webdriver.EdgeOptions()
-        edge_options.add_argument("--headless=new")
+        if headless:
+            edge_options.add_argument("--headless=new")
         edge_options.add_argument("--window-size=1280,900")
         edge_options.add_argument("--disable-gpu")
         try:
@@ -127,6 +141,13 @@ class BridgesPracticeUiTest(unittest.TestCase):
         raise RuntimeError("; ".join(errors))
 
     # ── helpers ──────────────────────────────────────────────────────────────
+    def pause(self, factor=1.0):
+        """Пауза между этапами — только в видимом режиме (HEADLESS=0),
+        чтобы можно было разглядеть, что делает тест. В headless игнорируется.
+        Длительность = STEP_PAUSE * factor (STEP_PAUSE по умолчанию 1.2 сек)."""
+        if self.visible and self.pause_seconds > 0:
+            time.sleep(self.pause_seconds * factor)
+
     def wait_css(self, selector):
         return self.WebDriverWait(self.driver, 15).until(
             self.EC.presence_of_element_located((self.By.CSS_SELECTOR, selector))
@@ -163,6 +184,7 @@ class BridgesPracticeUiTest(unittest.TestCase):
     # ── tests ────────────────────────────────────────────────────────────────
     def test_page_has_required_controls(self):
         self.driver.get(self.base_url + "/bridges/practice")
+        self.pause()  # дать рассмотреть открывшуюся страницу
 
         self.assertTrue(self.driver.find_elements(self.By.CSS_SELECTOR, "form[action='/bridges/practice']"))
         self.assertTrue(self.driver.find_elements(self.By.CSS_SELECTOR, "#bridge-nodes-body"))
@@ -172,21 +194,27 @@ class BridgesPracticeUiTest(unittest.TestCase):
         self.assertTrue(self.driver.find_elements(self.By.CSS_SELECTOR, "button[type='submit']"))
 
     def test_large_network_from_file_and_analysis(self):
-        # Большой набор данных считывается из файла (требование доп. задания).
+        # Большой набор данных считывается из файла.
         with open(DATA_FILE, encoding="utf-8") as fh:
             dataset = json.load(fh)
 
+        # Этап 1: открываем пустую страницу практики.
         self.driver.get(self.base_url + "/bridges/practice")
+        self.pause()
+
+        # Этап 2: заполняем форму городами и дорогами из файла.
         self.fill_from_dataset(dataset)
 
         # Форма заполнена в полном объёме.
         self.wait_until(lambda d: self.node_count() == len(dataset["nodes"]))
         self.assertEqual(self.node_count(), len(dataset["nodes"]))
         self.assertEqual(self.edge_count(), len(dataset["edges"]))
+        self.pause(1.6)  # видно заполненные таблицы городов и дорог
 
-        # Запуск анализа и ожидание сгенерированной страницы результата.
+        # Этап 3: запуск анализа и ожидание сгенерированной страницы результата.
         self.driver.find_element(self.By.CSS_SELECTOR, "button[type='submit']").click()
         self.wait_css("#state0")
+        self.pause(1.6)  # видно результат: матрицы, вкладки и граф
 
         # На странице результата присутствуют сводка, матрицы и вкладки состояний.
         self.assertIn("Результат анализа", self.driver.page_source)
@@ -199,19 +227,23 @@ class BridgesPracticeUiTest(unittest.TestCase):
 
         # Граф исходной сети отрисован библиотекой vis.js.
         self.assertTrue(self.driver.find_elements(self.By.CSS_SELECTOR, "#state0 .state-graph"))
+        self.pause()
 
     def test_random_generation_fills_tables(self):
         self.driver.get(self.base_url + "/bridges/practice")
+        self.pause()
 
         count = self.driver.find_element(self.By.ID, "bridge-gen-count")
         count.clear()
         count.send_keys("7")
+        self.pause()  # видно введённое число городов
 
         self.driver.find_element(self.By.ID, "bridge-generate-btn").click()
         # Генерация идёт запросом к /bridges/generate (сервер, Python).
         self.wait_until(lambda d: self.node_count() == 7)
         self.assertEqual(self.node_count(), 7)
         self.assertGreaterEqual(self.edge_count(), 6)  # связный граф: не менее n-1 рёбер
+        self.pause(1.6)  # видно сгенерированные города и дороги
 
 
 if __name__ == "__main__":
