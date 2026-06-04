@@ -1,6 +1,6 @@
 """
-tests/test_bridges.py — Unit tests for algorithms/bridges.py
-Run: python -m pytest tests/test_bridges.py -v
+tests/test_bridges.py — Модульные тесты для algorithms/bridges.py
+Запуск: python -m pytest tests/test_bridges.py -v
 
 Контракт:
   • bridges — список мостов (Тарьян);
@@ -16,12 +16,12 @@ INF = float('inf')
 
 
 def _bridge_set(bridges):
-    """Convert bridge list to a set of frozensets for order-independent comparison."""
+    """Преобразовать список мостов в множество frozenset для сравнения без учёта порядка."""
     return {frozenset((u, v)) for u, v, w in bridges}
 
 
 def _find_state(result, pair):
-    """Return the state whose removed bridge connects the two vertices in `pair`."""
+    """Вернуть состояние, в котором удалён мост, соединяющий две вершины из `pair`."""
     target = frozenset(pair)
     for state in result['states']:
         if state['removed'] is not None and frozenset(state['removed'][:2]) == target:
@@ -30,7 +30,7 @@ def _find_state(result, pair):
 
 
 class TestPathAllBridges(unittest.TestCase):
-    """Path graph A–B–C–D: every edge is a bridge."""
+    """Цепочка A–B–C–D: каждое ребро — мост."""
 
     def setUp(self):
         self.vertices = ['A', 'B', 'C', 'D']
@@ -78,7 +78,7 @@ class TestPathAllBridges(unittest.TestCase):
 
     def test_removing_bc_breaks_path(self):
         state = _find_state(self.result, {'B', 'C'})
-        # B–C делит {A,B}|{C,D}: A→D становится недостижимым.
+        # B–C разделяет {A,B}|{C,D}: A→D становится недостижимым.
         self.assertEqual(state['dist']['A']['D'], INF)
         self.assertEqual(state['adj']['B']['C'], 0)   # ребро удалено
         self.assertEqual(state['adj']['A']['B'], 1)   # остальные на месте
@@ -91,7 +91,7 @@ class TestPathAllBridges(unittest.TestCase):
 
 
 class TestTriangleNoBridges(unittest.TestCase):
-    """Triangle A–B–C: no bridges (each edge part of a cycle)."""
+    """Треугольник A–B–C: мостов нет (каждое ребро входит в цикл)."""
 
     def setUp(self):
         self.vertices = ['A', 'B', 'C']
@@ -119,10 +119,10 @@ class TestTriangleNoBridges(unittest.TestCase):
 
 class TestTwoTrianglesOneBridge(unittest.TestCase):
     """
-    Two triangles connected by a bridge:
-    A–B:2, B–C:3, A–C:1  (triangle 1)
-    D–E:4, D–F:2, E–F:3  (triangle 2)
-    C–D:5                 (the only bridge)
+    Два треугольника, соединённых мостом:
+    A–B:2, B–C:3, A–C:1  (треугольник 1)
+    D–E:4, D–F:2, E–F:3  (треугольник 2)
+    C–D:5                 (единственный мост)
     """
 
     def setUp(self):
@@ -162,7 +162,7 @@ class TestTwoTrianglesOneBridge(unittest.TestCase):
 
 
 class TestSingleVertex(unittest.TestCase):
-    """Single vertex, no edges: trivial graph."""
+    """Одна вершина, нет рёбер: тривиальный граф."""
 
     def setUp(self):
         self.result = analyze_network(['A'], [])
@@ -185,8 +185,8 @@ class TestSingleVertex(unittest.TestCase):
 
 class TestTwoDisconnectedComponents(unittest.TestCase):
     """
-    Two separate edges (both bridges by definition):
-    A–B:1  and  C–D:2  — no connection between the two pairs.
+    Два отдельных ребра (оба — мосты по определению):
+    A–B:1  и  C–D:2  — соединения между двумя парами нет.
     """
 
     def setUp(self):
@@ -217,7 +217,7 @@ class TestTwoDisconnectedComponents(unittest.TestCase):
 
 
 class TestUnknownVertexRaises(unittest.TestCase):
-    """Edge referencing a vertex not in the vertex list → ValueError."""
+    """Ребро ссылается на вершину, отсутствующую в списке вершин → ValueError."""
 
     def test_unknown_source(self):
         with self.assertRaises(ValueError) as ctx:
@@ -231,7 +231,7 @@ class TestUnknownVertexRaises(unittest.TestCase):
 
 
 class TestInvalidWeightRaises(unittest.TestCase):
-    """Edge with weight ≤ 0 → ValueError."""
+    """Ребро с весом ≤ 0 → ValueError."""
 
     def test_zero_weight(self):
         with self.assertRaises(ValueError):
@@ -246,7 +246,7 @@ class TestStructuralGuards(unittest.TestCase):
     """Структурные предусловия алгоритма: петли, дубли рёбер, неконечный вес."""
 
     def test_self_loop_raises(self):
-        # Петля (дорога города в самого себя) недопустима.
+        # Петля (дорога из города в самого себя) недопустима.
         with self.assertRaises(ValueError):
             analyze_network(['A', 'B'], [('A', 'A', 1.0)])
 
