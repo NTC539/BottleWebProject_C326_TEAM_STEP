@@ -22,6 +22,7 @@
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>tests</UnitTestRootDirectory>
     <InterpreterId>MSBuild|env1|$(MSBuildProjectFullPath)</InterpreterId>
+    <WebBrowserPort>5555</WebBrowserPort>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,7 +44,16 @@
     <Compile Include="algorithms\dijkstra_utils.py" />
     <Compile Include="app.py" />
     <Compile Include="routes.py" />
-    <Compile Include="tests\__init__.py" />
+    <Compile Include="tests\test_cpm.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\test_cpm_generator.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\test_dijkstra_selenium.py" />
+    <Compile Include="tests\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="algorithms\" />
@@ -117,6 +127,8 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="static\scripts\_references.js" />
+    <Content Include="tests\data\data_invalid.txt" />
+    <Content Include="tests\data\data_valid_large.txt" />
     <Content Include="tests\data\bridges_ui_network.json" />
     <Content Include="views\about.tpl" />
     <Content Include="views\cpm_practice.tpl">
@@ -134,8 +146,8 @@
   <ItemGroup>
     <Interpreter Include="env1\">
       <Id>env1</Id>
-      <Version>3.12</Version>
-      <Description>env1 (Python 3.12 (64-bit))</Description>
+      <Version>3.9</Version>
+      <Description>env1 (Python 3.9 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
