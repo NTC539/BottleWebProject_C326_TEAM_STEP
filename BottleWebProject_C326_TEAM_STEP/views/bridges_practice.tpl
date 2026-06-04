@@ -1,5 +1,5 @@
 % rebase('layout.tpl', title='Практика — Мосты Тарьяна', year=year, active_page='bridges')
-<link rel="stylesheet" type="text/css" href="/static/content/bridges_practice.css?v=5" />
+<link rel="stylesheet" type="text/css" href="/static/content/bridges_practice.css?v=7" />
 
 <section class="practice-hero">
     <span class="page-label">Мосты Тарьяна — практика</span>
