@@ -83,7 +83,7 @@
     padding: 12px 14px;
 }
 
-.editor-panel h3 {
+.editor-panel h2 {
     color: #1a3a5c;
     margin-top: 0;
     font-size: 18px;
@@ -256,7 +256,7 @@
     overflow: auto;
 }
 
-.matrix-card h5 {
+.matrix-card h3 {
     margin: 0 0 8px;
     color: #1a3a5c;
     font-weight: 700;

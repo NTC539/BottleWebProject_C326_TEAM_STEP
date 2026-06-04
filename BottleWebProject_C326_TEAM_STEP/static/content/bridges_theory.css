@@ -9,7 +9,7 @@
     gap: 12px;
 }
 
-.bt-header h2 { margin: 0; border: none; padding: 0; }
+.bt-header h1 { margin: 0; border: none; padding: 0; }
 
 /* ── Hero split box ──────────────────────────────────────── */
 
@@ -333,7 +333,7 @@
     padding: 10px 12px;
 }
 
-.bt-matrix-card h5 {
+.bt-matrix-card h2 {
     margin: 0 0 8px;
     font-size: 12px;
     font-weight: 700;

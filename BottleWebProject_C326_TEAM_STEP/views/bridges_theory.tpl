@@ -1,9 +1,9 @@
 % rebase('layout.tpl', title='Теория — Мосты Тарьяна', year=year, active_page='bridges')
-<link rel="stylesheet" type="text/css" href="/static/content/bridges_theory.css?v=2" />
+<link rel="stylesheet" type="text/css" href="/static/content/bridges_theory.css?v=2">
 
 <!-- СЕКЦИЯ 1: Навигация -->
 <div class="bt-header">
-    <h2>Мосты Тарьяна &amp; Флойд&ndash;Уоршолл</h2>
+    <h1>Мосты Тарьяна &amp; Флойд&ndash;Уоршолл</h1>
     <a href="/bridges/practice" class="btn btn-primary btn-lg">К практике &rarr;</a>
 </div>
 
@@ -227,7 +227,7 @@
             % mats = [('Матрица весов', st['weight'], True), ('Матрица смежности', st['adj'], False), ('Кратчайшие пути', st['dist'], True)]
             % for mtitle, rows, mark_inf in mats:
             <div class="bt-matrix-card">
-                <h5>{{ mtitle }}</h5>
+                <h2>{{ mtitle }}</h2>
                 <table class="table table-bordered table-condensed bt-matrix">
                     <thead>
                         <tr>

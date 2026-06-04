@@ -1,5 +1,5 @@
 % rebase('layout.tpl', title='Практика — Мосты Тарьяна', year=year, active_page='bridges')
-<link rel="stylesheet" type="text/css" href="/static/content/bridges_practice.css?v=7" />
+<link rel="stylesheet" type="text/css" href="/static/content/bridges_practice.css?v=7">
 
 <section class="practice-hero">
     <span class="page-label">Мосты Тарьяна — практика</span>
@@ -22,7 +22,7 @@
     <div class="editor-grid">
 
         <section class="editor-panel">
-            <h3>Города</h3>
+            <h2>Города</h2>
             <p class="hint">Узлы транспортной сети.</p>
             <div class="input-table-wrap">
                 <table class="table input-table">
@@ -44,7 +44,7 @@
         </section>
 
         <section class="editor-panel">
-            <h3>Дороги</h3>
+            <h2>Дороги</h2>
             <p class="hint">Неориентированные рёбра с весом (длиной / временем).</p>
             <div class="input-table-wrap">
                 <table class="table input-table">
@@ -132,7 +132,7 @@ $(function () {
      СЕКЦИЯ 3: Результат
      ═══════════════════════════════════════════════════════════ -->
 % if defined('result') and result:
-<h3 style="margin-top:24px">Результат анализа</h3>
+<h2 style="margin-top:24px">Результат анализа</h2>
 
 <div class="result-summary">
     <div class="summary-chip">
@@ -172,7 +172,7 @@ $(function () {
             % mats = [('Матрица весов', st['weight_rows'], True), ('Матрица смежности', st['adj_rows'], False)]
             % for mtitle, rows, mark_inf in mats:
             <div class="matrix-card">
-                <h5>{{ mtitle }}</h5>
+                <h3>{{ mtitle }}</h3>
                 <table class="table matrix-table">
                     <thead>
                         <tr>
@@ -205,7 +205,7 @@ $(function () {
         <!-- Кратчайшие пути — на одном уровне с графом -->
         <div class="graph-row">
             <div class="matrix-card dist-card">
-                <h5>Кратчайшие пути</h5>
+                <h3>Кратчайшие пути</h3>
                 <table class="table matrix-table">
                     <thead>
                         <tr>
