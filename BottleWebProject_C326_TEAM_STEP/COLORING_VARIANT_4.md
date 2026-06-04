@@ -19,6 +19,7 @@
 - `COLORING_REQUIREMENTS_CHECK.md` - проверка соответствия требованиям.
 - `COLORING_TEST_REPORT.md` - краткий отчет о тестировании.
 - `COLORING_CODE_USAGE.md` - описание работы кода и инструкция по использованию страницы.
+- `COLORING_SELENIUM_GUIDE.md` - запуск Selenium, написание UI-тестов и сценарии использования.
 
 Каждая функция в `algorithms/coloring.py` и обработчики раскраски в `routes.py` снабжены короткими однострочными комментариями (docstring), описывающими их назначение.
 
