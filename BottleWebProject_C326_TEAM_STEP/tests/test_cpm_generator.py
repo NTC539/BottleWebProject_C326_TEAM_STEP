@@ -4,8 +4,9 @@ from algorithms.cpm import find_critical_path
 
 class TestGenerateRandomCPM(unittest.TestCase):
     def test_result_structure(self):
-        # Результат — словарь с ключами 'tasks' и 'deps' правильного формата
+        # Проверяем что результат это словарь с ключами 'tasks' и 'deps'
         data = generate_random_cpm()
+
         self.assertIn("tasks", data)
         self.assertIn("deps", data)
         for task in data["tasks"]:

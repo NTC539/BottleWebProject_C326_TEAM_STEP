@@ -10,17 +10,13 @@ class TestFindCriticalPath(unittest.TestCase):
 
         self.assertEqual(result["duration"], 9)
         self.assertEqual(result["critical_paths"], [["A", "B", "C"]])
-        self.assertEqual(result["es"], {"A": 0, "B": 2, "C": 5})
-
-        # Ранние сроки
+        
         self.assertEqual(result["es"], {"A": 0, "B": 2, "C": 5})
         self.assertEqual(result["ef"], {"A": 2, "B": 5, "C": 9})
 
-        # Поздние сроки
         self.assertEqual(result["ls"], {"A": 0, "B": 2, "C": 5})
         self.assertEqual(result["lf"], {"A": 2, "B": 5, "C": 9})
 
-        # Резервы (все нулевые — критический путь)
         self.assertEqual(result["total_float"], {"A": 0, "B": 0, "C": 0})
 
     def test_diamond_two_branches(self):
@@ -48,6 +44,7 @@ class TestFindCriticalPath(unittest.TestCase):
         result = find_critical_path(tasks, deps)
 
         self.assertEqual(result["duration"], 5)
+
         # Обе задачи критические (обе дают длину проекта)
         self.assertIn(["A"], result["critical_paths"])
         self.assertIn(["B"], result["critical_paths"])

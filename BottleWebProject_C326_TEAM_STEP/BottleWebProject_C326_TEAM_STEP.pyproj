@@ -50,6 +50,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="tests\test_dijkstra_selenium.py" />
+    <Compile Include="tests\test_selenium_cpm.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="tests\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -85,6 +88,7 @@
     <Content Include="requirements.txt" />
     <Content Include="static\content\bootstrap.css" />
     <Content Include="static\content\bootstrap.min.css" />
+    <Content Include="static\content\cpm_theory.css" />
     <Content Include="static\content\site.css" />
     <Content Include="static\content\dijkstra.css" />
     <Content Include="static\fonts\glyphicons-halflings-regular.eot" />
@@ -119,6 +123,9 @@
     <Content Include="static\scripts\_references.js" />
     <Content Include="tests\data\data_invalid.txt" />
     <Content Include="tests\data\data_valid_large.txt" />
+    <Content Include="tests\data\test_cpm_data_error.json" />
+    <Content Include="tests\data\test_cpm_data_large.json" />
+    <Content Include="tests\data\test_cpm_instructions.json" />
     <Content Include="views\about.tpl" />
     <Content Include="views\cpm_practice.tpl">
       <SubType>Code</SubType>

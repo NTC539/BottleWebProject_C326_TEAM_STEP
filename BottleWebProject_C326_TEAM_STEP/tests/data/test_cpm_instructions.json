@@ -1,0 +1,5 @@
+{
+  "base_url": "http://localhost:5555",
+  "test_data_file": "test_cpm_data_large.json",
+  "error_data_file": "test_cpm_data_error.json"
+}
